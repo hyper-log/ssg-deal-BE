@@ -3,6 +3,7 @@ package on.ssgdeal.promotion_service.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import on.ssgdeal.common.jpa.BaseEntity;
+import on.ssgdeal.promotion_service.domain.entity.dto.CreateCompanyDto;
 import on.ssgdeal.promotion_service.domain.vo.CompanyLogoUrl;
 import on.ssgdeal.promotion_service.domain.vo.CompanyName;
 
@@ -35,5 +36,14 @@ public class Company extends BaseEntity {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<Product> products;
+
+    public static Company create(CreateCompanyDto createCompanyDto) {
+        return Company.builder()
+                .managerId(createCompanyDto.managerId())
+                .logoUrl(createCompanyDto.companyLogoUrl())
+                .promotion(createCompanyDto.promotion())
+                .name(createCompanyDto.companyName())
+                .build();
+    }
 
 }
