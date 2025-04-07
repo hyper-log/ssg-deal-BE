@@ -13,35 +13,21 @@ allprojects {
 	}
 }
 
+ext {
+	set('springCloudVersion', "2024.0.0")
+	set('querydslVersion', "5.0.0")
+}
+
 subprojects {
 	// 적용 플러그인 설정
 	apply plugin: 'java'
 	apply plugin: 'org.springframework.boot'
 	apply plugin: 'io.spring.dependency-management'
 
-	// 공통 의존성 추가
-	dependencies {
-		// Web
-		implementation 'org.springframework.boot:spring-boot-starter-web'
-		// lombok
-		compileOnly 'org.projectlombok:lombok'
-		annotationProcessor 'org.projectlombok:lombok'
-		// jasypt
-		implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
-		// Test
-		testImplementation 'org.springframework.boot:spring-boot-starter-test'
-		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-		// zipkin
-		implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
-		implementation 'io.micrometer:micrometer-tracing-bridge-brave'
-		// prometheus
-		runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-		// actuator
-		implementation 'org.springframework.boot:spring-boot-starter-actuator'
-		// swagger
-		implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-		implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.15.0'
-		implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0'
+	dependencyManagement {
+		imports {
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		}
 	}
 
 	bootJar { enabled = true }
@@ -51,12 +37,6 @@ subprojects {
 project(':common') { // common은 bootJar로 패키징 할 필요 없음
 	bootJar { enabled = false }
 	jar { enabled = true }
-}
-
-project(':gateway_service') {
-	dependencies {
-		implementation project(':common')
-	}
 }
 
 project(':auth_service') {
