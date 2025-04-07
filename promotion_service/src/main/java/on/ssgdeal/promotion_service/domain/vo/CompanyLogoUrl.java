@@ -18,7 +18,7 @@ public class CompanyLogoUrl {
     private static final int MAX_LENGTH = 2048;
     private static final String ERROR_MESSAGE_FIELD = "업체 로고 이미지 URL";
 
-    @Column(name = "log_url", nullable = false, length = MAX_LENGTH)
+    @Column(name = "logo_url", nullable = false, length = MAX_LENGTH)
     private String value;
 
     public CompanyLogoUrl(final String value) {
