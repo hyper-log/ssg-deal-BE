@@ -2,7 +2,6 @@ package on.ssgdeal.order_service.domain.entity;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.math.BigDecimal;
 import on.ssgdeal.order_service.domain.vo.TotalOrderNumber;
 import on.ssgdeal.order_service.domain.vo.TotalPrice;
 import on.ssgdeal.order_service.exception.OrderException;
@@ -15,7 +14,7 @@ class TotalOrderTest {
     @DisplayName("가격 빈값 검증")
     void insertValidBlankPrice() throws Exception {
         //given
-        BigDecimal price = null;
+        Long price = null;
 
         //when & then
         assertThatThrownBy(() -> new TotalPrice(price))
@@ -26,7 +25,7 @@ class TotalOrderTest {
     @DisplayName("최저 가격 검증")
     void insertValidMinPrice() throws Exception {
         //given
-        BigDecimal price = new BigDecimal("0.00");
+        Long price = 0L;
 
         //when & then
         assertThatThrownBy(() -> new TotalPrice(price))

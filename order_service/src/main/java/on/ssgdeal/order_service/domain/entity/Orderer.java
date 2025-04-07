@@ -6,12 +6,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import on.ssgdeal.common.jpa.BaseEntity;
+import on.ssgdeal.order_service.application.service.dto.CreateUserInfoDto;
 import on.ssgdeal.order_service.domain.vo.DeliveryRequest;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -26,7 +27,7 @@ public class Orderer extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "total_order_id")
     private TotalOrder totalOrder;
 
@@ -36,4 +37,14 @@ public class Orderer extends BaseEntity {
     private String destination;
 
     private DeliveryRequest deliveryRequest;
+
+    public static Orderer create(TotalOrder totalOrder, CreateUserInfoDto dto) {
+        return Orderer.builder()
+            .userId(dto.userId())
+            .totalOrder(totalOrder)
+            .nickname(dto.nickname())
+            .slackEmail(dto.slackEmail())
+            .destination(dto.destination())
+            .build();
+    }
 }

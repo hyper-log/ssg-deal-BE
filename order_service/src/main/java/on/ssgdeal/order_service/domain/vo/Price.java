@@ -2,7 +2,6 @@ package on.ssgdeal.order_service.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,15 +15,15 @@ import on.ssgdeal.order_service.exception.OrderExceptionCode;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Price {
 
-    @Column(name = "price", nullable = false, precision = 18, scale = 2)
-    private BigDecimal value;
+    @Column(name = "price", nullable = false)
+    private Long value;
 
-    public Price(final BigDecimal value) {
+    public Price(final Long value) {
         validate(value);
         this.value = value;
     }
 
-    private void validate(final BigDecimal value) {
+    private void validate(final Long value) {
         if (value == null) {
             throw new OrderException(OrderExceptionCode.ORDER_NULL_PRICE);
         }
