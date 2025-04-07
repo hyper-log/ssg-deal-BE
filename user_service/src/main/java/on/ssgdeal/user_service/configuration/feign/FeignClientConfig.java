@@ -1,4 +1,4 @@
-package on.ssgdeal.common.feign;
+package on.ssgdeal.user_service.configuration.feign;
 
 import feign.RequestInterceptor;
 import feign.Retryer;
@@ -14,7 +14,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Configuration
-@EnableFeignClients(basePackages = "on.logistics.orderservice.infrastructure.clients")
+@EnableFeignClients(basePackages = "on.ssgdeal.user_service.infrastructure.client")
 public class FeignClientConfig {
 
     @Bean
