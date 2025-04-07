@@ -1,0 +1,28 @@
+spring:
+  application:
+    name:
+      promotion_service
+  datasource:
+    url: ENC(pLlxm5aGj5SQ2rdb3c2rRLrJiOSLgXbO3227FIAOdJf7x+G1LxYJ86lLRBhSbHgu)
+    username: ENC(7z6NDeo1BKW2uxNRR0vBbg==)
+    password: ENC(SL8cSVtJ7wtlsiIPLSEVjHTqqdRcU5St)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        default_batch_fetch_size: 10
+  data:
+    redis:
+      host: ENC(zvsZXeZsqV8e+HAQSzWlmbbXbEgF1HGsaq0zTn5bp4BtDLCUQSwCyD+SLrldFO4bZxr9vNf1DtKDzWQKeDQ+Lg==)
+      port: 6379
+      username: ENC(GE184hrCtXCl6Z2T2+vzcg==)
+      password: ENC(9nZh/bwOejIkPAK+drrlLw==)
+
+
+server:
+  port: 8010
