@@ -1,0 +1,37 @@
+server:
+  port: 8902
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: ENC(0VZCMcnA43GlvveYnOEEQuOuHLknS1XuZsC7QgadHejO800NXB62XWK38qwSuY36CCx0iI+wSPY=)
+    username: ENC(i/zeWlAFUh62ES5bxpURAg==)
+    password: ENC(1pjFUp0OO2E/UMnS+pMwj0Fb1XhMmn2T)
+  data:
+    redis:
+      host: ENC(zvsZXeZsqV8e+HAQSzWlmbbXbEgF1HGsaq0zTn5bp4BtDLCUQSwCyD+SLrldFO4bZxr9vNf1DtKDzWQKeDQ+Lg==)
+      port: 6379
+      username: ENC(GE184hrCtXCl6Z2T2+vzcg==)
+      password: ENC(9nZh/bwOejIkPAK+drrlLw==)
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+eureka:
+  client:
+    service-url:
+      defaultZone: ENC(7pjzAHqQCzqeS0H42O2ddRKRJ0zN06XL30GVT+62foOmiP0x9Ms9uQ==)
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /docs
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /api-docs-delivery-service
