@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Local Config ###
+notification_service/src/main/resources/application-dev.yml
