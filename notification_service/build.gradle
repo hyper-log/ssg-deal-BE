@@ -59,6 +59,8 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // web client
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 test {
