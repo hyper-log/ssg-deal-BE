@@ -8,7 +8,6 @@ import on.ssgdeal.notification_service.domain.enums.NotificationTemplateType;
 import on.ssgdeal.notification_service.domain.vo.SlackEmail;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "notification_record")
@@ -40,5 +39,15 @@ public class NotificationRecord extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private NotificationStatus status;
+
+    public static NotificationRecord create(Notification notification, NotificationStatus status) {
+        return NotificationRecord.builder()
+                .notification(notification)
+                .type(notification.getType())
+                .receiverSlackEmail(notification.getReceiverSlackEmail())
+                .sendAt(notification.getSendAt())
+                .status(status)
+                .build();
+    }
 
 }

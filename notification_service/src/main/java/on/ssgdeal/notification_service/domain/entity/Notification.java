@@ -3,11 +3,13 @@ package on.ssgdeal.notification_service.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import on.ssgdeal.common.jpa.BaseEntity;
+import on.ssgdeal.notification_service.application.service.dto.CreateNotificationRequestDto;
 import on.ssgdeal.notification_service.domain.enums.NotificationStatus;
 import on.ssgdeal.notification_service.domain.enums.NotificationTemplateType;
 import on.ssgdeal.notification_service.domain.vo.SlackEmail;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -50,5 +52,30 @@ public class Notification extends BaseEntity {
 
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL)
     private List<NotificationRecord> records;
+
+    public static Notification create(
+            CreateNotificationRequestDto requestDto,
+            String content,
+            NotificationTemplate template,
+            LocalDateTime sendAt
+    ) {
+        Notification notification = Notification.builder()
+                .notificationTemplate(template)
+                .content(content)
+                .senderSlackEmail(new SlackEmail(requestDto.senderSlackEmail()))
+                .receiverSlackEmail(new SlackEmail(requestDto.receiverSlackEmail()))
+                .sendAt(sendAt)
+                .status(NotificationStatus.SUCCESS)
+                .records(new ArrayList<>())
+                .build();
+
+        notification.addNotificationRecord(NotificationStatus.SUCCESS);
+        return notification;
+    }
+
+    public void addNotificationRecord(NotificationStatus status) {
+        NotificationRecord record = NotificationRecord.create(this, status);
+        this.records.add(record);
+    }
 
 }
