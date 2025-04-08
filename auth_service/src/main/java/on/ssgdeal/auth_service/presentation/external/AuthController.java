@@ -30,7 +30,7 @@ public class AuthController {
     ) {
         log.info("user signup request: {}", request);
 
-        SignupAuthRequestDto requestDto = SignupAuthRequestDto.from(request);
+        SignupAuthRequestDto requestDto = request.toDto();
         SignupAuthResponse response = authService.signup(requestDto);
         return ResponseEntity.ok(CommonResponse.success(response));
     }
