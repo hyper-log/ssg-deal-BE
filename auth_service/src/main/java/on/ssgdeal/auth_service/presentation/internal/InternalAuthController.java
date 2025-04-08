@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.auth_service.application.service.AuthServiceImpl;
 import on.ssgdeal.auth_service.presentation.internal.dto.ReissueTokensAuthResponse;
+import on.ssgdeal.auth_service.presentation.internal.dto.ValidateAuthResponse;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,16 @@ public class InternalAuthController {
 
         authService.deleteAuthByPassportId(request);
         return ResponseEntity.ok(CommonResponse.success());
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<CommonResponse<ValidateAuthResponse>> validate(
+        HttpServletRequest request
+    ) {
+        log.info("validate request: {}", request);
+
+        ValidateAuthResponse response = authService.validate(request);
+        return ResponseEntity.ok(CommonResponse.success(response));
     }
 
 }

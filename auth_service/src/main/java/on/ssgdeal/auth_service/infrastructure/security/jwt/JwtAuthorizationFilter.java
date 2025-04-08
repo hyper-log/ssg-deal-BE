@@ -15,7 +15,6 @@ import on.ssgdeal.auth_service.infrastructure.security.cookie.CookieUtil;
 import on.ssgdeal.auth_service.infrastructure.security.details.AuthDetails;
 import on.ssgdeal.auth_service.infrastructure.security.details.AuthDetailsService;
 import on.ssgdeal.common.auth.enums.AuthRole;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -30,8 +29,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final CookieUtil cookieUtil;
     private final AuthDetailsService authDetailsService;
     private final PassportService passportService;
-    @Value("${spring.cloud.gateway.auth.secret.key}")
-    private String secretKey;
 
     @Builder
     public JwtAuthorizationFilter(
@@ -72,13 +69,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("request method: {}", request.getMethod());
         log.info("request headers: {}", request.getHeaderNames());
         log.info("request queryString: {}", request.getQueryString());
-
-        if (request.getRequestURI().equals("/api/v1/auth/validate")) {
-            String headerSecretKey = request.getHeader("X-Internal-Secret");
-            if (secretKey.equals(headerSecretKey)) {
-                filterChain.doFilter(request, response);
-            }
-        }
 
         log.info("doFilterInternal");
         String accessToken = jwtUtil.getAccessTokenFromHeader(request);
