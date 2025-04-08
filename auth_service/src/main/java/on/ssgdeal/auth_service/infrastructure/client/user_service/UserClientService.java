@@ -7,7 +7,6 @@ import on.ssgdeal.auth_service.infrastructure.client.user_service.feign.UserFeig
 import on.ssgdeal.auth_service.infrastructure.client.user_service.feign.dto.UserCreateResponse;
 import on.ssgdeal.auth_service.infrastructure.client.user_service.feign.dto.UserFindByIdResponse;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +15,10 @@ import org.springframework.stereotype.Service;
 public class UserClientService {
 
     private final UserFeignClient userFeignClient;
-    @Value("${spring.cloud.gateway.auth.secret.key}")
-    private String secretKey;
 
     public UserCreateResponse createUser(UserCreateRequest request) {
         ResponseEntity<CommonResponse<UserCreateResponse>> responseEntity =
-            userFeignClient.createUser(secretKey, request);
+            userFeignClient.createUser(request);
 
         CommonResponse<UserCreateResponse> commonResponse = responseEntity.getBody();
         if (commonResponse != null) {
@@ -33,7 +30,7 @@ public class UserClientService {
 
     public UserFindByIdResponse findUserById(Long userId) {
         ResponseEntity<CommonResponse<UserFindByIdResponse>> responseEntity =
-            userFeignClient.findUserById(secretKey, userId);
+            userFeignClient.findUserById(userId);
 
         CommonResponse<UserFindByIdResponse> commonResponse = responseEntity.getBody();
         if (commonResponse != null) {
@@ -45,6 +42,6 @@ public class UserClientService {
     }
 
     public void withdrawUserByUserId(Long userId) {
-        userFeignClient.deleteUserByUserId(secretKey, userId);
+        userFeignClient.deleteUserByUserId(userId);
     }
 }

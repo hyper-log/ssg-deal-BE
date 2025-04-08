@@ -8,8 +8,6 @@ public interface AuthRepository {
 
     Auth save(Auth auth);
 
-    Optional<Auth> findById(Long id);
-
     Optional<Auth> findByUserId(Long userId);
 
     Optional<Auth> findByUsername(Username username);

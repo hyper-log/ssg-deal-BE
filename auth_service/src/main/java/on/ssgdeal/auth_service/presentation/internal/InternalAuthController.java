@@ -11,7 +11,6 @@ import on.ssgdeal.common.presentation.dto.CommonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,16 +32,6 @@ public class InternalAuthController {
         ReissueTokensAuthResponse response = authService.reIssueTokens(servletRequest,
             servletResponse);
         return ResponseEntity.ok(CommonResponse.success(response));
-    }
-
-    @PutMapping("/my")
-    public ResponseEntity<CommonResponse<Void>> deleteAuthByPassport(
-        HttpServletRequest request
-    ) {
-        log.info("delete auth by request: {}", request);
-
-        authService.deleteAuthByPassportId(request);
-        return ResponseEntity.ok(CommonResponse.success());
     }
 
     @GetMapping("/validate")

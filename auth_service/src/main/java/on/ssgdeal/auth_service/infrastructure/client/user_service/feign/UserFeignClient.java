@@ -12,25 +12,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "user-service")
+@FeignClient(name = "user-service", url = "http://localhost:8081")
 public interface UserFeignClient {
 
     @GetMapping("/internal/v1/users/{id}")
     ResponseEntity<CommonResponse<UserFindByIdResponse>> findUserById(
-        @RequestHeader("X-Internal-Secret") String headerSecretKey,
         @PathVariable("id") Long id
     );
 
-    @PostMapping("/api/v1/users")
+    @PostMapping("/internal/v1/users")
     ResponseEntity<CommonResponse<UserCreateResponse>> createUser(
-        @RequestHeader("X-Internal-Secret") String headerSecretKey,
         @RequestBody UserCreateRequest request);
 
     @PutMapping("/internal/v1/users/withdraw/{id}")
     ResponseEntity<CommonResponse<Void>> deleteUserByUserId(
-        @RequestHeader("X-Internal-Secret") String headerSecretKey,
         @PathVariable("id") Long id
     );
 

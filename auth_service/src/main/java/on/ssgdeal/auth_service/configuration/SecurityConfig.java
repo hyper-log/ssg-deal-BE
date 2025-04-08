@@ -81,6 +81,9 @@ public class SecurityConfig {
                     "/actuator/health",
                     "/actuator/info"
                 ).permitAll()
+                .requestMatchers(
+                    "/internal/**"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthentiactionFilter(), UsernamePasswordAuthenticationFilter.class)

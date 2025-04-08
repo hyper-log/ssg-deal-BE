@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.auth_service.application.service.dto.SignupAuthRequestDto;
 import on.ssgdeal.auth_service.application.service.dto.SignupAuthResponseDto;
 import on.ssgdeal.auth_service.domain.entity.Auth;
+import on.ssgdeal.auth_service.domain.entity.Passport;
 import on.ssgdeal.auth_service.domain.repository.AuthRepository;
+import on.ssgdeal.auth_service.domain.util.AuditFieldUpdater;
 import on.ssgdeal.auth_service.exception.AuthException;
 import on.ssgdeal.auth_service.exception.AuthExceptionCode;
 import on.ssgdeal.auth_service.infrastructure.client.user_service.UserClientService;
@@ -16,7 +18,6 @@ import on.ssgdeal.auth_service.infrastructure.client.user_service.dto.UserCreate
 import on.ssgdeal.auth_service.infrastructure.client.user_service.feign.dto.UserCreateResponse;
 import on.ssgdeal.auth_service.infrastructure.security.cookie.CookieUtil;
 import on.ssgdeal.auth_service.infrastructure.security.jwt.JwtUtil;
-import on.ssgdeal.auth_service.infrastructure.security.passport.Passport;
 import on.ssgdeal.auth_service.presentation.external.dto.SignupAuthResponse;
 import on.ssgdeal.auth_service.presentation.internal.dto.ReissueTokensAuthResponse;
 import on.ssgdeal.auth_service.presentation.internal.dto.ValidateAuthResponse;
@@ -52,9 +53,9 @@ public class AuthServiceImpl implements AuthService {
         String encodedPassword = passwordEncoder.encode(authRequestDto.password().toString());
         Auth auth = Auth.from(authRequestDto, userResponse, encodedPassword);
 
-        // TODO: auth Set Id 해결 필
-//        auth.setId(userResponse.userId());
         Auth savedAuth = authRepository.save(auth);
+
+        AuditFieldUpdater.updateAuditFields(auth, userResponse.userId());
 
         SignupAuthResponseDto authResponseDto = SignupAuthResponseDto.from(savedAuth, userResponse);
 
@@ -101,52 +102,6 @@ public class AuthServiceImpl implements AuthService {
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, reIssuedAccessToken);
         cookieUtil.addRefreshTokenToCookie(response, reIssuedRefreshToken);
         return ReissueTokensAuthResponse.from(passportId);
-    }
-
-    @Override
-    public void deleteAuthByPassport(
-        HttpServletRequest request
-    ) {
-        String refreshToken = cookieUtil.getRefreshTokenFromCookie(request);
-        Passport passport = passportService.getPassportByRefreshToken(refreshToken);
-        Auth auth = authRepository.findById(passport.getUserId()).orElseThrow(
-            () -> new AuthException(AuthExceptionCode.AUTH_IS_NOT_FOUND)
-        );
-
-        authRepository.delete(auth);
-        passportService.deletePassportByRefreshToken(refreshToken);
-    }
-
-    @Override
-    public void deleteAuthByPassportId(
-        HttpServletRequest request
-    ) {
-        String passportId = request.getHeader("X-Passport-Id");
-        Passport passport = passportService.getPassportByPassportId(passportId);
-        Auth auth = authRepository.findByUserId(passport.getUserId()).orElseThrow(
-            () -> new AuthException(AuthExceptionCode.AUTH_IS_NOT_FOUND)
-        );
-
-        authRepository.delete(auth);
-        passportService.deletePassportByPassportId(passportId);
-    }
-
-    @Override
-    public void deleteAuthByUserId(
-        Long userId,
-        HttpServletRequest request
-    ) {
-        String passportId = request.getHeader("X-Passport-Id");
-        Passport passport = passportService.getPassportByPassportId(passportId);
-        AuthRole role = passport.getRole();
-        if (role.equals(AuthRole.MASTER)) {
-            throw new AuthException(AuthExceptionCode.AUTH_IS_NOT_ALLOWED);
-        }
-        Auth auth = authRepository.findByUserId(userId).orElseThrow(
-            () -> new AuthException(AuthExceptionCode.AUTH_IS_NOT_FOUND)
-        );
-
-        authRepository.delete(auth);
     }
 
     @Override

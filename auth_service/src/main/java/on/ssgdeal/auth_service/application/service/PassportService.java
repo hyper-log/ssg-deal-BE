@@ -1,6 +1,6 @@
 package on.ssgdeal.auth_service.application.service;
 
-import on.ssgdeal.auth_service.infrastructure.security.passport.Passport;
+import on.ssgdeal.auth_service.domain.entity.Passport;
 
 public interface PassportService {
 

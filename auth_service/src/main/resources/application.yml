@@ -14,9 +14,9 @@ spring:
       password: password
 
   datasource:
-    url: jdbc:mysql://localhost:13306/onlogistics
-    username: ENC(g9PXMWVO5Hzcl88mPDXDVQ==)
-    password: ENC(SzFNDgC//YBbb9TJ7Bne4Cv1KM24A8WX)
+    url: url
+    username: username
+    password: password
 
   jpa:
     hibernate:
@@ -28,12 +28,11 @@ spring:
       discovery:
         enabled: true
         service-id: config_service
-      enabled: false
 
 
 jwt:
   secret:
-    key: ENC(2uuoncCRKwGUefB7oMr59hH/fP+END/NGxhJsdt2MsaIEiVSByZsbfh3vcmhh4FIo6Cf3u4ZhS9GiF+0zJL7mWtIN1BJYMD8GnVReruCWy9sKciYXbzm91GG8ZPMNAcDQJbI4f9P753yNEypXE0Coi+kvXC+pUS9GAKzYUGf9jd/MHUmfcwi2gOWASf0JJ5h)
+    key: key
   access:
     expiration: 300000 # 5 * 60 * 1000, 5분
   refresh:

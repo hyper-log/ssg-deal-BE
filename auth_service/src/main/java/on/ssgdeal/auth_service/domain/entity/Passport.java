@@ -1,4 +1,4 @@
-package on.ssgdeal.auth_service.infrastructure.security.passport;
+package on.ssgdeal.auth_service.domain.entity;
 
 
 import lombok.AccessLevel;

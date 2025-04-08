@@ -20,11 +20,6 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     @Override
-    public Optional<Auth> findById(Long id) {
-        return authJpaRepository.findById(id);
-    }
-
-    @Override
     public Optional<Auth> findByUserId(Long userId) {
         return authJpaRepository.findByUserId(userId);
     }

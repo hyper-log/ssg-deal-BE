@@ -19,11 +19,6 @@ public interface AuthService {
     ReissueTokensAuthResponse reIssueTokens(HttpServletRequest request,
         HttpServletResponse response);
 
-    void deleteAuthByPassportId(HttpServletRequest request);
-
-    void deleteAuthByPassport(HttpServletRequest request);
-
-    void deleteAuthByUserId(Long userId, HttpServletRequest request);
 
     void withdrawUserByPassport(HttpServletRequest request);
 

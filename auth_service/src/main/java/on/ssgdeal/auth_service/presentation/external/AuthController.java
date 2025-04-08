@@ -25,7 +25,7 @@ public class AuthController {
     private final AuthServiceImpl authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponse<SignupAuthResponse>> userSignup(
+    public ResponseEntity<CommonResponse<SignupAuthResponse>> signup(
         @RequestBody SignupAuthRequest request
     ) {
         log.info("user signup request: {}", request);
@@ -47,28 +47,7 @@ public class AuthController {
 
 
     @DeleteMapping("/my")
-    public ResponseEntity<CommonResponse<Void>> deleteAuthByPassport(
-        HttpServletRequest request
-    ) {
-        log.info("delete auth by request: {}", request);
-
-        authService.deleteAuthByPassportId(request);
-        return ResponseEntity.ok(CommonResponse.success());
-    }
-
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<CommonResponse<Void>> deleteAuthByUserId(
-        @PathVariable Long userId,
-        HttpServletRequest request
-    ) {
-        log.info("delete auth by Id: {}", userId);
-
-        authService.deleteAuthByUserId(userId, request);
-        return ResponseEntity.ok(CommonResponse.success());
-    }
-
-    @DeleteMapping("/withdraw/my")
-    public ResponseEntity<CommonResponse<Void>> withdrawUserByPassport(
+    public ResponseEntity<CommonResponse<Void>> withdraw(
         HttpServletRequest request
     ) {
         log.info("withdraw user by request: {}", request);
@@ -77,8 +56,8 @@ public class AuthController {
         return ResponseEntity.ok(CommonResponse.success());
     }
 
-    @DeleteMapping("/withdraw/{userId}")
-    public ResponseEntity<CommonResponse<Void>> withdrawUserByUserId(
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<CommonResponse<Void>> withdrawByUserId(
         @PathVariable Long userId,
         HttpServletRequest request
     ) {
