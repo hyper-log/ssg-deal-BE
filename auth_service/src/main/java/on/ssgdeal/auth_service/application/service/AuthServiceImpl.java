@@ -53,9 +53,9 @@ public class AuthServiceImpl implements AuthService {
         String encodedPassword = passwordEncoder.encode(authRequestDto.password().toString());
         Auth auth = Auth.from(authRequestDto, userResponse, encodedPassword);
 
-        Auth savedAuth = authRepository.save(auth);
-
         AuditFieldUpdater.updateAuditFields(auth, userResponse.userId());
+
+        Auth savedAuth = authRepository.save(auth);
 
         SignupAuthResponseDto authResponseDto = SignupAuthResponseDto.from(savedAuth, userResponse);
 
