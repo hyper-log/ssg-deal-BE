@@ -4,6 +4,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record CreateNotificationRequestDto(
         String senderSlackEmail,
         String receiverSlackEmail,
