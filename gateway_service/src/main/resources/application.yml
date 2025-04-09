@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: gateway_service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 서비스 디스커버리로 동적 라우트 생성
+      auth:
+        login:
+          endpoint: /api/v1/auth/login
+        signup:
+          endpoint: /api/v1/auth/signup
+        base:
+          url: http://localhost:18081
+        validate:
+          endpoint: /gateway/v1/auth/validate
+        secret:
+          key: ENC(HI4A/uV5RCH/wOUjxaZDApv6DlH9ANhHYK87ojAyzTI=)
+      routes:
+        - id: auth_service # 인증 서비스
+          uri: lb://auth_service
+          predicates:
+            - Path=/api/v1/auth/**
+
+        - id: cart_service # 장바구니 서비스
+          uri: lb://cart_service
+          predicates:
+            - Path=/api/v1/carts/**
+
+        - id: inquiry_service # 문의 서비스
+          uri: lb://inquiry_service
+          predicates:
+            - Path=/api/v1/inquirys/**
+
+        - id: notification_service # 알림 서비스
+          uri: lb://notification_service
+          predicates:
+            - Path=/api/v1/notifications/**
+
+        - id: order_service # 주문 서비스
+          uri: lb://order_service
+          predicates:
+            - Path=/api/v1/orders/**
+
+        - id: payment_service # 결제 서비스
+          uri: lb://payment_service
+          predicates:
+            - Path=/api/v1/payments/**
+
+        - id: promotion_service # 프로모션 서비스
+          uri: lb://promotion_service
+          predicates:
+            - Path=/api/v1/promotions/**
+
+        - id: user_service # 사용자 서비스
+          uri: lb://user_service
+          predicates:
+            - Path=/api/v1/users/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus,health,info"
+  tracing:
+    sampling:
+      probability: 1.0  # 10% of the requests will be traced
+    enabled: true  # Enable tracing
+
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans  # Zipkin server URL for receiving spans
+      connect-timeout: 1s  # Timeout for connecting to Zipkin server
+      encoding: json  # The format of the trace data (you can use json or protobuf)
+      read-timeout: 10s  # Timeout for reading from the Zipkin server
+

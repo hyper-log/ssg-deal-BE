@@ -1,4 +1,4 @@
-package on.ssgdeal.common.global.configuration;
+package on.ssgdeal.gateway_service.configuration;
 
 
 import org.jasypt.encryption.StringEncryptor;

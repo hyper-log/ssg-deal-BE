@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: order_service
+    name: cart_service
   config:
     import: "configserver:"
   data:
