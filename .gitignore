@@ -38,3 +38,4 @@ out/
 
 ### Local Config ###
 notification_service/src/main/resources/application-dev.yml
+config_service/src/main/resources/config-repo/*.yml

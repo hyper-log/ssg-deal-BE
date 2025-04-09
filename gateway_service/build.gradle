@@ -20,7 +20,24 @@ configurations {
 }
 
 dependencies {
+    // springboot
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // gateway
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    // lombok
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    // jasypt
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+    // spring cloud
     implementation platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
+    // eureka client
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    testImplementation 'io.projectreactor:reactor-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 }
 
 test {
