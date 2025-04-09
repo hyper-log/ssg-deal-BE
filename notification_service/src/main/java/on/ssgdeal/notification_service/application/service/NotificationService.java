@@ -23,6 +23,7 @@ public class NotificationService {
     private final SlackClient slackClient;
     private final NotificationRepository notificationRepository;
     private final NotificationTemplateRepository notificationTemplateRepository;
+    private final SlackTimestampToKSTConverter slackTimestampToKSTConverter;
     @Transactional
     public CreateNotificationResponse sendSlackNotification(final CreateNotificationRequestDto requestDto) {
         log.info("주문 완료 슬랙 메시지 전송 요청 : {}", requestDto);
@@ -30,12 +31,11 @@ public class NotificationService {
         String content = createOrderCompletedSlackNotification(requestDto, template.getContent());
         String timestamp = slackClient.sendNotificationToUser(requestDto.receiverSlackEmail(), content);
 
-        LocalDateTime sendAt = SlackTimestampToKSTConverter.convertToKST(timestamp);
+        LocalDateTime sendAt = slackTimestampToKSTConverter.convertToKST(timestamp);
         Notification notification = Notification.create(requestDto, content, template, sendAt);
         notificationRepository.save(notification);
         return CreateNotificationResponse.from(notification);
     }
-
     public String createOrderCompletedSlackNotification(CreateNotificationRequestDto requestDto, String content) {
         return content
                 .replace("{ordererName}", requestDto.ordererName())

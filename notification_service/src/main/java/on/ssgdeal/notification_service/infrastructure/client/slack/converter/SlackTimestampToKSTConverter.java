@@ -1,11 +1,14 @@
 package on.ssgdeal.notification_service.infrastructure.client.slack.converter;
 
+import org.springframework.stereotype.Component;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+@Component
 public class SlackTimestampToKSTConverter {
-    public static LocalDateTime convertToKST(String slackTimestamp) {
+    public LocalDateTime convertToKST(String slackTimestamp) {
         try {
             double timestampDouble = Double.parseDouble(slackTimestamp);
             long seconds = (long) timestampDouble;
