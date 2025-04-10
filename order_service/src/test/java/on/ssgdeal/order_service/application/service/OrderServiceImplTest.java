@@ -10,6 +10,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
+import on.ssgdeal.common.auth.enums.AuthRole;
+import on.ssgdeal.common.auth.passport.Passport;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.LoginUserInfoDto;
 import on.ssgdeal.order_service.domain.entity.TotalOrder;
@@ -46,8 +48,8 @@ class OrderServiceImplTest {
     private UserService userService;
 
     private LoginUserInfoDto createFakeLoginUserInfo() {
-        // TODO: PASSPORT 직접 생성으로 수정
-        return LoginUserInfoDto.testMethod(1L, "제발돼라", "한나윤", "order@naver.com");
+        Passport passport = new Passport(1L, "제발 돼라", AuthRole.CONSUMER, "한나윤", "order@naver.com");
+        return LoginUserInfoDto.from(passport);
     }
 
     private CreateOrderRequestDto createFakeCreateOrderRequestDto() {
