@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "promotion-service")
+@FeignClient(name = "promotion_service")
 public interface PromotionServiceFeignClient {
 
     @PostMapping("/internal/v1/promotions/products/stocks/decrease/detail")
