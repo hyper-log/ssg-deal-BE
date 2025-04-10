@@ -12,11 +12,10 @@ spring:
         signup:
           endpoint: /api/v1/auth/signup
         base:
-          url: http://localhost:18081
+          url: http://localhost:8082
         validate:
-          endpoint: /gateway/v1/auth/validate
-        secret:
-          key: ENC(HI4A/uV5RCH/wOUjxaZDApv6DlH9ANhHYK87ojAyzTI=)
+          endpoint: /internal/v1/auth/validate
+      
       routes:
         - id: auth_service # 인증 서비스
           uri: lb://auth_service

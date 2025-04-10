@@ -20,8 +20,8 @@ public class PassportUtil {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
 
-    public Passport getPassportBy(String passportKey) {
-        String json = redisTemplate.opsForValue().get(passportKey);
+    public Passport getPassportBy(String passportId) {
+        String json = redisTemplate.opsForValue().get(passportId);
 
         if (json == null) {
             return null;

@@ -12,11 +12,37 @@ spring:
       port: 1234
       username: username
       password: password
+
+  datasource:
+    url: url
+    username: username
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
   cloud:
     config:
       discovery:
         enabled: true
         service-id: config_service
+
+
+jwt:
+  secret:
+    key: key
+  access:
+    expiration: 300000 # 5 * 60 * 1000, 5분
+  refresh:
+    expiration: 3600000 # 60 * 60 * 1000, 1시간
+
+passport:
+  expiration:
+    generation: 3600000 # 60 * 60 * 1000, 1시간
+    expected: 60000 # 60 * 1000, 1분
+
 eureka:
   client:
     service-url:
