@@ -1,4 +1,4 @@
-package on.ssgdeal.orderservice;
+package on.ssgdeal.order_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

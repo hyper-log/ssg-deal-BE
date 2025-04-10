@@ -46,6 +46,7 @@ class OrderServiceImplTest {
     private UserService userService;
 
     private LoginUserInfoDto createFakeLoginUserInfo() {
+        // TODO: PASSPORT 직접 생성으로 수정
         return LoginUserInfoDto.testMethod(1L, "제발돼라", "한나윤", "order@naver.com");
     }
 
@@ -105,7 +106,6 @@ class OrderServiceImplTest {
         var companyInfo = new GetProductInfoDto.CompanyInfo(
             1L, "회사1", List.of(product1, product2, product3)
         );
-
         return GetProductInfoDto.from(List.of(companyInfo));
     }
 
