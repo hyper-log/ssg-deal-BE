@@ -9,16 +9,29 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import on.ssgdeal.common.auth.enums.AuthRole;
 import on.ssgdeal.common.auth.passport.Passport;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.LoginUserInfoDto;
+import on.ssgdeal.order_service.application.service.dto.UpdateTotalOrderSuccessRequestDto;
 import on.ssgdeal.order_service.domain.entity.TotalOrder;
+import on.ssgdeal.order_service.domain.entity.dtos.UpdateTotalOrderSuccessDto;
+import on.ssgdeal.order_service.domain.entity.dtos.mapper.TotalOrderEntityLayerMapper;
+import on.ssgdeal.order_service.domain.enums.PaymentMethod;
+import on.ssgdeal.order_service.domain.enums.PaymentStatus;
+import on.ssgdeal.order_service.domain.enums.PaymentType;
+import on.ssgdeal.order_service.domain.enums.TotalOrderStatus;
 import on.ssgdeal.order_service.domain.repository.TotalOrderRepository;
 import on.ssgdeal.order_service.exception.OrderException;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.DecreaseProductStockResponseDto;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.GetProductInfoDto;
+import on.ssgdeal.order_service.infrastructure.client.slack.dto.TotalOrderCompleteSendInfoDto;
+import on.ssgdeal.order_service.infrastructure.client.slack.feign.dto.OrderCompleteSendSlackRequestDto;
+import on.ssgdeal.order_service.infrastructure.client.slack.feign.dto.OrderCompleteSendSlackResponseDto;
 import on.ssgdeal.order_service.infrastructure.client.user.feign.dto.ValidDestinationRequestDto;
 import on.ssgdeal.order_service.infrastructure.client.user.feign.dto.ValidDestinationResponseDto;
 import org.junit.jupiter.api.DisplayName;
@@ -46,6 +59,12 @@ class OrderServiceImplTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private SlackService slackService;
+
+    @Autowired
+    private TotalOrderEntityLayerMapper totalOrderEntityLayerMapper;
 
     private LoginUserInfoDto createFakeLoginUserInfo() {
         Passport passport = new Passport(1L, "제발 돼라", AuthRole.CONSUMER, "한나윤", "order@naver.com");
@@ -117,6 +136,34 @@ class OrderServiceImplTest {
 
     private DecreaseProductStockResponseDto createFakeDecreaseProductResponse() {
         return DecreaseProductStockResponseDto.from(1L, 101L, 2L);
+    }
+
+    private UpdateTotalOrderSuccessRequestDto createFakeTotalOrderPaymentSuccess() {
+        return new UpdateTotalOrderSuccessRequestDto(3L, 1L, PaymentType.TOSS, PaymentMethod.CARD,
+            20000L,
+            Timestamp.valueOf(LocalDateTime.now()), "2", PaymentStatus.COMPLETED);
+    }
+
+    private UpdateTotalOrderSuccessRequestDto createFakeTotalOrderPaymentSuccessValid() {
+        return new UpdateTotalOrderSuccessRequestDto(1L, 1L, PaymentType.TOSS, PaymentMethod.CARD,
+            20000L,
+            Timestamp.valueOf(LocalDateTime.now()), "2", PaymentStatus.COMPLETED);
+    }
+
+    private OrderCompleteSendSlackRequestDto createFakerOrderCompleteSendSlackRequestDto(
+        UpdateTotalOrderSuccessRequestDto updateTotalOrderSuccessRequestDto,
+        LoginUserInfoDto loginUserInfoDto) {
+        UpdateTotalOrderSuccessDto updateTotalOrderSuccessDto = totalOrderEntityLayerMapper.toUpdateTotalOrderSuccessDto(
+            updateTotalOrderSuccessRequestDto);
+        TotalOrderCompleteSendInfoDto sendInfoDto = TotalOrderCompleteSendInfoDto.from(
+            LocalDate.now(),
+            10000L);
+        return OrderCompleteSendSlackRequestDto.from(updateTotalOrderSuccessDto, sendInfoDto,
+            loginUserInfoDto);
+    }
+
+    private OrderCompleteSendSlackResponseDto createFakeOrderCompleteSendSlackResponseDto() {
+        return new OrderCompleteSendSlackResponseDto(1L);
     }
 
     @Nested
@@ -232,6 +279,57 @@ class OrderServiceImplTest {
                 // 실패한 세 번째는 롤백 호출 안 됨
                 verify(promotionService, never()).increaseProductStock(
                     argThat(dto -> dto.productId().equals(3L)));
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Describe: createTotalOrderPaymentSuccess 메서드는")
+    class createTotalOrderPaymentSuccess {
+
+        @Nested
+        @DisplayName("Context: 입력 값 검증이 성공했을 때")
+        class createSuccessTest {
+
+            @Test
+            @DisplayName("It: TotalOrder, Order, TotalOrderPayment 상태를 성공으로 갱신하고 슬랙 메시지 알림을 보낸다.")
+            void createOrderTest() throws Exception {
+
+                //given
+                var request = createFakeTotalOrderPaymentSuccess();
+                var loginUserInfo = createFakeLoginUserInfo();
+                var createOrderCompleteSendSlackRequestDto = createFakerOrderCompleteSendSlackRequestDto(
+                    request, loginUserInfo);
+                given(slackService.sendOrderCompleteMessage(createOrderCompleteSendSlackRequestDto))
+                    .willReturn(createFakeOrderCompleteSendSlackResponseDto());
+
+                //when
+                orderService.createTotalOrderPaymentSuccess(request, loginUserInfo);
+
+                //then
+                TotalOrder totalOrder = totalOrderRepository.findById(request.totalOrderId())
+                    .orElseThrow(null);
+
+                assertThat(totalOrder.getStatus()).isEqualTo(TotalOrderStatus.EXPIRED);
+            }
+        }
+
+        @Nested
+        @DisplayName("Context: 입력 값 검증이 실패했을 때")
+        class createSuccessValidTest {
+
+            @Test
+            @DisplayName("It: 오류를 반환한다.")
+            void createOrderTest() throws Exception {
+
+                //given
+                var request = createFakeTotalOrderPaymentSuccessValid();
+                var loginUserInfo = createFakeLoginUserInfo();
+
+                //when & then
+                assertThatThrownBy(
+                    () -> orderService.createTotalOrderPaymentSuccess(request, loginUserInfo))
+                    .isInstanceOf(OrderException.class);
             }
         }
     }
