@@ -12,6 +12,11 @@ spring:
       port: 1234
       username: username
       password: password
+  datasource:
+    url: url
+    username: username
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     config:
       discovery:
