@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.CreateUserInfoDto;
+import on.ssgdeal.order_service.application.service.dto.GetTotalOrdersResponseDto;
 import on.ssgdeal.order_service.application.service.dto.LoginUserInfoDto;
 import on.ssgdeal.order_service.application.service.dto.TotalOrderProductInfo;
 import on.ssgdeal.order_service.application.service.dto.TotalOrderProductInfo.ProductInfo;
@@ -21,6 +23,7 @@ import on.ssgdeal.order_service.domain.entity.TotalOrderPayment;
 import on.ssgdeal.order_service.domain.entity.dtos.CreateOrderDto;
 import on.ssgdeal.order_service.domain.entity.dtos.CreateOrderProductDto;
 import on.ssgdeal.order_service.domain.entity.dtos.CreateTotalOrderDto;
+import on.ssgdeal.order_service.domain.entity.dtos.GetTotalOrdersUserInfoDto;
 import on.ssgdeal.order_service.domain.entity.dtos.UpdateTotalOrderSuccessDto;
 import on.ssgdeal.order_service.domain.entity.dtos.mapper.TotalOrderEntityLayerMapper;
 import on.ssgdeal.order_service.domain.repository.TotalOrderRepository;
@@ -37,6 +40,9 @@ import on.ssgdeal.order_service.infrastructure.client.slack.feign.dto.OrderCompl
 import on.ssgdeal.order_service.infrastructure.client.user.feign.dto.ValidDestinationRequestDto;
 import on.ssgdeal.order_service.infrastructure.client.user.feign.dto.ValidDestinationResponseDto;
 import on.ssgdeal.order_service.presentation.external.dto.CreateOrderResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,6 +113,28 @@ public class OrderServiceImpl implements OrderService {
         totalOrderRepository.paymentSuccess(totalOrder, updateTotalOrderSuccessDto);
         sendSlackMessage(loginUserInfo, totalOrder.getCreatedAt().toLocalDate(),
             totalOrder.getPrice().getValue(), updateTotalOrderSuccessDto);
+    }
+
+    @Override
+    public PageDto<GetTotalOrdersResponseDto> getTotalOrders(LoginUserInfoDto loginUserInfo,
+        Pageable pageable) {
+        log.info("총 주문 리스트 조회 요청");
+        GetTotalOrdersUserInfoDto getTotalOrdersUserInfoDto = totalOrderEntityLayerMapper.toGetTotalOrdersUserInfoDto(
+            loginUserInfo);
+        Page<TotalOrder> totalOrders = totalOrderRepository.getTotalOrderList(
+            getTotalOrdersUserInfoDto, pageable);
+
+        List<GetTotalOrdersResponseDto> totalMapperList = totalOrders.getContent().stream()
+            .map(GetTotalOrdersResponseDto::toGetTotalOrdersResponseDto)
+            .toList();
+
+        Page<GetTotalOrdersResponseDto> totalMapperPage = new PageImpl<>(
+            totalMapperList,
+            totalOrders.getPageable(),
+            totalOrders.getTotalElements()
+        );
+
+        return PageDto.from(totalMapperPage);
     }
 
     private void sendSlackMessage(

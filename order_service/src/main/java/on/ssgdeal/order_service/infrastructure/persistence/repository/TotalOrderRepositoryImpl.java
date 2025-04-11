@@ -3,10 +3,13 @@ package on.ssgdeal.order_service.infrastructure.persistence.repository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import on.ssgdeal.order_service.domain.entity.TotalOrder;
+import on.ssgdeal.order_service.domain.entity.dtos.GetTotalOrdersUserInfoDto;
 import on.ssgdeal.order_service.domain.entity.dtos.UpdateTotalOrderSuccessDto;
 import on.ssgdeal.order_service.domain.repository.TotalOrderRepository;
 import on.ssgdeal.order_service.infrastructure.persistence.jpa.TotalOrderJpaRepository;
 import on.ssgdeal.order_service.infrastructure.persistence.jpa.querydsl.TotalOrderQueryRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -31,4 +34,12 @@ public class TotalOrderRepositoryImpl implements TotalOrderRepository {
         UpdateTotalOrderSuccessDto updateTotalOrderSuccessDto) {
         queryRepository.paymentSuccess(totalOrder, updateTotalOrderSuccessDto);
     }
+
+    @Override
+    public Page<TotalOrder> getTotalOrderList(
+        GetTotalOrdersUserInfoDto getTotalOrdersUserInfoDto, Pageable pageable) {
+
+        return queryRepository.getTotalOrderList(getTotalOrdersUserInfoDto, pageable);
+    }
+
 }
