@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: auth_service
+    name: auth-service
   config:
     import: "configserver:"
   data:
@@ -12,23 +12,19 @@ spring:
       port: 1234
       username: username
       password: password
-
   datasource:
     url: url
     username: username
     password: password
-
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-
   cloud:
     config:
       discovery:
         enabled: true
-        service-id: config_service
-
+        service-id: config-service
 
 jwt:
   secret:
