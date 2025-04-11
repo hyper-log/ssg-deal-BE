@@ -26,8 +26,6 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     private String signupUrl;
     @Value("${spring.cloud.gateway.auth.validate.endpoint}")
     private String validateEndpoint;
-    @Value("${spring.cloud.gateway.auth.secret.key}")
-    private String secretKey;
 
     public AuthGlobalFilter(
         WebClient.Builder webClientBuilder,
@@ -57,14 +55,14 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         String accessToken = exchange.getRequest().getHeaders().getFirst("Authorization");
         if (accessToken == null || accessToken.isEmpty()) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            log.warn("Access Token is Unauthorized");
+            log.warn("Access Token is Empty");
             return exchange.getResponse().setComplete();
         }
 
         var refreshCookie = exchange.getRequest().getCookies().getFirst("refreshToken");
         if (refreshCookie == null) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            log.warn("Refresh Token is Unauthorized");
+            log.warn("Refresh Token is Empty");
             return exchange.getResponse().setComplete();
         }
         String refreshToken = refreshCookie.getValue();
@@ -72,7 +70,6 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         return webClient.get()
             .uri(validateEndpoint)
             .header("Authorization", accessToken)
-            .header("X-Internal-Secret", secretKey)
             .cookie("refreshToken", refreshToken)
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<CommonResponse<AuthValidateResponse>>() {
