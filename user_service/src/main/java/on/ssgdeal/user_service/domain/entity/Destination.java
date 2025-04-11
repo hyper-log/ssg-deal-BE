@@ -10,7 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import on.ssgdeal.common.auth.passport.Passport;
 import on.ssgdeal.common.jpa.BaseEntity;
+import on.ssgdeal.user_service.application.dto.destination.CreateMyDestinationDto;
 import on.ssgdeal.user_service.domain.vo.Address;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -32,5 +34,13 @@ public class Destination extends BaseEntity {
     private Long userId;
     private Address address;
     private String name;
+
+    public static Destination create(Passport passport, CreateMyDestinationDto dto) {
+        return Destination.builder()
+            .userId(passport.getUserId())
+            .address(new Address(dto.address()))
+            .name(dto.destinationName())
+            .build();
+    }
 
 }

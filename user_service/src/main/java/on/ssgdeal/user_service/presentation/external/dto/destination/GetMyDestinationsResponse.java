@@ -1,6 +1,7 @@
 package on.ssgdeal.user_service.presentation.external.dto.destination;
 
 import java.util.List;
+import on.ssgdeal.common.auth.passport.Passport;
 import on.ssgdeal.user_service.domain.entity.Destination;
 
 public record GetMyDestinationsResponse(
@@ -9,11 +10,11 @@ public record GetMyDestinationsResponse(
     List<DestinationResponse> destinations
 ) {
 
-    public static GetMyDestinationsResponse from(String nickname, String slackEmail,
+    public static GetMyDestinationsResponse from(Passport passport,
         List<Destination> destinations) {
         return new GetMyDestinationsResponse(
-            nickname,
-            slackEmail,
+            passport.getNickname(),
+            passport.getSlackEmail(),
             destinations
                 .stream()
                 .map(DestinationResponse::from)
