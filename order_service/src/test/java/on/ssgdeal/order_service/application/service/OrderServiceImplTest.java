@@ -22,7 +22,6 @@ import on.ssgdeal.order_service.domain.entity.TotalOrder;
 import on.ssgdeal.order_service.domain.entity.dtos.UpdateTotalOrderSuccessDto;
 import on.ssgdeal.order_service.domain.entity.dtos.mapper.TotalOrderEntityLayerMapper;
 import on.ssgdeal.order_service.domain.enums.PaymentMethod;
-import on.ssgdeal.order_service.domain.enums.PaymentStatus;
 import on.ssgdeal.order_service.domain.enums.PaymentType;
 import on.ssgdeal.order_service.domain.enums.TotalOrderStatus;
 import on.ssgdeal.order_service.domain.repository.TotalOrderRepository;
@@ -141,13 +140,13 @@ class OrderServiceImplTest {
     private UpdateTotalOrderSuccessRequestDto createFakeTotalOrderPaymentSuccess() {
         return new UpdateTotalOrderSuccessRequestDto(3L, 1L, PaymentType.TOSS, PaymentMethod.CARD,
             20000L,
-            Timestamp.valueOf(LocalDateTime.now()), "2", PaymentStatus.COMPLETED);
+            Timestamp.valueOf(LocalDateTime.now()), "2");
     }
 
     private UpdateTotalOrderSuccessRequestDto createFakeTotalOrderPaymentSuccessValid() {
         return new UpdateTotalOrderSuccessRequestDto(1L, 1L, PaymentType.TOSS, PaymentMethod.CARD,
             20000L,
-            Timestamp.valueOf(LocalDateTime.now()), "2", PaymentStatus.COMPLETED);
+            Timestamp.valueOf(LocalDateTime.now()), "2");
     }
 
     private OrderCompleteSendSlackRequestDto createFakerOrderCompleteSendSlackRequestDto(
