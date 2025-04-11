@@ -14,8 +14,7 @@ import on.ssgdeal.user_service.application.dto.UpdateUserDto;
 import on.ssgdeal.user_service.domain.entity.User;
 import on.ssgdeal.user_service.domain.repository.UserRepository;
 import on.ssgdeal.user_service.domain.util.AuditFieldUpdater;
-import on.ssgdeal.user_service.exception.UserException;
-import on.ssgdeal.user_service.exception.UserExceptionCode;
+import on.ssgdeal.user_service.exception.UserException.UserNotFoundException;
 import on.ssgdeal.user_service.presentation.external.dto.CreateUserResponse;
 import on.ssgdeal.user_service.presentation.external.dto.SearchUserResponse;
 import on.ssgdeal.user_service.presentation.external.dto.UpdateUserAdminResponse;
@@ -121,7 +120,7 @@ public class UserServiceImpl implements UserService {
 
     private User findByIdOrElseThrow(Long id) {
         return userRepository.findById(id).orElseThrow(
-            () -> new UserException(UserExceptionCode.USER_IS_NOT_FOUND)
+            UserNotFoundException::new
         );
     }
 

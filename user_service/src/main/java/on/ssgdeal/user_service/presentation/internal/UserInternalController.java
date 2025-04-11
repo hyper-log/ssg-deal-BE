@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j(topic = "InternalUserController")
 @RequiredArgsConstructor
 @RequestMapping("/internal/v1/users")
-public class InternalUserController {
+public class UserInternalController {
 
     private final UserService userService;
 
