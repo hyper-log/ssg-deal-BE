@@ -5,8 +5,7 @@ import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import on.ssgdeal.order_service.exception.OrderException;
-import on.ssgdeal.order_service.exception.OrderExceptionCode;
+import on.ssgdeal.order_service.exception.OrderException.OrderMaxDeliveryRequestException;
 
 @Embeddable
 @EqualsAndHashCode
@@ -25,7 +24,7 @@ public class DeliveryRequest {
 
     private void validate(final String value) {
         if (value.length() > LENGTH) {
-            throw new OrderException(OrderExceptionCode.ORDER_MAX_DELIVERY_REQUEST);
+            throw new OrderMaxDeliveryRequestException();
         }
     }
 }

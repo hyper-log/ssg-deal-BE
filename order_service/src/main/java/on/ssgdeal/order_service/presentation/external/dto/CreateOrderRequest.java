@@ -7,9 +7,10 @@ import java.util.List;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto.CreateSubOrderRequestDto;
 
-public record CreateOrderRequest(@NotNull(message = "배송지는 필수 입력 값입니다.") Long destinationId,
-                                 String deliveryRequest,
-                                 @Valid @NotEmpty(message = "주문 상품은 필수 입력 값입니다.") List<CreateSubOrderRequest> subOrders
+public record CreateOrderRequest(
+    @NotNull(message = "배송지는 필수 입력 값입니다.") Long destinationId,
+    String deliveryRequest,
+    @Valid @NotEmpty(message = "주문 상품은 필수 입력 값입니다.") List<CreateSubOrderRequest> subOrders
 ) {
 
     public CreateOrderRequestDto toDto() {
@@ -34,7 +35,8 @@ public record CreateOrderRequest(@NotNull(message = "배송지는 필수 입력 
         public record OrderedProduct(
             @NotNull(message = "상품 ID는 필수 입력 값입니다.") Long productId,
             @NotNull(message = "옵션 ID는 필수 입력 값입니다.") Long optionId,
-            @NotNull(message = "상품 수량은 필수 입력 값입니다.") Long quantity) {
+            @NotNull(message = "상품 수량은 필수 입력 값입니다.") Long quantity
+        ) {
 
         }
     }

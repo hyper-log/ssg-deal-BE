@@ -27,8 +27,9 @@ import on.ssgdeal.order_service.domain.entity.dtos.GetTotalOrdersUserInfoDto;
 import on.ssgdeal.order_service.domain.entity.dtos.UpdateTotalOrderSuccessDto;
 import on.ssgdeal.order_service.domain.entity.dtos.mapper.TotalOrderEntityLayerMapper;
 import on.ssgdeal.order_service.domain.repository.TotalOrderRepository;
-import on.ssgdeal.order_service.exception.OrderException;
-import on.ssgdeal.order_service.exception.OrderExceptionCode;
+import on.ssgdeal.order_service.exception.OrderException.OrderNotFoundTotalOrderException;
+import on.ssgdeal.order_service.exception.OrderException.OrderPromotionStockOver;
+import on.ssgdeal.order_service.exception.OrderException.OrderValidDestination;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.DecreaseProductStockRequestDto;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.DecreaseProductStockResponseDto;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.GetProductInfoDto;
@@ -60,8 +61,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public CreateOrderResponse createOrder(CreateOrderRequestDto request,
-        LoginUserInfoDto loginUserInfoDto) {
+    public CreateOrderResponse createOrder(
+        CreateOrderRequestDto request,
+        LoginUserInfoDto loginUserInfoDto
+    ) {
 
         log.info("주문 생성 요청: {}", request);
 
@@ -158,7 +161,7 @@ public class OrderServiceImpl implements OrderService {
 
     private TotalOrder getTotalOrderElseThrow(Long paymentId) {
         return totalOrderRepository.findById(paymentId)
-            .orElseThrow(() -> new OrderException(OrderExceptionCode.ORDER_NOT_FOUND_TOTAL_ORDER));
+            .orElseThrow(OrderNotFoundTotalOrderException::new);
     }
 
     protected ValidDestinationResponseDto validDestinationRequestDto(Long destinationId) {
@@ -172,7 +175,7 @@ public class OrderServiceImpl implements OrderService {
             return validDestinationResponseDto;
         } catch (Exception e) {
             log.info("배송지 검증 실패: {}", e.getMessage());
-            throw new OrderException(OrderExceptionCode.ORDER_VALID_DESTINATION);
+            throw new OrderValidDestination();
         }
     }
 
@@ -198,8 +201,10 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private List<Order> savedOrdersAndOrderProducts(TotalOrder totalOrder,
-        List<CreateOrderDto> orderDtos) {
+    private List<Order> savedOrdersAndOrderProducts(
+        TotalOrder totalOrder,
+        List<CreateOrderDto> orderDtos
+    ) {
         List<Order> orders = Order.create(totalOrder, orderDtos);
         for (int i = 0; i < orders.size(); i++) {
             Order order = orders.get(i);
@@ -243,7 +248,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private GetProductInfoDto getGetProductInfoAndStockDecreaseResponseDto(
-        CreateOrderRequestDto request) {
+        CreateOrderRequestDto request
+    ) {
         TotalOrderProductInfo totalOrderProductInfo = convertPromotionRequestProductInfo(request);
         var promotionRequestInfo = fromTotalOrderProductInfo(totalOrderProductInfo);
 
@@ -255,13 +261,14 @@ public class OrderServiceImpl implements OrderService {
             log.info("상품 정보 조회 성공 : {}", productInfoDto);
         } catch (Exception e) {
             log.info("조회 실패 및 재고 감소 불가능 상황 : {}", e.getMessage());
-            throw new OrderException(OrderExceptionCode.ORDER_PROMOTION_STOCK_OVER);
+            throw new OrderPromotionStockOver();
         }
         return productInfoDto;
     }
 
     private TotalOrderProductInfo convertPromotionRequestProductInfo(
-        CreateOrderRequestDto request) {
+        CreateOrderRequestDto request
+    ) {
         return new TotalOrderProductInfo(request.subOrders().stream().flatMap(
             sub -> sub.orderedProducts().stream()
                 .map(p -> new ProductInfo(p.productId(), p.optionId(), p.quantity()))).toList());

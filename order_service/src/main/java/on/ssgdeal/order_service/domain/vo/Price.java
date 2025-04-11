@@ -6,8 +6,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import on.ssgdeal.order_service.exception.OrderException;
-import on.ssgdeal.order_service.exception.OrderExceptionCode;
+import on.ssgdeal.order_service.exception.OrderException.OrderNullPriceException;
 
 @Getter
 @Embeddable
@@ -25,7 +24,7 @@ public class Price {
 
     private void validate(final Long value) {
         if (value == null) {
-            throw new OrderException(OrderExceptionCode.ORDER_NULL_PRICE);
+            throw new OrderNullPriceException();
         }
 
     }

@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@Slf4j(topic = "OrderEndpoint")
-@RequestMapping("/internal/v1/order")
+@Slf4j(topic = "OrderInternalController")
+@RequestMapping("/internal/v1/orders")
 public class OrderInternalController {
 
     private final OrderService orderService;
