@@ -3,7 +3,7 @@ package on.ssgdeal.order_service.domain.entity;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import on.ssgdeal.order_service.domain.vo.DeliveryRequest;
-import on.ssgdeal.order_service.exception.OrderException;
+import on.ssgdeal.order_service.exception.OrderException.OrderMaxDeliveryRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +17,6 @@ class OrdererTest {
 
         //when & then
         assertThatThrownBy(() -> new DeliveryRequest(deliveryRequest)).isInstanceOf(
-            OrderException.class);
+            OrderMaxDeliveryRequestException.class);
     }
 }
