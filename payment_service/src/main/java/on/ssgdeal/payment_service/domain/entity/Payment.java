@@ -43,19 +43,18 @@ public class Payment extends BaseEntity {
     private Long paymentAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(200)")
+    @Column(nullable = false)
     private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(200)")
+    @Column(nullable = false)
     private PaymentType paymentType;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(200)")
+    @Column(nullable = false)
     private PaymentStatus paymentStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(255)")
     private PaymentFailReason paymentFailReason;
 
     @Column(nullable = false)
