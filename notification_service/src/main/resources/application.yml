@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: notification_service
+    name: notification-service
   config:
     import: "configserver:"
   data:
@@ -16,15 +16,9 @@ spring:
     config:
       discovery:
         enabled: true
-        service-id: config_service
-
-#  cloud:
-#    config:
-#      enabled: false
-
+        service-id: config-service
   profiles:
     active: dev
-
 eureka:
   client:
     service-url:

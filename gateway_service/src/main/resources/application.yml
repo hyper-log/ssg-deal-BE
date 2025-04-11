@@ -1,6 +1,6 @@
 spring:
   application:
-    name: gateway_service
+    name: gateway-service
   cloud:
     gateway:
       discovery:
@@ -12,49 +12,47 @@ spring:
         signup:
           endpoint: /api/v1/auth/signup
         base:
-          url: http://localhost:18081
+          url: http://localhost:8080
         validate:
-          endpoint: /gateway/v1/auth/validate
-        secret:
-          key: ENC(HI4A/uV5RCH/wOUjxaZDApv6DlH9ANhHYK87ojAyzTI=)
+          endpoint: /internal/v1/auth/validate
       routes:
-        - id: auth_service # 인증 서비스
-          uri: lb://auth_service
+        - id: auth-service # 인증 서비스
+          uri: lb://auth-service
           predicates:
             - Path=/api/v1/auth/**
 
-        - id: cart_service # 장바구니 서비스
-          uri: lb://cart_service
+        - id: cart-service # 장바구니 서비스
+          uri: lb://cart-service
           predicates:
             - Path=/api/v1/carts/**
 
-        - id: inquiry_service # 문의 서비스
-          uri: lb://inquiry_service
+        - id: inquiry-service # 문의 서비스
+          uri: lb://inquiry-service
           predicates:
             - Path=/api/v1/inquirys/**
 
-        - id: notification_service # 알림 서비스
-          uri: lb://notification_service
+        - id: notification-service # 알림 서비스
+          uri: lb://notification-service
           predicates:
             - Path=/api/v1/notifications/**
 
-        - id: order_service # 주문 서비스
-          uri: lb://order_service
+        - id: order-service # 주문 서비스
+          uri: lb://order-service
           predicates:
             - Path=/api/v1/orders/**
 
-        - id: payment_service # 결제 서비스
-          uri: lb://payment_service
+        - id: payment-service # 결제 서비스
+          uri: lb://payment-service
           predicates:
             - Path=/api/v1/payments/**
 
-        - id: promotion_service # 프로모션 서비스
-          uri: lb://promotion_service
+        - id: promotion-service # 프로모션 서비스
+          uri: lb://promotion-service
           predicates:
             - Path=/api/v1/promotions/**
 
-        - id: user_service # 사용자 서비스
-          uri: lb://user_service
+        - id: user-service # 사용자 서비스
+          uri: lb://user-service
           predicates:
             - Path=/api/v1/users/**
 
