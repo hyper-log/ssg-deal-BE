@@ -22,13 +22,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class NotificationServiceImplTest {
+class NotificationServiceImplUnitTest {
 
     @Mock
     private SlackClient slackClient;
@@ -38,7 +38,6 @@ class NotificationServiceImplTest {
 
     @Mock
     private NotificationTemplateRepository notificationTemplateRepository;
-
 
     @Mock
     private SlackTimestampToKSTConverter slackTimestampConverter;
@@ -118,8 +117,8 @@ class NotificationServiceImplTest {
         CreateNotificationResponse response = notificationServiceImpl.sendSlackNotification(mockRequestDto);
 
         // then
-        assertNotNull(response);
-        assertEquals(1L, response.notificationId());
+        assertThat(response).isNotNull();
+        assertThat(response.notificationId()).isEqualTo(1L);
         verify(notificationTemplateRepository, times(1))
                 .findByType(NotificationTemplateType.ORDER_COMPLETED);
         verify(notificationRepository, times(1))
