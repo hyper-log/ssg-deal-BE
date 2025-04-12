@@ -71,6 +71,7 @@ public class OrderServiceImpl implements OrderService {
     private final TotalOrderEntityLayerMapper totalOrderEntityLayerMapper;
     private final SlackService slackService;
     private final PaymentService paymentService;
+    private final CartService cartService;
 
     @Override
     @Transactional
@@ -192,12 +193,12 @@ public class OrderServiceImpl implements OrderService {
             .filter(order -> order.getStatus() != OrderStatus.PAID)
             .toList();
 
-        totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
-        TotalOrder updateTotalOrder = getTotalOrderElseThrow(totalOrder.getId());
-
         if (!nonPaidOrders.isEmpty()) {
             throw new OrderNotCancelException();
         }
+
+        totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
+        TotalOrder updateTotalOrder = getTotalOrderElseThrow(totalOrder.getId());
 
         requestCancelTotalOrderPayment(totalOrder);
         requestCancelTotalOrderIncreaseProduct(totalOrder);
