@@ -194,14 +194,14 @@ public class OrderServiceImpl implements OrderService {
             .filter(order -> order.getStatus() != OrderStatus.PAID)
             .toList();
 
+        totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
+        TotalOrder updateTotalOrder = getTotalOrderElseThrow(totalOrder.getId());
+
         if (!nonPaidOrders.isEmpty()) {
             throw new OrderNotCancelException();
         }
 
         requestCancelPayment(totalOrder);
-
-        totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
-        TotalOrder updateTotalOrder = getTotalOrderElseThrow(totalOrder.getId());
 
         return CancelTotalOrderResponseDto.from(updateTotalOrder);
     }
