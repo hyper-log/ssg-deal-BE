@@ -21,7 +21,7 @@ import static on.ssgdeal.promotion_service.domain.entity.QPromotion.promotion;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class QueryDslPromotionRepositoryImpl implements QueryDslPromotionRepository {
+public class PromotionQueryDslRepositoryImpl implements PromotionQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
 

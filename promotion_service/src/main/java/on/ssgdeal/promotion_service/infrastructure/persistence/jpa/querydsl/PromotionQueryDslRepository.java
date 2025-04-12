@@ -5,6 +5,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
-public interface QueryDslPromotionRepository {
+public interface PromotionQueryDslRepository {
     Optional<GetInProgressPromotionDetailDto> findPromotionWithProductsById(Long promotionId, Pageable pageable);
 }
