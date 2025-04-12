@@ -151,6 +151,19 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
         return Optional.ofNullable(results.get(0));
     }
 
+    @Override
+    public Optional<TotalOrder> findOrderForCancel(Long totalOrderId, Long orderId) {
+        List<TotalOrder> results = queryFactory
+            .selectDistinct(totalOrder)
+            .join(totalOrder.orders, order).on(order.id.eq(orderId)).fetchJoin()
+            .join(order.orderProducts, orderProduct).fetchJoin()
+            .where(
+                totalOrder.id.eq(totalOrderId)
+            )
+            .fetch();
+        return Optional.ofNullable(results.get(0));
+    }
+
     public Optional<TotalOrder> getTotalOrderDetailInfo(BooleanBuilder totalOrderDetailFilter) {
         List<TotalOrder> results = queryFactory
             .selectDistinct(totalOrder)

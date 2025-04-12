@@ -1,6 +1,8 @@
 package on.ssgdeal.order_service.application.service;
 
 import on.ssgdeal.common.application.dto.PageDto;
+import on.ssgdeal.order_service.application.service.dto.CancelOrderRequestDto;
+import on.ssgdeal.order_service.application.service.dto.CancelOrderResponseDto;
 import on.ssgdeal.order_service.application.service.dto.CancelTotalOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.CancelTotalOrderResponseDto;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
@@ -30,4 +32,6 @@ public interface OrderService {
     CancelTotalOrderResponseDto cancelTotalOrder(CancelTotalOrderRequestDto request);
 
     void createTotalOrderPaymentFail(UpdateTotalOrderFailRequestDto requestDto);
+
+    CancelOrderResponseDto cancelOrder(CancelOrderRequestDto request);
 }

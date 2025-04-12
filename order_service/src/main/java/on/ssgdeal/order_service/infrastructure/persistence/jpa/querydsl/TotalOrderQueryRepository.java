@@ -23,4 +23,6 @@ public interface TotalOrderQueryRepository {
     Optional<TotalOrder> findTotalOrderForCancel(Long totalOrderId);
 
     Optional<TotalOrder> findTotalOrderForFail(Long totalOrderId);
+
+    Optional<TotalOrder> findOrderForCancel(Long totalOrderId, Long orderId);
 }

@@ -9,6 +9,8 @@ import on.ssgdeal.common.auth.passport.Passport;
 import on.ssgdeal.common.auth.passport.PassportUtil;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
 import on.ssgdeal.order_service.application.service.OrderService;
+import on.ssgdeal.order_service.application.service.dto.CancelOrderRequestDto;
+import on.ssgdeal.order_service.application.service.dto.CancelOrderResponseDto;
 import on.ssgdeal.order_service.application.service.dto.CancelTotalOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.CancelTotalOrderResponseDto;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
@@ -74,7 +76,7 @@ public class OrderController {
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 
-    @PatchMapping("/{totalOrderId}")
+    @PatchMapping("/{totalOrderId}/cancel")
     public ResponseEntity<CommonResponse<CancelTotalOrderResponseDto>> cancelTotalOrder(
         @PathVariable Long totalOrderId,
         HttpServletRequest httpServletRequest
@@ -84,6 +86,20 @@ public class OrderController {
         CancelTotalOrderRequestDto request = CancelTotalOrderRequestDto.from(totalOrderId,
             loginUserInfo);
         CancelTotalOrderResponseDto response = orderService.cancelTotalOrder(request);
+        return ResponseEntity.ok(CommonResponse.success(response));
+    }
+
+    @PatchMapping("/{totalOrderId}/orders/{orderId}/cancel")
+    public ResponseEntity<CommonResponse<CancelOrderResponseDto>> cancelOrder(
+        @PathVariable Long totalOrderId,
+        @PathVariable Long orderId,
+        HttpServletRequest httpServletRequest
+    ) {
+        Passport passport = passportUtil.getPassportBy(httpServletRequest);
+        LoginUserInfoDto loginUserInfo = LoginUserInfoDto.from(passport);
+        CancelOrderRequestDto request = CancelOrderRequestDto.from(totalOrderId, orderId,
+            loginUserInfo);
+        CancelOrderResponseDto response = orderService.cancelOrder(request);
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 

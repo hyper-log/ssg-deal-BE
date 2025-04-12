@@ -8,6 +8,8 @@ import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.application.dto.PageDto;
+import on.ssgdeal.order_service.application.service.dto.CancelOrderRequestDto;
+import on.ssgdeal.order_service.application.service.dto.CancelOrderResponseDto;
 import on.ssgdeal.order_service.application.service.dto.CancelTotalOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.CancelTotalOrderResponseDto;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
@@ -41,7 +43,8 @@ import on.ssgdeal.order_service.exception.OrderException.OrderPaymentsError;
 import on.ssgdeal.order_service.exception.OrderException.OrderPromotionStockOver;
 import on.ssgdeal.order_service.exception.OrderException.OrderValidDestination;
 import on.ssgdeal.order_service.infrastructure.client.cart.feign.dtos.ClearCartRequestDto;
-import on.ssgdeal.order_service.infrastructure.client.payments.feign.dtos.CancelTotalOrderPaymentRequestDto;
+import on.ssgdeal.order_service.infrastructure.client.payment.feign.dtos.CancelOrderPaymentRequestDto;
+import on.ssgdeal.order_service.infrastructure.client.payment.feign.dtos.CancelTotalOrderPaymentRequestDto;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.DecreaseProductStockRequestDto;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.DecreaseProductStockResponseDto;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.GetProductInfoDto;
@@ -226,6 +229,31 @@ public class OrderServiceImpl implements OrderService {
             .orElseThrow(OrderNotFoundTotalOrderException::new);
         totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
         requestCancelTotalOrderIncreaseProduct(totalOrder);
+    }
+
+    @Override
+    @Transactional
+    public CancelOrderResponseDto cancelOrder(CancelOrderRequestDto request) {
+        TotalOrder totalOrder = totalOrderRepository.findOrderForCancel(
+                request.totalOrderId(), request.orderId())
+            .orElseThrow(OrderNotFoundTotalOrderException::new);
+        totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
+        CancelOrderPaymentRequestDto requestDto = CancelOrderPaymentRequestDto.from(
+            totalOrder.getOrders().get(0).getPrice().getValue());
+        requestCancelOrderPayment(requestDto, totalOrder);
+        requestCancelTotalOrderIncreaseProduct(totalOrder);
+        return CancelOrderResponseDto.from(totalOrder.getOrders().get(0).getId());
+    }
+
+    private void requestCancelOrderPayment(CancelOrderPaymentRequestDto requestDto,
+        TotalOrder totalOrder) {
+        try {
+            log.error("부분 주문 결제 취소 요청 cancelAmount : {}", requestDto.cancelAmount());
+            paymentService.cancelOrderPayment(totalOrder.getId(), requestDto);
+        } catch (Exception e) {
+            log.error("부분 주문 결제 취소 오류 : {}", e.getMessage());
+            throw new OrderPaymentsError();
+        }
     }
 
     private void requestCancelTotalOrderIncreaseProduct(TotalOrder totalOrder) {
