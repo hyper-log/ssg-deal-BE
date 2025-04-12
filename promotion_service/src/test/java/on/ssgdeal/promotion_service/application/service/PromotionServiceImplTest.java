@@ -1,7 +1,9 @@
 package on.ssgdeal.promotion_service.application.service;
 
 import on.ssgdeal.promotion_service.application.service.dto.GetFinishedPromotionDetailResponseDto;
+import on.ssgdeal.promotion_service.application.service.dto.GetInProgressPromotionDetailResponseDto;
 import on.ssgdeal.promotion_service.domain.entity.Promotion;
+import on.ssgdeal.promotion_service.domain.enums.PromotionStatus;
 import on.ssgdeal.promotion_service.domain.repository.PromotionRepository;
 import org.hibernate.AssertionFailure;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +11,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +36,11 @@ public class PromotionServiceImplTest {
     class getFinishedPromotionDetailTest {
 
         @Nested
-        @DisplayName("Context: 유효한 요청으로 종료된 프로모션 상세 정보를 반환하다.")
+        @DisplayName("Context: 유효한 요청으로 종료된 프로모션 상세 정보를 조회할 때")
         class getFinishedPromotionDetailSuccessTest {
 
             @Test
-            @DisplayName("It: 종료된 프로모션 상세 정보를 조회")
+            @DisplayName("It: 종료된 프로모션의 상세 정보를 반환하다.")
             void getFinishedPromotionDetailTest() throws Exception {
 
                 //given
@@ -45,16 +49,51 @@ public class PromotionServiceImplTest {
                 //when
                 GetFinishedPromotionDetailResponseDto response = promotionService.getFinishedPromotionDetail(requestPromotionId);
                 Promotion promotion = promotionRepository.findById(requestPromotionId).orElseThrow(
-                    () -> new AssertionFailure("Promotion이 조회되지 않았습니다.")
+                        () -> new AssertionFailure("프로모션이 조회되지 않았습니다.")
                 );
 
                 //then
                 assertThat(response).isNotNull();
+                assertThat(promotion.getStatus()).isEqualTo(PromotionStatus.FINISHED);
                 assertThat(promotion.getId()).isEqualTo(response.promotionId());
 
             }
         }
     }
+
+    @Nested
+    @DisplayName("Describe: getInProgressPromotionDetail 메서드는")
+    class getInProgressPromotionDetailTest {
+
+        @Nested
+        @DisplayName("Context: 유효한 요청으로 진행 중인 프로모션 상세 정보를 조회할 때")
+        class getFinishedPromotionDetailSuccessTest {
+
+            @Test
+            @DisplayName("It: 진행 중인 프로모션의 상세 정보를 반환하다.")
+            void getFinishedPromotionDetailTest() throws Exception {
+
+                //given
+                Long requestPromotionId = 2L;
+                Pageable pageable = PageRequest.of(0, 10);
+
+                //when
+                GetInProgressPromotionDetailResponseDto response = promotionService.getInProgressPromotionDetail(requestPromotionId, pageable);
+                Promotion promotion = promotionRepository.findById(requestPromotionId).orElseThrow(
+                        () -> new AssertionFailure("프로모션이 조회되지 않았습니다.")
+                );
+
+                //then
+                assertThat(response).isNotNull();
+                assertThat(promotion.getStatus()).isEqualTo(PromotionStatus.IN_PROGRESS);
+                assertThat(promotion.getId()).isEqualTo(response.promotionId());
+                assertThat(response.promotionProducts()).isNotNull();
+
+            }
+        }
+    }
+
+
 }
 
 
