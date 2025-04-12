@@ -5,7 +5,7 @@ spring:
   application:
     name: notification_service
   config:
-    import: "configserver:"
+    import: "optional:configserver:"
   data:
     redis:
       host: host
@@ -15,12 +15,8 @@ spring:
   cloud:
     config:
       discovery:
-        enabled: true
+        enabled: false
         service-id: config_service
-
-#  cloud:
-#    config:
-#      enabled: false
 
   profiles:
     active: dev
@@ -30,4 +26,7 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
-
+slack:
+  base-url: https://slack.com/api
+  bot:
+    token: ${SLACK_BOT_TOKEN}
