@@ -6,14 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Builder
 public record CreateNotificationRequest(
         @NotBlank @Email String slackEmail,
-        @NotNull Long orderId,
+        @NotNull Long totalOrderId,
         @NotBlank String ordererName,
-        @NotNull LocalDateTime orderAt,
+        @NotNull LocalDate orderAt,
         @NotNull @PositiveOrZero Long paymentPrice,
         @NotBlank String orderStatus
 ) {

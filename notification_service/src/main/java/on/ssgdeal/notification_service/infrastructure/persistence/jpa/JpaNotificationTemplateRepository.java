@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface JpaNotificationTemplateRepository extends JpaRepository<NotificationTemplate, Long>, NotificationTemplateRepository {
+public interface JpaNotificationTemplateRepository extends JpaRepository<NotificationTemplate, Long> {
 
     Optional<NotificationTemplate> findByType(NotificationTemplateType type);
 }

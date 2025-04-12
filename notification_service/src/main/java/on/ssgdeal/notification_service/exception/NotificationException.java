@@ -36,4 +36,11 @@ public class NotificationException extends CustomException {
             super(NotificationExceptionCode.SLACK_MESSAGE_SEND_FAILED);
         }
     }
+
+    public static class InvalidNumberFormatException extends NotificationException {
+        public InvalidNumberFormatException() {
+            super(NotificationExceptionCode.INVALID_NUMBER_FORMAT);
+        }
+    }
+
 }

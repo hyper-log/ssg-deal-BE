@@ -1,5 +1,6 @@
 package on.ssgdeal.notification_service.infrastructure.client.slack.converter;
 
+import on.ssgdeal.notification_service.exception.NotificationException;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -17,7 +18,7 @@ public class SlackTimestampToKSTConverter {
             ZoneId kstZoneId = ZoneId.of("Asia/Seoul");
             return LocalDateTime.ofInstant(instant, kstZoneId);
         } catch (NumberFormatException e) {
-            return null;
+            throw new NotificationException.InvalidNumberFormatException();
         }
     }
 }

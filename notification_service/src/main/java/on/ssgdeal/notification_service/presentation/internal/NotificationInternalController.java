@@ -7,25 +7,25 @@ import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.auth.passport.Passport;
 import on.ssgdeal.common.auth.passport.PassportUtil;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
-import on.ssgdeal.notification_service.application.service.NotificationService;
+import on.ssgdeal.notification_service.application.service.NotificationServiceImpl;
 import on.ssgdeal.notification_service.presentation.internal.dto.CreateNotificationRequest;
 import on.ssgdeal.notification_service.presentation.internal.dto.CreateNotificationResponse;
-import on.ssgdeal.notification_service.presentation.internal.mapper.NotificationRequestMapper;
+import on.ssgdeal.notification_service.presentation.internal.dto.mapper.NotificationPresentationMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j(topic = "NotificationController")
+@Slf4j(topic = "NotificationInternalController")
 @RestController
-@RequestMapping("/api/v1/slack")
+@RequestMapping("/internal/v1/slack")
 @RequiredArgsConstructor
-public class NotificationController {
+public class NotificationInternalController {
 
     private final PassportUtil passportUtil;
-    private final NotificationRequestMapper notificationMapper;
-    private final NotificationService notificationService;
+    private final NotificationPresentationMapper notificationMapper;
+    private final NotificationServiceImpl notificationServiceImpl;
 
     @PostMapping("/order/complete")
     public ResponseEntity<CommonResponse<CreateNotificationResponse>> createNotification(
@@ -33,9 +33,9 @@ public class NotificationController {
             HttpServletRequest servletRequest
     ) {
         Passport passport = passportUtil.getPassportBy(servletRequest);
-        final var requestDto = notificationMapper.toDto(request, passport.getSlackEmail());
+        final var requestDto = notificationMapper.toNotificationRequestDto(request, passport.getSlackEmail());
         log.info("주문 완료 슬랙 메시지 요청 : {}", request);
-        final var responseDto = notificationService.sendSlackNotification(requestDto);
+        final var responseDto = notificationServiceImpl.sendSlackNotification(requestDto);
         return ResponseEntity.ok().body(CommonResponse.success(responseDto));
     }
 }

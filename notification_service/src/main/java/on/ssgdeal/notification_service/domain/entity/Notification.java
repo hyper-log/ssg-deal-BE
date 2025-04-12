@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import on.ssgdeal.common.jpa.BaseEntity;
 import on.ssgdeal.notification_service.application.service.dto.CreateNotificationRequestDto;
+import on.ssgdeal.notification_service.domain.entity.dto.CreateNotificationDto;
 import on.ssgdeal.notification_service.domain.enums.NotificationStatus;
 import on.ssgdeal.notification_service.domain.enums.NotificationTemplateType;
 import on.ssgdeal.notification_service.domain.vo.SlackEmail;
@@ -54,17 +55,15 @@ public class Notification extends BaseEntity {
     private List<NotificationRecord> records;
 
     public static Notification create(
-            CreateNotificationRequestDto requestDto,
-            String content,
-            NotificationTemplate template,
-            LocalDateTime sendAt
+            CreateNotificationDto notificationDto
     ) {
         Notification notification = Notification.builder()
-                .notificationTemplate(template)
-                .content(content)
-                .senderSlackEmail(new SlackEmail(requestDto.senderSlackEmail()))
-                .receiverSlackEmail(new SlackEmail(requestDto.receiverSlackEmail()))
-                .sendAt(sendAt)
+                .notificationTemplate(notificationDto.template())
+                .type(notificationDto.template().getType())
+                .content(notificationDto.content())
+                .senderSlackEmail(new SlackEmail(notificationDto.requestDto().senderSlackEmail()))
+                .receiverSlackEmail(new SlackEmail(notificationDto.requestDto().receiverSlackEmail()))
+                .sendAt(notificationDto.sendAt())
                 .status(NotificationStatus.SUCCESS)
                 .records(new ArrayList<>())
                 .build();

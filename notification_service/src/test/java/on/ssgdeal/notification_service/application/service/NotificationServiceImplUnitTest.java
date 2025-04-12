@@ -3,6 +3,7 @@ package on.ssgdeal.notification_service.application.service;
 import on.ssgdeal.notification_service.application.service.dto.CreateNotificationRequestDto;
 import on.ssgdeal.notification_service.domain.entity.Notification;
 import on.ssgdeal.notification_service.domain.entity.NotificationTemplate;
+import on.ssgdeal.notification_service.domain.entity.dto.CreateNotificationDto;
 import on.ssgdeal.notification_service.domain.enums.NotificationTemplateType;
 import on.ssgdeal.notification_service.domain.repository.NotificationRepository;
 import on.ssgdeal.notification_service.domain.repository.NotificationTemplateRepository;
@@ -15,9 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class NotificationServiceTest {
+class NotificationServiceImplTest {
 
     @Mock
     private SlackClient slackClient;
@@ -43,7 +44,7 @@ class NotificationServiceTest {
     private SlackTimestampToKSTConverter slackTimestampConverter;
 
     @InjectMocks
-    private NotificationService notificationService;
+    private NotificationServiceImpl notificationServiceImpl;
 
     private CreateNotificationRequestDto mockRequestDto;
 
@@ -55,6 +56,7 @@ class NotificationServiceTest {
     private Notification mockNotification;
 
     private String mockContent;
+    private CreateNotificationDto mockDto;
 
 
     @BeforeEach
@@ -63,9 +65,9 @@ class NotificationServiceTest {
                 .receiverSlackEmail("hyunj2034@naver.com")
                 .senderSlackEmail("master@naver.com")
                 .ordererName("양현진")
-                .orderId(123L)
+                .totalOrderId(123L)
                 .paymentPrice(10000L)
-                .orderAt(LocalDateTime.now())
+                .orderAt(LocalDate.now())
                 .orderStatus("결제완료")
                 .build();
 
@@ -80,12 +82,15 @@ class NotificationServiceTest {
 
         mockSendAt = LocalDateTime.of(2025, 4, 8, 19, 51, 21, 123456000);
 
-        mockNotification = Notification.create(
-                mockRequestDto,
-                mockContent,
-                mockTemplate,
-                mockSendAt
-        );
+        mockDto = CreateNotificationDto.builder()
+                .requestDto(mockRequestDto)
+                .template(mockTemplate)
+                .sendAt(mockSendAt)
+                .content(mockContent)
+                .build();
+
+        mockNotification = Notification.create(mockDto);
+
     }
 
     @Test
@@ -110,7 +115,7 @@ class NotificationServiceTest {
                 );
 
         // when
-        CreateNotificationResponse response = notificationService.sendSlackNotification(mockRequestDto);
+        CreateNotificationResponse response = notificationServiceImpl.sendSlackNotification(mockRequestDto);
 
         // then
         assertNotNull(response);
