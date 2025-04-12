@@ -9,7 +9,9 @@ import on.ssgdeal.common.auth.passport.PassportUtil;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
 import on.ssgdeal.order_service.application.service.OrderService;
 import on.ssgdeal.order_service.application.service.dto.LoginUserInfoDto;
+import on.ssgdeal.order_service.application.service.dto.UpdateTotalOrderFailRequestDto;
 import on.ssgdeal.order_service.application.service.dto.UpdateTotalOrderSuccessRequestDto;
+import on.ssgdeal.order_service.presentation.internal.dto.UpdateTotalOrderFailRequest;
 import on.ssgdeal.order_service.presentation.internal.dto.UpdateTotalOrderSuccessRequest;
 import on.ssgdeal.order_service.presentation.internal.dto.ValidTotalOrderResponse;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +32,7 @@ public class OrderInternalController {
     private final PassportUtil passportUtil;
 
     @PostMapping("/payments/success")
-    public ResponseEntity<CommonResponse<Void>> createTotalOrderPayment(
+    public ResponseEntity<CommonResponse<Void>> createTotalOrderPaymentSuccess(
         @Valid @RequestBody UpdateTotalOrderSuccessRequest request,
         HttpServletRequest httpServletRequest
     ) {
@@ -46,5 +48,14 @@ public class OrderInternalController {
         @PathVariable Long totalOrderId) {
         ValidTotalOrderResponse response = orderService.validTotalOrder(totalOrderId);
         return ResponseEntity.ok(CommonResponse.success(response));
+    }
+
+    @PostMapping("/payments/fail")
+    public ResponseEntity<CommonResponse<Void>> createTotalOrderPaymentFail(
+        @Valid @RequestBody UpdateTotalOrderFailRequest request
+    ) {
+        UpdateTotalOrderFailRequestDto requestDto = request.toDto();
+        orderService.createTotalOrderPaymentFail(requestDto);
+        return ResponseEntity.ok(CommonResponse.success());
     }
 }

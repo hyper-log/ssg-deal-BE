@@ -21,4 +21,6 @@ public interface TotalOrderQueryRepository {
     void cancelUpdateStatusTotalOrder(TotalOrder totalOrder);
 
     Optional<TotalOrder> findTotalOrderForCancel(Long totalOrderId);
+
+    Optional<TotalOrder> findTotalOrderForFail(Long totalOrderId);
 }

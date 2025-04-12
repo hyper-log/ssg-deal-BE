@@ -17,6 +17,7 @@ import on.ssgdeal.order_service.application.service.dto.GetTotalOrdersResponseDt
 import on.ssgdeal.order_service.application.service.dto.LoginUserInfoDto;
 import on.ssgdeal.order_service.application.service.dto.TotalOrderProductInfo;
 import on.ssgdeal.order_service.application.service.dto.TotalOrderProductInfo.ProductInfo;
+import on.ssgdeal.order_service.application.service.dto.UpdateTotalOrderFailRequestDto;
 import on.ssgdeal.order_service.application.service.dto.UpdateTotalOrderSuccessRequestDto;
 import on.ssgdeal.order_service.domain.entity.Order;
 import on.ssgdeal.order_service.domain.entity.OrderProduct;
@@ -205,6 +206,16 @@ public class OrderServiceImpl implements OrderService {
         requestCancelTotalOrderIncreaseProduct(totalOrder);
 
         return CancelTotalOrderResponseDto.from(updateTotalOrder);
+    }
+
+    @Override
+    @Transactional
+    public void createTotalOrderPaymentFail(UpdateTotalOrderFailRequestDto requestDto) {
+        TotalOrder totalOrder = totalOrderRepository.findTotalOrderForFail(
+                requestDto.totalOrderId())
+            .orElseThrow(OrderNotFoundTotalOrderException::new);
+        totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
+        requestCancelTotalOrderIncreaseProduct(totalOrder);
     }
 
     private void requestCancelTotalOrderIncreaseProduct(TotalOrder totalOrder) {

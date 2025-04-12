@@ -7,6 +7,7 @@ import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.GetTotalOrderDetailResponseDto;
 import on.ssgdeal.order_service.application.service.dto.GetTotalOrdersResponseDto;
 import on.ssgdeal.order_service.application.service.dto.LoginUserInfoDto;
+import on.ssgdeal.order_service.application.service.dto.UpdateTotalOrderFailRequestDto;
 import on.ssgdeal.order_service.application.service.dto.UpdateTotalOrderSuccessRequestDto;
 import on.ssgdeal.order_service.presentation.external.dto.CreateOrderResponse;
 import on.ssgdeal.order_service.presentation.internal.dto.ValidTotalOrderResponse;
@@ -27,4 +28,6 @@ public interface OrderService {
     ValidTotalOrderResponse validTotalOrder(Long totalOrderId);
 
     CancelTotalOrderResponseDto cancelTotalOrder(CancelTotalOrderRequestDto request);
+
+    void createTotalOrderPaymentFail(UpdateTotalOrderFailRequestDto requestDto);
 }

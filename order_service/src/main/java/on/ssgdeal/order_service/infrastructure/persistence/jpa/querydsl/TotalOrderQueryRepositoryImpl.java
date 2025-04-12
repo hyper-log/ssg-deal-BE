@@ -57,7 +57,7 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
     public void paymentSuccess(TotalOrder requestTotalOrder,
         UpdateTotalOrderSuccessDto requestDto) {
         queryFactory.update(totalOrder)
-            .set(totalOrder.status, TotalOrderStatus.EXPIRED)
+            .set(totalOrder.status, TotalOrderStatus.PAID)
             .where(totalOrder.id.eq(requestTotalOrder.getId()))
             .execute();
         entityManager.flush();
@@ -134,6 +134,21 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
             .fetch();
 
         return Optional.ofNullable(results.get(0));
+    }
+
+    @Override
+    public Optional<TotalOrder> findTotalOrderForFail(Long totalOrderId) {
+        List<TotalOrder> results = queryFactory
+            .selectDistinct(totalOrder)
+            .join(totalOrder.orders, order).fetchJoin()
+            .join(totalOrder.totalOrderPayments, totalOrderPayment).fetchJoin()
+            .where(
+                totalOrder.id.eq(totalOrderId),
+                totalOrder.status.eq(TotalOrderStatus.PENDING)
+            )
+            .fetch();
+
+        return Optional.empty();
     }
 
     public TotalOrder getTotalOrderDetailInfo(BooleanBuilder totalOrderDetailFilter) {
