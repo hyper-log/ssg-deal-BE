@@ -2,7 +2,6 @@ package on.ssgdeal.user_service.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -29,10 +28,11 @@ public class SlackEmail {
         this.email = email;
     }
 
+    public static SlackEmail valueOf(String email) {
+        return new SlackEmail(email);
+    }
+
     private void validate(final String email) {
-        if (Objects.isNull(email) || email.isBlank()) {
-            throw new UserException(UserExceptionCode.USER_SLACK_EMAIL_IS_NULL);
-        }
         if (!EMAIL_PATTERN.matcher(email).matches()) {
             throw new UserException(UserExceptionCode.USER_SLACK_EMAIL_INVALID_FORMAT);
         }

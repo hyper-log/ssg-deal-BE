@@ -1,4 +1,4 @@
-package on.ssgdeal.user_service.presentation.external.dto;
+package on.ssgdeal.user_service.presentation.external.dto.user;
 
 import on.ssgdeal.user_service.domain.entity.User;
 

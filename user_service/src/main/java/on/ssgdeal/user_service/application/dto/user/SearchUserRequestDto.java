@@ -1,18 +1,19 @@
-package on.ssgdeal.user_service.application.dto;
+package on.ssgdeal.user_service.application.dto.user;
 
 import org.springframework.data.domain.Pageable;
 
-public record SearchUserDto(
+public record SearchUserRequestDto(
     String nickname,
     String slackEmail,
     Pageable pageable
 ) {
-    public static SearchUserDto from(
+
+    public static SearchUserRequestDto from(
         String nickname,
         String slackEmail,
         Pageable pageable
     ) {
-        return new SearchUserDto(
+        return new SearchUserRequestDto(
             nickname,
             slackEmail,
             pageable);

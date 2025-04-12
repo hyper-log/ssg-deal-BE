@@ -3,10 +3,10 @@ package on.ssgdeal.user_service.presentation.internal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
-import on.ssgdeal.user_service.application.dto.CreateUserDto;
+import on.ssgdeal.user_service.application.dto.user.CreateUserRequestDto;
 import on.ssgdeal.user_service.application.service.UserService;
-import on.ssgdeal.user_service.presentation.external.dto.CreateUserRequest;
-import on.ssgdeal.user_service.presentation.external.dto.CreateUserResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.CreateUserRequest;
+import on.ssgdeal.user_service.presentation.external.dto.user.CreateUserResponse;
 import on.ssgdeal.user_service.presentation.internal.dto.FindByIdUserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +37,7 @@ public class UserInternalController {
     public ResponseEntity<CommonResponse<CreateUserResponse>> createUser(
         @RequestBody CreateUserRequest request
     ) {
-        CreateUserDto dto = request.toDto();
+        CreateUserRequestDto dto = request.toDto();
         CreateUserResponse response = userService.createUser(dto);
         return ResponseEntity.ok(CommonResponse.success(response));
     }

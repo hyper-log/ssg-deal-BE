@@ -6,7 +6,7 @@ import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import on.ssgdeal.user_service.application.dto.SearchUserDto;
+import on.ssgdeal.user_service.application.dto.user.SearchUserRequestDto;
 import on.ssgdeal.user_service.domain.entity.QUser;
 import on.ssgdeal.user_service.domain.entity.User;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
     }
 
     @Override
-    public Page<User> searchUser(SearchUserDto requestDto) {
+    public Page<User> searchUser(SearchUserRequestDto requestDto) {
 
         Pageable pageable = requestDto.pageable();
 

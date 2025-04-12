@@ -15,6 +15,7 @@ public enum UserExceptionCode implements ExceptionCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
     USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 사용자입니다."),
     UNAUTHORIZED(HttpStatus.FORBIDDEN, "조회 권한이 없습니다."),
+    USER_NICKNAME_IS_NULL(HttpStatus.BAD_REQUEST, "이름은 필수 입력 값입니다."),
     ;
 
     private final HttpStatus httpStatus;

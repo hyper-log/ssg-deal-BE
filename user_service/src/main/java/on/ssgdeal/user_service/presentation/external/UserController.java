@@ -5,16 +5,16 @@ import lombok.RequiredArgsConstructor;
 import on.ssgdeal.common.annotation.RoleCheck;
 import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
-import on.ssgdeal.user_service.application.dto.GetSlackEmailByIdResponseDto;
-import on.ssgdeal.user_service.application.dto.SearchUserDto;
-import on.ssgdeal.user_service.application.dto.UpdateUserAdminDto;
-import on.ssgdeal.user_service.application.dto.UpdateUserDto;
+import on.ssgdeal.user_service.application.dto.user.SearchUserRequestDto;
+import on.ssgdeal.user_service.application.dto.user.UpdateUserAdminRequestDto;
+import on.ssgdeal.user_service.application.dto.user.UpdateUserRequestDto;
 import on.ssgdeal.user_service.application.service.UserService;
-import on.ssgdeal.user_service.presentation.external.dto.SearchUserResponse;
-import on.ssgdeal.user_service.presentation.external.dto.UpdateUserAdminRequest;
-import on.ssgdeal.user_service.presentation.external.dto.UpdateUserAdminResponse;
-import on.ssgdeal.user_service.presentation.external.dto.UpdateUserRequest;
-import on.ssgdeal.user_service.presentation.external.dto.UpdateUserResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.FindSlackEmailByIdResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.SearchUserResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.UpdateUserAdminRequest;
+import on.ssgdeal.user_service.presentation.external.dto.user.UpdateUserAdminResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.UpdateUserRequest;
+import on.ssgdeal.user_service.presentation.external.dto.user.UpdateUserResponse;
 import on.ssgdeal.user_service.presentation.internal.dto.FindByIdUserResponse;
 import on.ssgdeal.user_service.presentation.internal.dto.FindMyUserResponse;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +40,7 @@ public class UserController {
         HttpServletRequest request,
         @RequestBody UpdateUserRequest updateUserRequest
     ) {
-        UpdateUserDto dto = updateUserRequest.toDto();
+        UpdateUserRequestDto dto = updateUserRequest.toDto();
         UpdateUserResponse response = userService.updateUser(dto, request);
         return ResponseEntity.ok(CommonResponse.success(response));
     }
@@ -55,10 +55,10 @@ public class UserController {
 
     @RoleCheck("MASTER")
     @GetMapping("/{id}/slack-email")
-    public ResponseEntity<CommonResponse<GetSlackEmailByIdResponseDto>> getSlackEmailById(
+    public ResponseEntity<CommonResponse<FindSlackEmailByIdResponse>> getSlackEmailById(
         @PathVariable Long id
     ) {
-        GetSlackEmailByIdResponseDto response = userService.getSlackEmailById(id);
+        FindSlackEmailByIdResponse response = userService.getSlackEmailById(id);
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 
@@ -78,7 +78,7 @@ public class UserController {
         @RequestParam(required = false) String slackEmail,
         @PageableDefault Pageable pageable
     ) {
-        SearchUserDto dto = SearchUserDto.from(nickname, slackEmail, pageable);
+        SearchUserRequestDto dto = SearchUserRequestDto.from(nickname, slackEmail, pageable);
         PageDto<SearchUserResponse> response = userService.searchUser(dto);
         return ResponseEntity.ok(CommonResponse.success(response));
     }
@@ -89,7 +89,7 @@ public class UserController {
         @PathVariable Long id,
         @RequestBody UpdateUserAdminRequest updateUserAdminRequest
     ) {
-        UpdateUserAdminDto dto = updateUserAdminRequest.toDto(id);
+        UpdateUserAdminRequestDto dto = updateUserAdminRequest.toDto(id);
         UpdateUserAdminResponse response = userService.updateUserAdmin(dto);
         return ResponseEntity.ok(CommonResponse.success(response));
     }

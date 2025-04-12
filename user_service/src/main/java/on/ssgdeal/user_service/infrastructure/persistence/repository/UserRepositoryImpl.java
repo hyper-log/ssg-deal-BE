@@ -2,7 +2,7 @@ package on.ssgdeal.user_service.infrastructure.persistence.repository;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import on.ssgdeal.user_service.application.dto.SearchUserDto;
+import on.ssgdeal.user_service.application.dto.user.SearchUserRequestDto;
 import on.ssgdeal.user_service.domain.entity.User;
 import on.ssgdeal.user_service.domain.repository.UserRepository;
 import on.ssgdeal.user_service.domain.vo.SlackEmail;
@@ -35,7 +35,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Page<User> searchUser(SearchUserDto requestDto) {
+    public Page<User> searchUser(SearchUserRequestDto requestDto) {
         return userQueryRepository.searchUser(requestDto);
     }
 

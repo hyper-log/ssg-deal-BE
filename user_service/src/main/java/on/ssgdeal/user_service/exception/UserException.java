@@ -59,4 +59,10 @@ public class UserException extends CustomException {
         }
     }
 
+    public static class UserNicknameIsNullException extends UserException {
+
+        public UserNicknameIsNullException() {
+            super(UserExceptionCode.USER_NICKNAME_IS_NULL);
+        }
+    }
 }

@@ -6,20 +6,21 @@ import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.common.auth.passport.Passport;
 import on.ssgdeal.common.auth.passport.PassportUtil;
-import on.ssgdeal.user_service.application.dto.CreateUserDto;
-import on.ssgdeal.user_service.application.dto.GetSlackEmailByIdResponseDto;
-import on.ssgdeal.user_service.application.dto.SearchUserDto;
-import on.ssgdeal.user_service.application.dto.UpdateUserAdminDto;
-import on.ssgdeal.user_service.application.dto.UpdateUserDto;
+import on.ssgdeal.user_service.application.dto.user.CreateUserRequestDto;
+import on.ssgdeal.user_service.application.dto.user.SearchUserRequestDto;
+import on.ssgdeal.user_service.application.dto.user.UpdateUserAdminRequestDto;
+import on.ssgdeal.user_service.application.dto.user.UpdateUserRequestDto;
 import on.ssgdeal.user_service.domain.entity.User;
 import on.ssgdeal.user_service.domain.repository.UserRepository;
 import on.ssgdeal.user_service.domain.util.AuditFieldUpdater;
+import on.ssgdeal.user_service.domain.vo.SlackEmail;
 import on.ssgdeal.user_service.exception.UserException;
 import on.ssgdeal.user_service.exception.UserException.UserNotFoundException;
-import on.ssgdeal.user_service.presentation.external.dto.CreateUserResponse;
-import on.ssgdeal.user_service.presentation.external.dto.SearchUserResponse;
-import on.ssgdeal.user_service.presentation.external.dto.UpdateUserAdminResponse;
-import on.ssgdeal.user_service.presentation.external.dto.UpdateUserResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.CreateUserResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.FindSlackEmailByIdResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.SearchUserResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.UpdateUserAdminResponse;
+import on.ssgdeal.user_service.presentation.external.dto.user.UpdateUserResponse;
 import on.ssgdeal.user_service.presentation.internal.dto.FindByIdUserResponse;
 import on.ssgdeal.user_service.presentation.internal.dto.FindMyUserResponse;
 import org.springframework.data.domain.Page;
@@ -34,15 +35,29 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PassportUtil passportUtil;
 
+    private static void dtoNullValidate(CreateUserRequestDto dto)
+        throws UserException.UserNicknameIsNullException {
+        if (dto.nickname() == null || dto.nickname().isEmpty()) {
+            throw new UserException.UserNicknameIsNullException();
+        }
+
+        if (dto.slackEmail() == null || dto.slackEmail().isEmpty()) {
+            throw new UserException.UserSlackEmailIsNullException();
+        }
+    }
 
     @Override
     @Transactional
     public CreateUserResponse createUser(
-        CreateUserDto dto
+        CreateUserRequestDto dto
     ) {
-        if (userRepository.existsBySlackEmail(dto.slackEmail())) {
+
+        dtoNullValidate(dto);
+
+        if (userRepository.existsBySlackEmail(SlackEmail.valueOf(dto.slackEmail()))) {
             throw new UserException.UserSlackEmailAlreadyExistsException();
         }
+
         User user = User.create(dto);
 
         User savedUser = userRepository.save(user);
@@ -81,7 +96,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageDto<SearchUserResponse> searchUser(SearchUserDto dto) {
+    public PageDto<SearchUserResponse> searchUser(SearchUserRequestDto dto) {
         Page<User> users = userRepository.searchUser(dto);
         Page<SearchUserResponse> responsePage = users.map(SearchUserResponse::from);
         return PageDto.from(responsePage);
@@ -89,7 +104,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UpdateUserResponse updateUser(UpdateUserDto dto, HttpServletRequest request) {
+    public UpdateUserResponse updateUser(UpdateUserRequestDto dto, HttpServletRequest request) {
         Passport passport = passportUtil.getPassportBy(request);
 
         if (userRepository.existsBySlackEmail(dto.slackEmail())) {
@@ -109,12 +124,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UpdateUserAdminResponse updateUserAdmin(
-        UpdateUserAdminDto dto
+        UpdateUserAdminRequestDto dto
     ) {
         if (userRepository.existsBySlackEmail(dto.slackEmail())) {
             throw new UserException.UserSlackEmailAlreadyExistsException();
         }
-        
+
         User user = findByIdOrElseThrow(dto.userId());
 
         user.updateNickname(dto.nickname());
@@ -125,11 +140,11 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public GetSlackEmailByIdResponseDto getSlackEmailById(
+    public FindSlackEmailByIdResponse getSlackEmailById(
         Long id
     ) {
         User user = findByIdOrElseThrow(id);
-        return GetSlackEmailByIdResponseDto.from(user);
+        return FindSlackEmailByIdResponse.from(user);
     }
 
     private User findByIdOrElseThrow(Long id) {

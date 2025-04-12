@@ -8,14 +8,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import on.ssgdeal.common.auth.enums.AuthRole;
 import on.ssgdeal.common.auth.passport.Passport;
 import on.ssgdeal.common.auth.passport.PassportUtil;
-import on.ssgdeal.user_service.application.dto.UpdateUserDto;
+import on.ssgdeal.user_service.application.dto.user.UpdateUserRequestDto;
 import on.ssgdeal.user_service.domain.entity.User;
 import on.ssgdeal.user_service.domain.repository.UserRepository;
 import on.ssgdeal.user_service.domain.vo.SlackEmail;
 import on.ssgdeal.user_service.exception.UserException.UserNotFoundException;
 import on.ssgdeal.user_service.exception.UserException.UserSlackEmailAlreadyExistsException;
-import on.ssgdeal.user_service.presentation.external.dto.CreateUserRequest;
-import on.ssgdeal.user_service.presentation.external.dto.UpdateUserAdminRequest;
+import on.ssgdeal.user_service.presentation.external.dto.user.CreateUserRequest;
+import on.ssgdeal.user_service.presentation.external.dto.user.UpdateUserAdminRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -296,7 +296,7 @@ class UserServiceImplTest {
                 // given
                 var saved = userService.createUser(
                     new CreateUserRequest("old", "old@ssg.com").toDto());
-                var updateDto = new UpdateUserDto("newNick", new SlackEmail("new@ssg.com"));
+                var updateDto = new UpdateUserRequestDto("newNick", new SlackEmail("new@ssg.com"));
 
                 var mockRequest = new MockHttpServletRequest();
                 when(passportUtil

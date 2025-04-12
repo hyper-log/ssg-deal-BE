@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import on.ssgdeal.common.jpa.BaseEntity;
-import on.ssgdeal.user_service.application.dto.CreateUserDto;
+import on.ssgdeal.user_service.application.dto.user.CreateUserRequestDto;
 import on.ssgdeal.user_service.domain.vo.SlackEmail;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -33,10 +33,10 @@ public class User extends BaseEntity {
     private String nickname;
     private SlackEmail slackEmail;
 
-    public static User create(CreateUserDto dto) {
+    public static User create(CreateUserRequestDto dto) {
         return User.builder()
             .nickname(dto.nickname())
-            .slackEmail(dto.slackEmail())
+            .slackEmail(SlackEmail.valueOf(dto.slackEmail()))
             .build();
     }
 
