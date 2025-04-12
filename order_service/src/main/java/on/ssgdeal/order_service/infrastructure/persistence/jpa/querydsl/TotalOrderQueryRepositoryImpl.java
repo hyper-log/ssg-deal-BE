@@ -11,6 +11,7 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,17 @@ import org.springframework.stereotype.Repository;
 public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository {
 
     private final JPAQueryFactory queryFactory;
+
+    private static List<TotalOrderStatus> getTotalOrderStatuses() {
+        List<TotalOrderStatus> excludedStatuses = List.of(
+            TotalOrderStatus.FAILED,
+            TotalOrderStatus.EXPIRED
+        );
+
+        return Arrays.stream(TotalOrderStatus.values())
+            .filter(status -> !excludedStatuses.contains(status))
+            .toList();
+    }
 
     @Override
     public void paymentSuccess(TotalOrder requestTotalOrder,
@@ -87,7 +99,6 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
             .fetchOne();
     }
 
-
     private List<TotalOrder> getTotalOrder(GetTotalOrdersUserInfoDto getTotalOrdersUserInfoDto,
         Pageable pageable, BooleanBuilder totalOrderFilter) {
         OrderSpecifier<?>[] orderSpecifiers = getOrderSpecifiers(pageable);
@@ -131,14 +142,20 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
 
     private BooleanBuilder getTotalOrderFilter(GetTotalOrdersUserInfoDto dto) {
         BooleanBuilder builder = new BooleanBuilder();
+        List<TotalOrderStatus> targetStatuses = getTotalOrderStatuses();
+
         builder.and(totalOrder.createdBy.eq(dto.userId()));
+        builder.and(totalOrder.status.in(targetStatuses));
         return builder;
     }
 
     private BooleanBuilder getTotalOrderDetailFilter(GetTotalOrderDetailDto dto) {
         BooleanBuilder builder = new BooleanBuilder();
+        List<TotalOrderStatus> targetStatuses = getTotalOrderStatuses();
+
         builder.and(totalOrder.createdBy.eq(dto.userId()));
         builder.and(totalOrder.id.eq(dto.totalOrderId()));
+        builder.and(totalOrder.status.in(targetStatuses));
         return builder;
     }
 
