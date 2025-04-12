@@ -6,9 +6,11 @@ import on.ssgdeal.payment_service.application.service.dto.response.OrderPaymentC
 import on.ssgdeal.payment_service.application.service.dto.response.OrderPaymentResponseDto;
 import on.ssgdeal.payment_service.domain.entity.Payment;
 import on.ssgdeal.payment_service.domain.repository.PaymentRepository;
+import on.ssgdeal.payment_service.exception.PaymentException;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentCancelException;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentConfirmException;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentNotFoundException;
+import on.ssgdeal.payment_service.exception.PaymentExceptionCode;
 import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.PaymentClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +22,17 @@ public class PaymentProcessorServiceImpl implements PaymentProcessorService {
     private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
     private final PaymentClient paymentClient;
+    private final OrderService orderService;
 
     @Override
     @Transactional
     public OrderPaymentResponseDto orderPayment(OrderPaymentRequestDto requestDto) {
-        // TODO: total order id 검증
+        validTotalOrderId(requestDto.totalOrderId());
+
         Payment savedPayment = paymentService.savePayment(requestDto);
         Payment managedPayment = paymentRepository.findById(savedPayment.getId())
             .orElseThrow(PaymentNotFoundException::new);
+
         try {
             final var responseDto = paymentClient.confirmPayment(
                 requestDto.toPaymentRequestDto(generateOrderId(requestDto.totalOrderId())));
@@ -42,6 +47,8 @@ public class PaymentProcessorServiceImpl implements PaymentProcessorService {
     @Override
     @Transactional
     public OrderPaymentCancelResponseDto orderPaymentCancel(final Long totalOrderId) {
+        validTotalOrderId(totalOrderId);
+
         Payment payment = paymentService.getPaymentByTotalOrderId(totalOrderId);
 
         try {
@@ -55,5 +62,11 @@ public class PaymentProcessorServiceImpl implements PaymentProcessorService {
 
     private String generateOrderId(Long internalOrderId) {
         return "ORD-" + String.format("%06d", internalOrderId);
+    }
+
+    protected void validTotalOrderId(final Long totalOrderId) {
+        if (!orderService.getValidTotalOrderId(totalOrderId).totalOrderExists()) {
+            throw new PaymentException(PaymentExceptionCode.TOTAL_ORDER_ID_NOT_FOUND);
+        }
     }
 }
