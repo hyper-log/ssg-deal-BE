@@ -7,6 +7,7 @@ import on.ssgdeal.promotion_service.domain.enums.PromotionStatus;
 import on.ssgdeal.promotion_service.domain.vo.PromotionContentImageUrl;
 import on.ssgdeal.promotion_service.domain.vo.PromotionPreviewUrl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,10 +40,10 @@ public class Promotion extends BaseEntity {
     private PromotionStatus status;
 
     @Column(name = "start_promotion_date", nullable = false)
-    private LocalDateTime startPromotionDate;
+    private LocalDate startPromotionDate;
 
     @Column(name = "end_promotion_date", nullable = false)
-    private LocalDateTime endPromotionDate;
+    private LocalDate endPromotionDate;
 
     @OneToOne(mappedBy = "promotion")
     private Company company;
