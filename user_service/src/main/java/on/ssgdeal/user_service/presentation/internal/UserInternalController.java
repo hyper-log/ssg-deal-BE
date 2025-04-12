@@ -1,18 +1,13 @@
 package on.ssgdeal.user_service.presentation.internal;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
-import on.ssgdeal.user_service.application.dto.destination.ValidateDestinationsRequestDto;
 import on.ssgdeal.user_service.application.dto.user.CreateUserRequestDto;
-import on.ssgdeal.user_service.application.service.DestinationService;
 import on.ssgdeal.user_service.application.service.UserService;
 import on.ssgdeal.user_service.presentation.external.dto.user.CreateUserRequest;
 import on.ssgdeal.user_service.presentation.external.dto.user.CreateUserResponse;
 import on.ssgdeal.user_service.presentation.internal.dto.FindByIdUserResponse;
-import on.ssgdeal.user_service.presentation.internal.dto.ValidateDestinationsRequest;
-import on.ssgdeal.user_service.presentation.internal.dto.ValidateDestinationsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserInternalController {
 
     private final UserService userService;
-    private final DestinationService destinationService;
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<FindByIdUserResponse>> findUserById(
@@ -56,17 +50,6 @@ public class UserInternalController {
         userService.withdrawUserByUserId(id);
 
         return ResponseEntity.ok(CommonResponse.success());
-    }
-
-    @PostMapping("/validations/deliveries")
-    public ResponseEntity<CommonResponse<ValidateDestinationsResponse>> validateMyDestinations(
-        HttpServletRequest httpServletRequest,
-        @RequestBody ValidateDestinationsRequest request
-    ) {
-        ValidateDestinationsRequestDto dto = request.toDto();
-        var response = destinationService.validateMyDestinations(httpServletRequest, dto);
-
-        return ResponseEntity.ok(CommonResponse.success(response));
     }
 
 }
