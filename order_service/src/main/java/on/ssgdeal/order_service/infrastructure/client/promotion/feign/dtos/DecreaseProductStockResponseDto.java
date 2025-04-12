@@ -1,4 +1,4 @@
-package on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto;
+package on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos;
 
 public record DecreaseProductStockResponseDto(Long productId, Long optionId,
                                               Long decreaseStockAmount) {

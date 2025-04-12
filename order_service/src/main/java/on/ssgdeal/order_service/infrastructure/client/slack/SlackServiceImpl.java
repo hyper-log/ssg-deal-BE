@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.order_service.application.service.SlackService;
 import on.ssgdeal.order_service.infrastructure.client.slack.feign.SlackServiceFeignClient;
-import on.ssgdeal.order_service.infrastructure.client.slack.feign.dto.OrderCompleteSendSlackRequestDto;
-import on.ssgdeal.order_service.infrastructure.client.slack.feign.dto.OrderCompleteSendSlackResponseDto;
+import on.ssgdeal.order_service.infrastructure.client.slack.feign.dtos.OrderCompleteSendSlackRequestDto;
+import on.ssgdeal.order_service.infrastructure.client.slack.feign.dtos.OrderCompleteSendSlackResponseDto;
 import org.springframework.stereotype.Service;
 
 @Service

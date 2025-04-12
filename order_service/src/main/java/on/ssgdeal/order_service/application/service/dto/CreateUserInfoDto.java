@@ -1,6 +1,6 @@
 package on.ssgdeal.order_service.application.service.dto;
 
-import on.ssgdeal.order_service.infrastructure.client.user.feign.dto.ValidDestinationResponseDto;
+import on.ssgdeal.order_service.infrastructure.client.user.feign.dtos.ValidDestinationResponseDto;
 
 public record CreateUserInfoDto(
     Long userId,

@@ -1,4 +1,4 @@
-package on.ssgdeal.order_service.infrastructure.client.user.feign.dto;
+package on.ssgdeal.order_service.infrastructure.client.user.feign.dtos;
 
 public record ValidDestinationRequestDto(Long destinationId) {
 

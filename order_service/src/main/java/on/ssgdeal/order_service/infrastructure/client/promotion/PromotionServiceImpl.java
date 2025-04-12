@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.order_service.application.service.PromotionService;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.PromotionServiceFeignClient;
-import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.DecreaseProductStockRequestDto;
-import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.DecreaseProductStockResponseDto;
-import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.GetProductInfoDto;
-import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.GetProductInfoRequestDto;
-import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.InCreaseProductStockRequestDto;
-import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.InCreaseProductStockResponseDto;
+import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.DecreaseProductStockRequestDto;
+import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.DecreaseProductStockResponseDto;
+import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.GetProductInfoDto;
+import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.GetProductInfoRequestDto;
+import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.InCreaseProductStockRequestDto;
+import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.InCreaseProductStockResponseDto;
 import org.springframework.stereotype.Service;
 
 @Service

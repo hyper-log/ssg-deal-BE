@@ -1,4 +1,4 @@
-package on.ssgdeal.order_service.infrastructure.client.slack.dto;
+package on.ssgdeal.order_service.infrastructure.client.slack.dtos;
 
 import java.time.LocalDate;
 

@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.order_service.application.service.UserService;
 import on.ssgdeal.order_service.infrastructure.client.user.feign.UserServiceFeignClient;
-import on.ssgdeal.order_service.infrastructure.client.user.feign.dto.ValidDestinationRequestDto;
-import on.ssgdeal.order_service.infrastructure.client.user.feign.dto.ValidDestinationResponseDto;
+import on.ssgdeal.order_service.infrastructure.client.user.feign.dtos.ValidDestinationRequestDto;
+import on.ssgdeal.order_service.infrastructure.client.user.feign.dtos.ValidDestinationResponseDto;
 import org.springframework.stereotype.Service;
 
 @Service

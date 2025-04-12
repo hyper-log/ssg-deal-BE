@@ -1,6 +1,6 @@
 package on.ssgdeal.order_service.domain.entity.dtos;
 
-import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dto.GetProductInfoDto.CompanyProduct;
+import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.GetProductInfoDto.CompanyProduct;
 
 public record CreateOrderProductDto(Long productId, String productName, String previewUrl,
                                     Long originalPrice, Long promotionPrice, Long optionId,
