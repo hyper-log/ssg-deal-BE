@@ -1,10 +1,8 @@
 package on.ssgdeal.order_service.application.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.application.dto.PageDto;
@@ -57,6 +55,7 @@ import on.ssgdeal.order_service.infrastructure.client.user.feign.dtos.ValidDesti
 import on.ssgdeal.order_service.infrastructure.client.user.feign.dtos.ValidDestinationResponseDto;
 import on.ssgdeal.order_service.presentation.external.dto.CreateOrderResponse;
 import on.ssgdeal.order_service.presentation.internal.dto.ValidTotalOrderResponse;
+import on.ssgdeal.order_service.util.OrderNumberGenerator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -76,6 +75,7 @@ public class OrderServiceImpl implements OrderService {
     private final SlackService slackService;
     private final PaymentService paymentService;
     private final CartService cartService;
+    private final OrderNumberGenerator orderNumberGenerator;
 
     @Override
     @Transactional
@@ -383,11 +383,8 @@ public class OrderServiceImpl implements OrderService {
         return orderDtos.stream().mapToLong(CreateOrderDto::orderTotalPrice).sum();
     }
 
-    //todo: 주문번호 저장 로직 변경 -> 현재 랜덤 번호 부여, 시퀀스로 변환 필요.
     private String getTotalOrderNumber() {
-        String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-        String randomPart = String.format("%04d", new Random().nextInt(10000));
-        return datePart + randomPart;
+        return orderNumberGenerator.generateOrderNumber();
     }
 
     private GetProductInfoDto getGetProductInfoAndStockDecreaseResponseDto(
