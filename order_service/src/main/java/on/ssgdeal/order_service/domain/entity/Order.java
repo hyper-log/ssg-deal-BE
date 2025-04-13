@@ -21,6 +21,7 @@ import on.ssgdeal.common.jpa.BaseEntity;
 import on.ssgdeal.order_service.domain.entity.dtos.CreateOrderDto;
 import on.ssgdeal.order_service.domain.enums.OrderStatus;
 import on.ssgdeal.order_service.domain.vo.Price;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter
@@ -47,6 +48,7 @@ public class Order extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @BatchSize(size = 100)
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
     public static List<Order> create(TotalOrder totalOrder, List<CreateOrderDto> createOrderDto) {

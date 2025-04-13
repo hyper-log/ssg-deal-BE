@@ -194,7 +194,8 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
             .selectDistinct(totalOrder)
             .from(totalOrder)
             .join(totalOrder.orders, order).fetchJoin()
-            .join(order.orderProducts, orderProduct).fetchJoin()
+            .join(order.orderProducts, orderProduct)
+            .join(totalOrder.orderer, orderer).fetchJoin()
             .where(totalOrder.id.in(totalOrderIds))
             .fetch();
     }
