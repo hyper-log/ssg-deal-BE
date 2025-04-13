@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import on.ssgdeal.cart_service.application.service.dto.UpdateCartProductDto;
+import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.UpdateCartProductDto;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
 import on.ssgdeal.cart_service.domain.repository.CartRepository;
 import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.AddCartProductDto;

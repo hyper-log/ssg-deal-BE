@@ -3,7 +3,7 @@ package on.ssgdeal.cart_service.application.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.cart_service.application.service.dto.AddCartProductRequestDto;
-import on.ssgdeal.cart_service.application.service.dto.UpdateCartProductDto;
+import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.UpdateCartProductDto;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
 import on.ssgdeal.cart_service.domain.repository.CartRepository;
 import on.ssgdeal.cart_service.infrastructure.persistence.generator.RedisKeyGenerator;

@@ -3,7 +3,7 @@ package on.ssgdeal.cart_service.infrastructure.persistence.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
-import on.ssgdeal.cart_service.application.service.dto.UpdateCartProductDto;
+import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.UpdateCartProductDto;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
 import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.AddCartProductDto;
 import org.junit.jupiter.api.AfterEach;

@@ -1,4 +1,4 @@
-package on.ssgdeal.cart_service.application.service.dto;
+package on.ssgdeal.cart_service.infrastructure.persistence.repository.dto;
 
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
 
