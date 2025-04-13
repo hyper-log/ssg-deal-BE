@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum CartExceptionCode implements ExceptionCode {
 
+    CART_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니 상품을 찾을 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

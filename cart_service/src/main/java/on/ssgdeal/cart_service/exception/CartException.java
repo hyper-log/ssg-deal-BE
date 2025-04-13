@@ -7,4 +7,10 @@ public class CartException extends CustomException {
     public CartException(CartExceptionCode e) {
         super(e);
     }
+
+    public static class CartProductNotFoundException extends CustomException {
+        public CartProductNotFoundException() {
+            super(CartExceptionCode.CART_PRODUCT_NOT_FOUND);
+        }
+    }
 }
