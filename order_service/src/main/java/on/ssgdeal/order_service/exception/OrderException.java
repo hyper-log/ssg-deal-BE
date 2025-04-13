@@ -106,4 +106,11 @@ public class OrderException extends CustomException {
             super(OrderExceptionCode.ORDER_NOT_FOUND_ORDER);
         }
     }
+
+    public static class OrderAlreadyCancelException extends OrderException {
+
+        public OrderAlreadyCancelException() {
+            super(OrderExceptionCode.ORDER_ALREADY_CANCEL);
+        }
+    }
 }

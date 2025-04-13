@@ -35,6 +35,7 @@ import on.ssgdeal.order_service.domain.entity.dtos.mapper.TotalOrderEntityLayerM
 import on.ssgdeal.order_service.domain.enums.OrderStatus;
 import on.ssgdeal.order_service.domain.enums.TotalOrderStatus;
 import on.ssgdeal.order_service.domain.repository.TotalOrderRepository;
+import on.ssgdeal.order_service.exception.OrderException.OrderAlreadyCancelException;
 import on.ssgdeal.order_service.exception.OrderException.OrderNotCancelException;
 import on.ssgdeal.order_service.exception.OrderException.OrderNotFoundTotalOrderException;
 import on.ssgdeal.order_service.exception.OrderException.OrderNotOrdererException;
@@ -234,6 +235,10 @@ public class OrderServiceImpl implements OrderService {
     public CancelOrderResponseDto cancelOrder(CancelOrderRequestDto request) {
         TotalOrder totalOrder = totalOrderRepository.findOrderForCancel(
             request.totalOrderId(), request.orderId());
+        if (totalOrder.getStatus().equals(TotalOrderStatus.CANCELED)
+            || totalOrder.cancelAlreadyOrder(request.orderId())) {
+            throw new OrderAlreadyCancelException();
+        }
         totalOrder.cancelSpecificOrder(request.orderId());
         totalOrder.updateCancelTotalPrice(
             totalOrder.getOrders().get(0).getPrice().getValue());

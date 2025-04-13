@@ -2,6 +2,8 @@ package on.ssgdeal.order_service.domain.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,6 +44,8 @@ public class Order extends BaseEntity {
     private TotalOrder totalOrder;
 
     private Price price;
+
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
     private Long companyId;
     private String companyName;

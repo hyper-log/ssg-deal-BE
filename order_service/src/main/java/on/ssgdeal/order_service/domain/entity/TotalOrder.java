@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import on.ssgdeal.common.jpa.BaseEntity;
 import on.ssgdeal.order_service.domain.entity.dtos.CreateTotalOrderDto;
 import on.ssgdeal.order_service.domain.entity.dtos.UpdateCancelOrderSuccessDto;
+import on.ssgdeal.order_service.domain.enums.OrderStatus;
 import on.ssgdeal.order_service.domain.enums.TotalOrderStatus;
 import on.ssgdeal.order_service.domain.vo.TotalOrderNumber;
 import on.ssgdeal.order_service.domain.vo.TotalPrice;
@@ -128,5 +129,13 @@ public class TotalOrder extends BaseEntity {
             .orElseThrow(OrderNotFoundOrderException::new);
 
         order.cancel();
+    }
+
+    public Boolean cancelAlreadyOrder(Long orderId) {
+        Order order = this.orders.stream()
+            .filter(o -> o.getId().equals(orderId))
+            .findFirst()
+            .orElseThrow(OrderNotFoundOrderException::new);
+        return order.getStatus().equals(OrderStatus.CANCELED);
     }
 }

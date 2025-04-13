@@ -22,7 +22,7 @@ public enum OrderExceptionCode implements ExceptionCode {
     ORDER_NOT_CANCEL(HttpStatus.BAD_REQUEST, "취소될 수 없는 주문 상태입니다."),
     ORDER_PAYMENTS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "현재 주문을 취소할 수 없습니다."),
     ORDER_NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "주문 데이터를 찾을 수 없습니다."),
-    ;
+    ORDER_ALREADY_CANCEL(HttpStatus.BAD_REQUEST, "이미 취소된 주문입니다.");;
 
     private final HttpStatus httpStatus;
     private final String message;
