@@ -79,7 +79,7 @@ INSERT INTO product (
 ) VALUES
         (1, '플로럴 봄 원피스', 55000, 39000, 'https://example.com/dress-preview.jpg', 'https://example.com/dress-detail.jpg', '화사한 봄 원피스입니다.', 1, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
         (2, '라이트 데님 자켓', 72000, 52000, 'https://example.com/jacket-preview.jpg', 'https://example.com/jacket-detail.jpg', '간절기용 가벼운 자켓.', 1, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
-        (3, '브런치 세트A', 18000, 15000, 'https://example.com/brunch-preview.jpg', 'https://example.com/brunch-detail.jpg', '샐러드 + 샌드위치 + 커피', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (3, '디저트 세트', 12000, 22000, 'https://example.com/dessert-detail2.jpg', 'https://example.com/dessert-detail2.jpg', '맛있는 디저트.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
         (4, '디저트 플레이트', 12000, 9800, 'https://example.com/dessert-preview.jpg', 'https://example.com/dessert-detail.jpg', '다양한 디저트 구성.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
         (5, '촉촉한 수분크림', 30000, 21000, 'https://example.com/cream-preview.jpg', 'https://example.com/cream-detail.jpg', '건조한 피부를 위한 수분크림.', 3, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
         (6, '립 틴트 3종 세트', 27000, 18900, 'https://example.com/tint-preview.jpg', 'https://example.com/tint-detail.jpg', '데일리용 틴트 세트.', 3, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
@@ -92,9 +92,24 @@ INSERT INTO product (
         (13, '빈티지 유리컵 세트', 24000, 19000, 'https://example.com/glass-preview.jpg', 'https://example.com/glass-detail.jpg', '빈티지 감성 유리컵 4개 세트.', 7, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
         (14, '마카롱 색감 수저받침', 4200, 3500, 'https://example.com/spoon-rest-preview.jpg', 'https://example.com/spoon-rest-detail.jpg', '알록달록 감성 수저받침.', 8, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
         (15, '아로마 디퓨저', 19000, 15500, 'https://example.com/diffuser-preview.jpg', 'https://example.com/diffuser-detail.jpg', '은은한 향기의 디퓨저.', 9, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
-        (16, '라탄 트레이', 17000, 13000, 'https://example.com/rattan-tray-preview.jpg', 'https://example.com/rattan-tray-detail.jpg', '자연 감성의 라탄 트레이.', 10, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false);
+        (16, '라탄 트레이', 17000, 13000, 'https://example.com/rattan-tray-preview.jpg', 'https://example.com/rattan-tray-detail.jpg', '자연 감성의 라탄 트레이.', 10, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (17, '프렌치 토스트 세트', 15000, 25000, 'https://example.com/french-toast.jpg', 'https://example.com/french-toast-detail.jpg', '달콤한 프렌치 토스트와 음료 세트.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (18, '에그 베네딕트', 14000, 23000, 'https://example.com/egg-benedict.jpg', 'https://example.com/egg-benedict-detail.jpg', '신선한 재료로 만든 에그 베네딕트.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (19, '브런치 플래터', 18000, 28000, 'https://example.com/brunch-platter.jpg', 'https://example.com/brunch-platter-detail.jpg', '소시지, 베이컨, 샐러드가 어우러진 브런치 세트.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (20, '아보카도 오픈 샌드위치', 13000, 21000, 'https://example.com/avocado-toast.jpg', 'https://example.com/avocado-toast-detail.jpg', '고소한 아보카도와 토마토의 조화.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (21, '리코타 치즈 샐러드', 11000, 19000, 'https://example.com/ricotta-salad.jpg', 'https://example.com/ricotta-salad-detail.jpg', '신선한 채소와 리코타 치즈의 환상 궁합.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (22, '수제 요거트 볼', 9000, 15000, 'https://example.com/yogurt-bowl.jpg', 'https://example.com/yogurt-bowl-detail.jpg', '수제 요거트와 그래놀라, 과일 토핑.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (23, '허니버터 팬케이크', 12000, 20000, 'https://example.com/honey-pancake.jpg', 'https://example.com/honey-pancake-detail.jpg', '달콤한 허니버터와 부드러운 팬케이크.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (24, '크로크 마담', 16000, 25000, 'https://example.com/croque-madame.jpg', 'https://example.com/croque-madame-detail.jpg', '고소한 치즈와 햄이 듬뿍.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (25, '아메리칸 브렉퍼스트', 17000, 27000, 'https://example.com/american-breakfast.jpg', 'https://example.com/american-breakfast-detail.jpg', '풍성한 아침 한상 차림.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (26, '트러플 머쉬룸 리조또', 18000, 28000, 'https://example.com/truffle-risotto.jpg', 'https://example.com/truffle-risotto-detail.jpg', '트러플 향 가득 머쉬룸 리조또.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (27, '디저트 세트', 12000, 22000, 'https://example.com/dessert-detail2.jpg', 'https://example.com/dessert-detail2.jpg', '다양한 디저트와 음료 세트.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (28, '수제 스콘과 잼', 8000, 14000, 'https://example.com/scone-jam.jpg', 'https://example.com/scone-jam-detail.jpg', '갓 구운 스콘과 달콤한 잼.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (29, '바질 페스토 파스타', 15000, 25000, 'https://example.com/pesto-pasta.jpg', 'https://example.com/pesto-pasta-detail.jpg', '상큼한 바질 페스토의 풍미.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false),
+        (30, '아이스 아메리카노', 5000, 9000, 'https://example.com/iced-americano.jpg', 'https://example.com/iced-americano-detail.jpg', '깔끔하고 시원한 커피.', 2, CURRENT_TIMESTAMP, 0, CURRENT_TIMESTAMP, 0, false);
 
-INSERT INTO product_option (
+
+        INSERT INTO product_option (
       id, product_id, option_name, extra_price, product_stock,
       created_at, created_by, updated_at, updated_by,
       is_deleted

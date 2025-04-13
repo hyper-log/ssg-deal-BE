@@ -18,4 +18,10 @@ public class PromotionException extends CustomException {
         }
     }
 
+    public static class PromotionNotInProgressException extends PromotionException {
+        public PromotionNotInProgressException() {
+            super(PromotionExceptionCode.PROMOTION_NOT_IN_PROGRESS);
+        }
+    }
+
 }
