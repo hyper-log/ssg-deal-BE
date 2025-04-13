@@ -9,13 +9,16 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.common.auth.enums.AuthRole;
 import on.ssgdeal.common.auth.passport.Passport;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
+import on.ssgdeal.order_service.application.service.dto.GetTotalOrdersResponseDto;
 import on.ssgdeal.order_service.application.service.dto.LoginUserInfoDto;
 import on.ssgdeal.order_service.application.service.dto.UpdateTotalOrderSuccessRequestDto;
 import on.ssgdeal.order_service.domain.entity.TotalOrder;
@@ -26,6 +29,7 @@ import on.ssgdeal.order_service.domain.enums.PaymentType;
 import on.ssgdeal.order_service.domain.enums.TotalOrderStatus;
 import on.ssgdeal.order_service.domain.repository.TotalOrderRepository;
 import on.ssgdeal.order_service.exception.OrderException;
+import on.ssgdeal.order_service.exception.OrderException.OrderNotFoundTotalOrderException;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.DecreaseProductStockResponseDto;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.GetProductInfoDto;
 import on.ssgdeal.order_service.infrastructure.client.slack.dtos.TotalOrderCompleteSendInfoDto;
@@ -33,40 +37,48 @@ import on.ssgdeal.order_service.infrastructure.client.slack.feign.dtos.OrderComp
 import on.ssgdeal.order_service.infrastructure.client.slack.feign.dtos.OrderCompleteSendSlackResponseDto;
 import on.ssgdeal.order_service.infrastructure.client.user.feign.dtos.ValidDestinationRequestDto;
 import on.ssgdeal.order_service.infrastructure.client.user.feign.dtos.ValidDestinationResponseDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@Slf4j
 @SpringBootTest
 @DisplayName("OrderServiceImpl 클래스의")
 class OrderServiceImplTest {
 
+    @MockitoBean
+    private AuditorAware<Long> auditorAware;
     @Autowired
     private OrderService orderService;
-
     @Autowired
     private OrderServiceImpl orderServiceImpl;
-
     @MockitoBean
     private PromotionService promotionService;
-
     @Autowired
     private TotalOrderRepository totalOrderRepository;
-
     @MockitoBean
     private UserService userService;
-
     @MockitoBean
     private SlackService slackService;
-
     @Autowired
     private TotalOrderEntityLayerMapper totalOrderEntityLayerMapper;
 
+    @BeforeEach
+    void setUp() {
+        Mockito.when(auditorAware.getCurrentAuditor()).thenReturn(Optional.of(999L));
+    }
+
     private LoginUserInfoDto createFakeLoginUserInfo() {
-        Passport passport = new Passport(1L, "제발 돼라", AuthRole.CONSUMER, "한나윤", "order@naver.com");
+        Passport passport = new Passport(999L, "제발 돼라", AuthRole.CONSUMER, "한나윤",
+            "order@naver.com");
         return LoginUserInfoDto.from(passport);
     }
 
@@ -138,15 +150,15 @@ class OrderServiceImplTest {
     }
 
     private UpdateTotalOrderSuccessRequestDto createFakeTotalOrderPaymentSuccess() {
-        return new UpdateTotalOrderSuccessRequestDto(3L, 1L, PaymentType.TOSS, PaymentMethod.CARD,
+        return new UpdateTotalOrderSuccessRequestDto(1L, 1L, PaymentType.TOSS, PaymentMethod.CARD,
             20000L,
-            Timestamp.valueOf(LocalDateTime.now()), "2");
+            LocalDateTime.now(), "2");
     }
 
     private UpdateTotalOrderSuccessRequestDto createFakeTotalOrderPaymentSuccessValid() {
-        return new UpdateTotalOrderSuccessRequestDto(1L, 1L, PaymentType.TOSS, PaymentMethod.CARD,
+        return new UpdateTotalOrderSuccessRequestDto(0L, 1L, PaymentType.TOSS, PaymentMethod.CARD,
             20000L,
-            Timestamp.valueOf(LocalDateTime.now()), "2");
+            LocalDateTime.now(), "2");
     }
 
     private OrderCompleteSendSlackRequestDto createFakerOrderCompleteSendSlackRequestDto(
@@ -309,7 +321,7 @@ class OrderServiceImplTest {
                 TotalOrder totalOrder = totalOrderRepository.findById(request.totalOrderId())
                     .orElseThrow(null);
 
-                assertThat(totalOrder.getStatus()).isEqualTo(TotalOrderStatus.EXPIRED);
+                assertThat(totalOrder.getStatus()).isEqualTo(TotalOrderStatus.PAID);
             }
         }
 
@@ -328,7 +340,37 @@ class OrderServiceImplTest {
                 //when & then
                 assertThatThrownBy(
                     () -> orderService.createTotalOrderPaymentSuccess(request, loginUserInfo))
-                    .isInstanceOf(OrderException.class);
+                    .isInstanceOf(OrderNotFoundTotalOrderException.class);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Describe: getTotalOrders 메서드는")
+    class getListTotalOrder {
+
+        @Nested
+        @DisplayName("Context: 들어온 유저와 일치했을 때")
+        class successTest {
+
+            @Test
+            @DisplayName("It: 유저의 주문 리스트를 반환한다. ")
+            void createOrderTest() throws Exception {
+
+                //given
+                var loginUserInfo = createFakeLoginUserInfo();
+                Pageable pageable = PageRequest.of(0, 10);
+
+                // when
+                PageDto<GetTotalOrdersResponseDto> result = orderService.getTotalOrders(
+                    loginUserInfo, pageable);
+
+                // then
+                assertThat(result).isNotNull();
+                assertThat(result.content()).hasSize(3);
+                assertThat(result.content().get(0).totalOrderId()).isEqualTo(1L);
+                assertThat(result.totalElements()).isEqualTo(3);
+                log.info(result.content().toString());
             }
         }
     }
