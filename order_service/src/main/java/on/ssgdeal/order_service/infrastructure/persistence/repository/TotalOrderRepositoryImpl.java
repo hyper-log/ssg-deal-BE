@@ -44,7 +44,7 @@ public class TotalOrderRepositoryImpl implements TotalOrderRepository {
     }
 
     @Override
-    public Optional<TotalOrder> getTotalOrderDetail(GetTotalOrderDetailDto getTotalOrderDetailDto) {
+    public TotalOrder getTotalOrderDetail(GetTotalOrderDetailDto getTotalOrderDetailDto) {
 
         return queryRepository.getTotalOrderDetail(getTotalOrderDetailDto);
     }
@@ -56,7 +56,7 @@ public class TotalOrderRepositoryImpl implements TotalOrderRepository {
 
 
     @Override
-    public Optional<TotalOrder> findTotalOrderForCancel(Long totalOrderId) {
+    public TotalOrder findTotalOrderForCancel(Long totalOrderId) {
         return queryRepository.findTotalOrderForCancel(totalOrderId);
     }
 
@@ -68,12 +68,12 @@ public class TotalOrderRepositoryImpl implements TotalOrderRepository {
     }
 
     @Override
-    public Optional<TotalOrder> findTotalOrderForFail(Long totalOrderId) {
+    public TotalOrder findTotalOrderForFail(Long totalOrderId) {
         return queryRepository.findTotalOrderForFail(totalOrderId);
     }
 
     @Override
-    public Optional<TotalOrder> findOrderForCancel(Long totalOrderId, Long orderId) {
+    public TotalOrder findOrderForCancel(Long totalOrderId, Long orderId) {
         return queryRepository.findOrderForCancel(totalOrderId, orderId);
     }
 

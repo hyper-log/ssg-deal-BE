@@ -181,8 +181,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("주문 상세 내용 요청");
         GetTotalOrderDetailDto getTotalOrderDetailDto = GetTotalOrderDetailDto.from(totalOrderId,
             loginUserInfo.userId());
-        TotalOrder totalOrder = totalOrderRepository.getTotalOrderDetail(getTotalOrderDetailDto)
-            .orElseThrow(OrderNotFoundTotalOrderException::new);
+        TotalOrder totalOrder = totalOrderRepository.getTotalOrderDetail(getTotalOrderDetailDto);
         return GetTotalOrderDetailResponseDto.toGetTotalOrderDetailResponseDto(totalOrder);
     }
 
@@ -195,8 +194,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public CancelTotalOrderResponseDto cancelTotalOrder(CancelTotalOrderRequestDto request) {
-        TotalOrder totalOrder = totalOrderRepository.findTotalOrderForCancel(request.orderId())
-            .orElseThrow(OrderNotFoundTotalOrderException::new);
+        TotalOrder totalOrder = totalOrderRepository.findTotalOrderForCancel(request.orderId());
 
         if (!totalOrder.getOrderer().getUserId().equals(request.loginUserInfo().userId())) {
             throw new OrderNotOrdererException();
@@ -226,8 +224,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void createTotalOrderPaymentFail(UpdateTotalOrderFailRequestDto requestDto) {
         TotalOrder totalOrder = totalOrderRepository.findTotalOrderForFail(
-                requestDto.totalOrderId())
-            .orElseThrow(OrderNotFoundTotalOrderException::new);
+            requestDto.totalOrderId());
         totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
         requestCancelTotalOrderIncreaseProduct(totalOrder);
     }
@@ -236,8 +233,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public CancelOrderResponseDto cancelOrder(CancelOrderRequestDto request) {
         TotalOrder totalOrder = totalOrderRepository.findOrderForCancel(
-                request.totalOrderId(), request.orderId())
-            .orElseThrow(OrderNotFoundTotalOrderException::new);
+            request.totalOrderId(), request.orderId());
         totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
         TotalOrder updateTotalOrder = getTotalOrderElseThrow(totalOrder.getId());
         updateTotalOrder.updateCancelTotalPrice(
@@ -251,8 +247,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void cancelOrderPaymentSuccess(UpdateCancelOrderSuccessRequestDto request) {
         TotalOrder totalOrder = totalOrderRepository.findTotalOrderForCancel(
-                request.totalOrderId())
-            .orElseThrow(OrderNotFoundTotalOrderException::new);
+            request.totalOrderId());
         var updateCancelOrderSuccessDto = totalOrderEntityLayerMapper.toUpdateCancelOrderSuccessDto(
             request);
         totalOrder.addCancelPayment(updateCancelOrderSuccessDto);

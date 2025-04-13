@@ -16,7 +16,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.pageable.enums.PageSortBy;
@@ -95,7 +94,7 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
     }
 
     @Override
-    public Optional<TotalOrder> getTotalOrderDetail(GetTotalOrderDetailDto getTotalOrderDetailDto) {
+    public TotalOrder getTotalOrderDetail(GetTotalOrderDetailDto getTotalOrderDetailDto) {
         BooleanBuilder totalOrderDetailFilter = getTotalOrderDetailFilter(getTotalOrderDetailDto);
 
         return getTotalOrderDetailInfo(totalOrderDetailFilter);
@@ -124,7 +123,7 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
     }
 
     @Override
-    public Optional<TotalOrder> findTotalOrderForCancel(Long totalOrderId) {
+    public TotalOrder findTotalOrderForCancel(Long totalOrderId) {
         List<TotalOrder> results = queryFactory
             .selectDistinct(totalOrder)
             .join(totalOrder.orders, order).fetchJoin()
@@ -135,11 +134,15 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
             )
             .fetch();
 
-        return Optional.ofNullable(results.get(0));
+        if (results.isEmpty()) {
+            throw new OrderNotFoundTotalOrderException();
+        }
+
+        return results.get(0);
     }
 
     @Override
-    public Optional<TotalOrder> findTotalOrderForFail(Long totalOrderId) {
+    public TotalOrder findTotalOrderForFail(Long totalOrderId) {
         List<TotalOrder> results = queryFactory
             .selectDistinct(totalOrder)
             .join(totalOrder.orders, order).fetchJoin()
@@ -150,11 +153,15 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
             )
             .fetch();
 
-        return Optional.ofNullable(results.get(0));
+        if (results.isEmpty()) {
+            throw new OrderNotFoundTotalOrderException();
+        }
+
+        return results.get(0);
     }
 
     @Override
-    public Optional<TotalOrder> findOrderForCancel(Long totalOrderId, Long orderId) {
+    public TotalOrder findOrderForCancel(Long totalOrderId, Long orderId) {
         List<TotalOrder> results = queryFactory
             .selectDistinct(totalOrder)
             .join(totalOrder.orders, order).on(order.id.eq(orderId)).fetchJoin()
@@ -163,10 +170,13 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
                 totalOrder.id.eq(totalOrderId)
             )
             .fetch();
-        return Optional.ofNullable(results.get(0));
+        if (results.isEmpty()) {
+            throw new OrderNotFoundTotalOrderException();
+        }
+        return results.get(0);
     }
 
-    public Optional<TotalOrder> getTotalOrderDetailInfo(BooleanBuilder totalOrderDetailFilter) {
+    public TotalOrder getTotalOrderDetailInfo(BooleanBuilder totalOrderDetailFilter) {
         List<TotalOrder> results = queryFactory
             .selectDistinct(totalOrder)
             .from(totalOrder)
@@ -179,7 +189,7 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
         if (results.isEmpty()) {
             throw new OrderNotFoundTotalOrderException();
         }
-        return Optional.ofNullable(results.get(0));
+        return results.get(0);
     }
 
     private List<TotalOrder> getTotalOrder(GetTotalOrdersUserInfoDto getTotalOrdersUserInfoDto,

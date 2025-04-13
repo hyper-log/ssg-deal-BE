@@ -20,15 +20,15 @@ public interface TotalOrderRepository {
     Page<TotalOrder> getTotalOrderList(
         GetTotalOrdersUserInfoDto getTotalOrdersUserInfoDto, Pageable pageable);
 
-    Optional<TotalOrder> getTotalOrderDetail(GetTotalOrderDetailDto getTotalOrderDetailDto);
+    TotalOrder getTotalOrderDetail(GetTotalOrderDetailDto getTotalOrderDetailDto);
 
     Boolean existsById(Long totalOrderId);
 
-    Optional<TotalOrder> findTotalOrderForCancel(Long totalOrderId);
+    TotalOrder findTotalOrderForCancel(Long totalOrderId);
 
     void cancelUpdateStatusTotalOrder(TotalOrder totalOrder);
 
-    Optional<TotalOrder> findTotalOrderForFail(Long totalOrderId);
+    TotalOrder findTotalOrderForFail(Long totalOrderId);
 
-    Optional<TotalOrder> findOrderForCancel(Long totalOrderId, Long orderId);
+    TotalOrder findOrderForCancel(Long totalOrderId, Long orderId);
 }
