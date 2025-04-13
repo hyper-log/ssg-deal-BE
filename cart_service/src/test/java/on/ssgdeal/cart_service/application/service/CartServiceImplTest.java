@@ -24,7 +24,7 @@ class CartServiceImplTest {
     private final CartService cartService;
 
     public CartServiceImplTest(
-        CartRepository cartRepository
+        @Autowired CartRepository cartRepository
     ) {
         this.cartService = new CartServiceImpl(
             cartRepository,
