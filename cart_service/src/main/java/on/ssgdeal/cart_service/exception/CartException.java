@@ -7,4 +7,10 @@ public class CartException extends CustomException {
     public CartException(CartExceptionCode e) {
         super(e);
     }
+
+    public static class NotEnoughStockException extends CartException {
+        public NotEnoughStockException() {
+            super(CartExceptionCode.NOT_ENOUGH_STOCK);
+        }
+    }
 }

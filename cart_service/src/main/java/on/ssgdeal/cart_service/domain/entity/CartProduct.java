@@ -32,4 +32,8 @@ public class CartProduct {
             ", quantity=" + quantity +
             '}';
     }
+
+    public void increaseQuantity(Long quantity) {
+        this.quantity += quantity;
+    }
 }
