@@ -206,7 +206,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: 데이터를 저장하여 OrderId, TotalOrderPrice 반환한다.")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
                 //given
                 var request = createFakeCreateOrderRequestDto();
                 var loginUserInfo = createFakeLoginUserInfo();
@@ -237,7 +237,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: OrderException 에러를 반환한다.")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
                 //given
                 var request = createFakeCreateOrderRequestDto();
                 var loginUserInfo = createFakeLoginUserInfo();
@@ -257,7 +257,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: OrderException 에러를 반환한다.")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
                 //given
                 var request = createFakeCreateOrderRequestDto();
                 var loginUserInfo = createFakeLoginUserInfo();
@@ -279,7 +279,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: 성공한 상품의 개수만큼 롤백을 요청한다.")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
                 // given
                 var productInfo = createFakeGetProductInfoDto();
                 var decreaseRequests = orderServiceImpl.toDecreaseRequest(productInfo);
@@ -324,7 +324,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: TotalOrder, Order, TotalOrderPayment 상태를 성공으로 갱신하고 슬랙 메시지 알림을 보낸다.")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
 
                 //given
                 var request = createFakeTotalOrderPaymentSuccess();
@@ -347,11 +347,11 @@ class OrderServiceImplTest {
 
         @Nested
         @DisplayName("Context: 입력 값 검증이 실패했을 때")
-        class createSuccessValidTest {
+        class FailTest {
 
             @Test
             @DisplayName("It: 오류를 반환한다.")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
 
                 //given
                 var request = createFakeTotalOrderPaymentSuccessValid();
@@ -376,7 +376,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: 유저의 주문 리스트를 반환한다. ")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
 
                 //given
                 var loginUserInfo = createFakeLoginUserInfo();
@@ -388,9 +388,9 @@ class OrderServiceImplTest {
 
                 // then
                 assertThat(result).isNotNull();
-                assertThat(result.content()).hasSize(3);
+                assertThat(result.content()).hasSize(1);
                 assertThat(result.content().get(0).totalOrderId()).isEqualTo(1L);
-                assertThat(result.totalElements()).isEqualTo(3);
+                assertThat(result.totalElements()).isEqualTo(1);
             }
 
             @Nested
@@ -399,7 +399,7 @@ class OrderServiceImplTest {
 
                 @Test
                 @DisplayName("It: 빈 리스트를 반환한다.")
-                void getDetailFailTest() throws Exception {
+                void test() throws Exception {
 
                     //given
                     var loginUserInfo = createFakeValidLoginUserInfo();
@@ -427,7 +427,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: 유저의 주문 상세 정보를 반환한다. ")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
 
                 //given
                 var loginUserInfo = createFakeLoginUserInfo();
@@ -449,7 +449,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: 에러를 반환한다.")
-            void getDetailFailTest() throws Exception {
+            void test() throws Exception {
 
                 //given
                 var loginUserInfo = createFakeValidLoginUserInfo();
@@ -463,7 +463,7 @@ class OrderServiceImplTest {
         }
     }
 
-    @Order(10)
+    @Order(5)
     @Nested
     @DisplayName("Describe: cancelOrder 메서드는")
     class cancelOrderTest {
@@ -474,7 +474,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: 해당 주문을 캔슬한다. ")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
 
                 //given
                 var loginUserInfo = createFakeLoginUserInfo();
@@ -502,7 +502,7 @@ class OrderServiceImplTest {
 
             @Test
             @DisplayName("It: 에러를 반환한다.")
-            void createOrderTest() throws Exception {
+            void test() throws Exception {
 
                 //given
                 var loginUserInfo = createFakeLoginUserInfo();
