@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.common.auth.enums.AuthRole;
 import on.ssgdeal.common.auth.passport.Passport;
+import on.ssgdeal.order_service.application.service.dto.CancelOrderRequestDto;
+import on.ssgdeal.order_service.application.service.dto.CancelOrderResponseDto;
 import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.GetTotalOrderDetailResponseDto;
 import on.ssgdeal.order_service.application.service.dto.GetTotalOrdersResponseDto;
@@ -30,7 +32,10 @@ import on.ssgdeal.order_service.domain.enums.PaymentType;
 import on.ssgdeal.order_service.domain.enums.TotalOrderStatus;
 import on.ssgdeal.order_service.domain.repository.TotalOrderRepository;
 import on.ssgdeal.order_service.exception.OrderException;
+import on.ssgdeal.order_service.exception.OrderException.OrderAlreadyCancelException;
 import on.ssgdeal.order_service.exception.OrderException.OrderNotFoundTotalOrderException;
+import on.ssgdeal.order_service.infrastructure.client.payment.feign.dtos.CancelOrderPaymentRequestDto;
+import on.ssgdeal.order_service.infrastructure.client.payment.feign.dtos.CancelOrderPaymentResponseDto;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.DecreaseProductStockResponseDto;
 import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.GetProductInfoDto;
 import on.ssgdeal.order_service.infrastructure.client.slack.dtos.TotalOrderCompleteSendInfoDto;
@@ -75,6 +80,8 @@ class OrderServiceImplTest {
     private SlackService slackService;
     @Autowired
     private TotalOrderEntityLayerMapper totalOrderEntityLayerMapper;
+    @MockitoBean
+    private PaymentService paymentService;
 
     @BeforeEach
     void setUp() {
@@ -82,7 +89,7 @@ class OrderServiceImplTest {
     }
 
     private LoginUserInfoDto createFakeLoginUserInfo() {
-        Passport passport = new Passport(999L, "제발 돼라", AuthRole.CONSUMER, "한나윤",
+        Passport passport = new Passport(999L, "실패 케이스", AuthRole.CONSUMER, "한나윤",
             "order@naver.com");
         return LoginUserInfoDto.from(passport);
     }
@@ -456,4 +463,64 @@ class OrderServiceImplTest {
         }
     }
 
+    @Order(10)
+    @Nested
+    @DisplayName("Describe: cancelOrder 메서드는")
+    class cancelOrderTest {
+
+        @Nested
+        @DisplayName("Context: 조건 만족(유저 일치, TotalOrder 상태가 주문 완료일 때) 상태면")
+        class successTest {
+
+            @Test
+            @DisplayName("It: 해당 주문을 캔슬한다. ")
+            void createOrderTest() throws Exception {
+
+                //given
+                var loginUserInfo = createFakeLoginUserInfo();
+                CancelOrderRequestDto request = CancelOrderRequestDto.from(1L, 1L, loginUserInfo);
+                CancelOrderPaymentResponseDto paymentResponse = new CancelOrderPaymentResponseDto(
+                    5L);
+
+                CancelOrderPaymentRequestDto cancelRequest = CancelOrderPaymentRequestDto.from(
+                    11000L);
+                given(paymentService.cancelOrderPayment(1L, cancelRequest))
+                    .willReturn(paymentResponse);
+
+                // when
+                CancelOrderResponseDto result = orderService.cancelOrder(request);
+
+                // then
+                assertThat(result).isNotNull();
+                assertThat(result.orderId()).isEqualTo(1L);
+            }
+        }
+
+        @Nested
+        @DisplayName("Context: 주문이 이미 취소된 상태면")
+        class failTest {
+
+            @Test
+            @DisplayName("It: 에러를 반환한다.")
+            void createOrderTest() throws Exception {
+
+                //given
+                var loginUserInfo = createFakeLoginUserInfo();
+                CancelOrderRequestDto request = CancelOrderRequestDto.from(1L, 1L,
+                    loginUserInfo);
+                CancelOrderPaymentResponseDto paymentResponse = new CancelOrderPaymentResponseDto(
+                    5L);
+
+                CancelOrderPaymentRequestDto cancelRequest = CancelOrderPaymentRequestDto.from(
+                    11000L);
+                given(paymentService.cancelOrderPayment(1L, cancelRequest))
+                    .willReturn(paymentResponse);
+
+                // when
+                assertThatThrownBy(
+                    () -> orderService.cancelOrder(request))
+                    .isInstanceOf(OrderAlreadyCancelException.class);
+            }
+        }
+    }
 }
