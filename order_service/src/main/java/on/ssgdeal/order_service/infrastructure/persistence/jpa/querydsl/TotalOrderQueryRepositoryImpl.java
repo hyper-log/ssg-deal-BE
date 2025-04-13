@@ -27,6 +27,7 @@ import on.ssgdeal.order_service.domain.entity.dtos.UpdateTotalOrderSuccessDto;
 import on.ssgdeal.order_service.domain.enums.OrderStatus;
 import on.ssgdeal.order_service.domain.enums.PaymentStatus;
 import on.ssgdeal.order_service.domain.enums.TotalOrderStatus;
+import on.ssgdeal.order_service.exception.OrderException.OrderNotFoundTotalOrderException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -175,6 +176,9 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
             .join(order.orderProducts, orderProduct)
             .where(totalOrderDetailFilter)
             .fetch();
+        if (results.isEmpty()) {
+            throw new OrderNotFoundTotalOrderException();
+        }
         return Optional.ofNullable(results.get(0));
     }
 
