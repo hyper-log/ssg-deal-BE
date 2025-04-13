@@ -77,4 +77,9 @@ public class TotalOrderRepositoryImpl implements TotalOrderRepository {
         return queryRepository.findOrderForCancel(totalOrderId, orderId);
     }
 
+    @Override
+    public TotalOrder findTotalOrderForCancelUpdate(Long totalOrderId) {
+        return queryRepository.findTotalOrderForCancelUpdate(totalOrderId);
+    }
+
 }

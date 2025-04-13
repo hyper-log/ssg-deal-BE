@@ -32,4 +32,5 @@ public interface TotalOrderRepository {
 
     TotalOrder findOrderForCancel(Long totalOrderId, Long orderId);
 
+    TotalOrder findTotalOrderForCancelUpdate(Long aLong);
 }

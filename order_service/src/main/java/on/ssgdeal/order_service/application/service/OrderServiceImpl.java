@@ -214,10 +214,11 @@ public class OrderServiceImpl implements OrderService {
         }
 
         totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
-        TotalOrder updateTotalOrder = getTotalOrderElseThrow(totalOrder.getId());
+        TotalOrder updateTotalOrder = totalOrderRepository.findTotalOrderForCancelUpdate(
+            request.totalOrderId());
 
-        requestCancelTotalOrderPayment(totalOrder);
-        requestCancelTotalOrderIncreaseProduct(totalOrder);
+        requestCancelTotalOrderPayment(updateTotalOrder);
+        requestCancelTotalOrderIncreaseProduct(updateTotalOrder);
 
         return CancelTotalOrderResponseDto.from(updateTotalOrder);
     }

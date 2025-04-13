@@ -126,6 +126,7 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
     public TotalOrder findTotalOrderForCancel(Long totalOrderId) {
         List<TotalOrder> results = queryFactory
             .selectDistinct(totalOrder)
+            .from(totalOrder)
             .join(totalOrder.orders, order).fetchJoin()
             .join(totalOrder.totalOrderPayments, totalOrderPayment)
             .where(
@@ -179,8 +180,20 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
     }
 
     @Override
-    public void cancelUpdateStatusOrder(TotalOrder totalOrder, Long orderId) {
+    public TotalOrder findTotalOrderForCancelUpdate(Long totalOrderId) {
+        List<TotalOrder> results = queryFactory
+            .select(totalOrder)
+            .from(totalOrder)
+            .join(totalOrder.orders, order).fetchJoin()
+            .join(order.orderProducts, orderProduct)
+            .where(totalOrder.id.eq(totalOrderId))
+            .fetch();
 
+        if (results.isEmpty()) {
+            throw new OrderNotFoundTotalOrderException();
+        }
+
+        return results.get(0);
     }
 
     public TotalOrder getTotalOrderDetailInfo(BooleanBuilder totalOrderDetailFilter) {
