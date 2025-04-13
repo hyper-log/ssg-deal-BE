@@ -1,7 +1,13 @@
 package on.ssgdeal.cart_service.infrastructure.persistence.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,5 +29,57 @@ class CartRepositoryImplTest {
     @AfterEach
     void tearDown() {
         redisTemplate.delete(key);
+    }
+
+    @Nested
+    @DisplayName("장바구니 상품을 삭제하는 deleteCartProducts 메서드는")
+    class Describe_deleteCartProducts {
+
+        @Nested
+        @DisplayName("장바구니에 상품이 하나 존재할 때")
+        class Context_WithCartProduct {
+
+            @BeforeEach
+            void setUp() {
+                redisTemplate.opsForHash().put(key, hashKey, quantity);
+            }
+
+            @Test
+            @DisplayName("장바구니에서 해당 상품을 삭제한다.")
+            void it_deletesCartProduct() {
+                // when
+                cartRepository.deleteCartProducts(key, List.of(hashKey));
+
+                Object get = redisTemplate.opsForHash().get(key, hashKey);
+                assertThat(get).isNull();
+            }
+        }
+
+        @Nested
+        @DisplayName("장바구니에 상품이 여러 개 존재할 때")
+        class Context_WithMultipleCartProducts {
+
+            @BeforeEach
+            void setUp() {
+                redisTemplate.opsForHash().put(key, hashKey, quantity);
+                redisTemplate.opsForHash().put(key, "product:1", 3L);
+                redisTemplate.opsForHash().put(key, "product:2", 2L);
+            }
+
+            @Test
+            @DisplayName("장바구니에서 해당 상품들을 삭제한다.")
+            void it_deletesCartProducts() {
+                // when
+                cartRepository.deleteCartProducts(key, List.of(hashKey, "product:1", "product:2"));
+
+                Object get0 = redisTemplate.opsForHash().get(key, hashKey);
+                Object get1 = redisTemplate.opsForHash().get(key, "product:1");
+                Object get2 = redisTemplate.opsForHash().get(key, "product:2");
+
+                assertThat(get0).isNull();
+                assertThat(get1).isNull();
+                assertThat(get2).isNull();
+            }
+        }
     }
 }
