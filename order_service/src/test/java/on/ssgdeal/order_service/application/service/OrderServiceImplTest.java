@@ -622,6 +622,8 @@ class OrderServiceImplTest {
                     totalOrder.getId(), 1L, PaymentType.TOSS, PaymentMethod.CARD,
                     totalOrder.getPrice().getValue(), LocalDateTime.now(), "1");
                 totalOrderRepository.paymentSuccess(totalOrder, updateTotalOrderSuccessDto);
+                totalOrder.cancelSpecificOrder(totalOrder.getOrders().get(0).getId());
+                totalOrderRepository.save(totalOrder);
                 em.flush();
                 em.clear();
 
@@ -722,6 +724,7 @@ class OrderServiceImplTest {
                     totalOrder.getId(), 1L, PaymentType.TOSS, PaymentMethod.CARD,
                     totalOrder.getPrice().getValue(), LocalDateTime.now(), "1");
                 totalOrderRepository.paymentSuccess(totalOrder, updateTotalOrderSuccessDto);
+                totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
                 em.flush();
                 em.clear();
 
