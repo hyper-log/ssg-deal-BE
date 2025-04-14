@@ -2,9 +2,9 @@ package on.ssgdeal.cart_service.application.service;
 
 import java.util.List;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
-import on.ssgdeal.cart_service.infrastructure.client.product.ProductServiceImpl.GetProductOptionsResponseDto;
-import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
+import on.ssgdeal.cart_service.infrastructure.client.product.dto.GetProductOptionsResponseDto;
 import on.ssgdeal.cart_service.infrastructure.client.product.dto.IsProductStockAvailableRequestDto;
+import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
 
 public interface ProductService {
 

@@ -1,22 +1,18 @@
 package on.ssgdeal.cart_service.application.service;
 
+import static on.ssgdeal.cart_service.exception.CartException.NotEnoughStockException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
+import on.ssgdeal.cart_service.application.generator.RedisKeyGenerator;
+import on.ssgdeal.cart_service.application.service.dto.AddCartProductRequestDto;
 import on.ssgdeal.cart_service.application.service.dto.GetProductsByIdsResponseDto;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
 import on.ssgdeal.cart_service.domain.repository.CartRepository;
-import on.ssgdeal.cart_service.infrastructure.client.product.ProductServiceImpl.GetProductOptionsResponseDto;
-import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
-import static on.ssgdeal.cart_service.exception.CartException.NotEnoughStockException;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import on.ssgdeal.cart_service.application.service.dto.AddCartProductRequestDto;
-import on.ssgdeal.cart_service.domain.entity.CartProduct;
-import on.ssgdeal.cart_service.domain.repository.CartRepository;
+import on.ssgdeal.cart_service.infrastructure.client.product.dto.GetProductOptionsResponseDto;
 import on.ssgdeal.cart_service.infrastructure.client.product.dto.IsProductStockAvailableRequestDto;
-import on.ssgdeal.cart_service.infrastructure.persistence.generator.RedisKeyGenerator;
+import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +27,22 @@ import org.springframework.data.redis.core.RedisTemplate;
 class CartServiceImplTest {
 
     private final CartService cartService;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private final Long userId = 0L;
+    private final Long productId = 0L;
+    private final Long optionId = 0L;
+    private final Long quantity = 5L;
+
+    private final String key = RedisKeyGenerator.generateKey(userId);
+    private final String hashKey = RedisKeyGenerator.generateHashKey(productId, optionId);
+
+    @AfterEach
+    void tearDown() {
+        redisTemplate.delete(key);
+    }
 
     public CartServiceImplTest(
         @Autowired CartRepository cartRepository
@@ -129,6 +141,7 @@ class CartServiceImplTest {
                             )
                         )
                     );
+                }
                 @Override
                 public void isProductStockAvailable(IsProductStockAvailableRequestDto requestDto) {
                     if (requestDto.quantity() <= 0) {
@@ -137,22 +150,6 @@ class CartServiceImplTest {
                 }
             }
         );
-    }
-
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    private final Long userId = 0L;
-    private final Long productId = 0L;
-    private final Long optionId = 0L;
-    private final Long quantity = 5L;
-
-    private final String key = RedisKeyGenerator.generateKey(userId);
-    private final String hashKey = RedisKeyGenerator.generateHashKey(productId, optionId);
-
-    @AfterEach
-    void tearDown() {
-        redisTemplate.delete(key);
     }
 
     @Nested
@@ -243,7 +240,8 @@ class CartServiceImplTest {
                 cartService.addCartProduct(requestDto);
 
                 // then
-                Object get = redisTemplate.opsForHash().get(key, existingProduct.getHashKey());
+                Object get = redisTemplate.opsForHash()
+                    .get(key, existingProduct.getHashKey());
                 assertThat(get).isNotNull();
                 assertThat(get).isEqualTo(existingProductQuantity + quantity);
             }

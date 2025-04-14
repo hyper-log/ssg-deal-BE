@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import on.ssgdeal.cart_service.application.service.dto.GetProductsByIdsResponseDto.SubCart.Product;
 import on.ssgdeal.cart_service.application.service.dto.GetProductsByIdsResponseDto.SubCart.Product.Option;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
-import on.ssgdeal.cart_service.infrastructure.client.product.ProductServiceImpl.GetProductOptionsResponseDto;
+import on.ssgdeal.cart_service.infrastructure.client.product.dto.GetProductOptionsResponseDto;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
-import on.ssgdeal.cart_service.infrastructure.persistence.generator.RedisKeyGenerator;
+import on.ssgdeal.cart_service.application.generator.RedisKeyGenerator;
 
 public record GetProductsByIdsResponseDto(
     Long originalTotalPrice,

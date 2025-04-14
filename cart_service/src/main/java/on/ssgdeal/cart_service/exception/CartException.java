@@ -8,19 +8,22 @@ public class CartException extends CustomException {
         super(e);
     }
 
-    public static class CartProductNotFoundException extends CustomException {
+    public static class CartProductNotFoundException extends CartException {
+
         public CartProductNotFoundException() {
             super(CartExceptionCode.CART_PRODUCT_NOT_FOUND);
         }
     }
 
     public static class NotEnoughStockException extends CartException {
+
         public NotEnoughStockException() {
             super(CartExceptionCode.NOT_ENOUGH_STOCK);
         }
     }
 
     public static class MustBePositiveQuantityException extends CartException {
+
         public MustBePositiveQuantityException() {
             super(CartExceptionCode.MUST_BE_POSITIVE_QUANTITY);
         }
