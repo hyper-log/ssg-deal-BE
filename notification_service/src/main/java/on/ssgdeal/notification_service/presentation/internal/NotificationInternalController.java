@@ -29,11 +29,12 @@ public class NotificationInternalController {
 
     @PostMapping("/order/complete")
     public ResponseEntity<CommonResponse<CreateNotificationResponseDto>> createNotification(
-            @Valid @RequestBody final CreateNotificationRequest request,
-            HttpServletRequest servletRequest
+            @Valid @RequestBody final CreateNotificationRequest request
+//            HttpServletRequest servletRequest
     ) {
-        Passport passport = passportUtil.getPassportBy(servletRequest);
-        final var requestDto = notificationMapper.toNotificationRequestDto(request, passport.getSlackEmail());
+//        Passport passport = passportUtil.getPassportBy(servletRequest);
+//        final var requestDto = notificationMapper.toNotificationRequestDto(request, passport.getSlackEmail());
+        final var requestDto = notificationMapper.toNotificationRequestDto(request, "hyunj2034@naver.com");
         log.info("주문 완료 슬랙 메시지 요청 : {}", request);
         final var responseDto = notificationServiceImpl.sendSlackNotification(requestDto);
         return ResponseEntity.ok().body(CommonResponse.success(responseDto));
