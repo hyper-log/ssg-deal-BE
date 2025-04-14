@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import on.ssgdeal.promotion_service.exception.ProductException;
 
 
 @Embeddable
@@ -28,6 +29,18 @@ public class ProductStock {
         if (value < MIN_SIZE) {
             throw new IllegalArgumentException("상품 재고는 " + MIN_SIZE + " 이상이어야 합니다.");
         }
+    }
+
+    public void decrease(Long decreaseAmount) {
+        if (value - decreaseAmount < MIN_SIZE) {
+            throw new ProductException.ProductDoNotExistException();
+        }
+        
+        value -= decreaseAmount;
+    }
+
+    public void increase(Long increaseAmount) {
+        value += increaseAmount;
     }
 
 }
