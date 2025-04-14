@@ -101,16 +101,16 @@ public class PromotionQueryDslRepositoryImpl implements PromotionQueryDslReposit
                 .limit(conditionDto.pageable().getPageSize())
                 .fetch();
 
-        long totalCount = queryFactory
+        Long totalCountResult = queryFactory
                 .select(promotion.count())
                 .from(promotion)
                 .where(
                         containsKeyword(conditionDto.keyword(), promotion.title),
                         filterStatus(conditionDto.filter())
                 )
-                .offset(conditionDto.pageable().getOffset())
-                .limit(conditionDto.pageable().getPageSize())
                 .fetchOne();
+
+        long totalCount = (totalCountResult != null) ? totalCountResult : 0L;
 
         return new PageImpl<>(promotions, conditionDto.pageable(), totalCount);
     }
@@ -127,7 +127,17 @@ public class PromotionQueryDslRepositoryImpl implements PromotionQueryDslReposit
                 .limit(conditionDto.pageable().getPageSize())
                 .fetch();
 
-        return new PageImpl<>(companies, conditionDto.pageable(), companies.size());
+        Long totalCountResult = queryFactory
+                .select(company.count())
+                .from(company)
+                .where(
+                        containsKeyword(conditionDto.keyword(), company.name.value)
+                )
+                .fetchOne();
+
+        long totalCount = (totalCountResult != null) ? totalCountResult : 0L;
+
+        return new PageImpl<>(companies, conditionDto.pageable(), totalCount);
     }
 
     private BooleanExpression containsKeyword(String keyword, StringPath target) {
