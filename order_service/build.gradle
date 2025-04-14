@@ -57,8 +57,24 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // map struct
+    implementation "org.mapstruct:mapstruct:1.5.5.Final"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
+    // test lombok
+    testCompileOnly 'org.projectlombok:lombok:'
+    testAnnotationProcessor 'org.projectlombok:lombok:'
 }
 
 test {
     useJUnitPlatform()
+}
+
+def querydslSrcDir = 'src/main/generated'
+
+clean {
+    delete file(querydslSrcDir)
+}
+
+tasks.withType(JavaCompile) {
+    options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }

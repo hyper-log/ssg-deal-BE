@@ -16,4 +16,12 @@ public class RedisKeyGenerator {
     public static String generateHashKey(Long productId, Long optionId) {
         return productId + KEY_SEPARATOR + optionId;
     }
+
+    public static Long parseProductId(String hashKey) {
+        return Long.parseLong(hashKey.split(KEY_SEPARATOR)[0]);
+    }
+
+    public static Long parseOptionId(String hashKey) {
+        return Long.parseLong(hashKey.split(KEY_SEPARATOR)[1]);
+    }
 }
