@@ -2,29 +2,20 @@ package on.ssgdeal.cart_service.application.service;
 
 import static on.ssgdeal.cart_service.exception.CartException.CartProductNotFoundException;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import on.ssgdeal.cart_service.application.service.dto.UpdateCartProductRequestDto;
-import on.ssgdeal.cart_service.domain.entity.CartProduct;
-import on.ssgdeal.cart_service.domain.repository.CartRepository;
-import on.ssgdeal.cart_service.infrastructure.persistence.generator.RedisKeyGenerator;
-import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.UpdateCartProductDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import on.ssgdeal.cart_service.application.service.dto.AddCartProductRequestDto;
 import on.ssgdeal.cart_service.application.service.dto.DeleteCartProductRequestDto;
-import on.ssgdeal.cart_service.domain.repository.CartRepository;
-import on.ssgdeal.cart_service.infrastructure.persistence.generator.RedisKeyGenerator;
 import on.ssgdeal.cart_service.application.service.dto.GetProductsByIdsResponseDto;
+import on.ssgdeal.cart_service.application.service.dto.UpdateCartProductRequestDto;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
 import on.ssgdeal.cart_service.domain.repository.CartRepository;
-import on.ssgdeal.cart_service.infrastructure.client.product.ProductServiceImpl.GetProductOptionsResponseDto;
-import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductOptionsResponse;
+import on.ssgdeal.cart_service.infrastructure.client.product.dto.GetProductOptionsResponseDto;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
-import on.ssgdeal.cart_service.application.service.dto.AddCartProductRequestDto;
-import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.UpdateCartProductDto;
-import on.ssgdeal.cart_service.infrastructure.persistence.generator.RedisKeyGenerator;
+import on.ssgdeal.cart_service.application.generator.RedisKeyGenerator;
 import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.AddCartProductDto;
+import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.UpdateCartProductDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -74,7 +65,7 @@ public class CartServiceImpl implements CartService {
                     throw new CartProductNotFoundException();
                 }
             );
-    }  
+    }
 
     @Override
     public void deleteCartProducts(DeleteCartProductRequestDto requestDto) {

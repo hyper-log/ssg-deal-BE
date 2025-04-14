@@ -1,12 +1,10 @@
 package on.ssgdeal.cart_service.domain.repository;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
 import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.AddCartProductDto;
 import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.UpdateCartProductDto;
-import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.UpdateCartProductDto;
-import on.ssgdeal.cart_service.infrastructure.persistence.repository.dto.AddCartProductDto;
 
 public interface CartRepository {
 

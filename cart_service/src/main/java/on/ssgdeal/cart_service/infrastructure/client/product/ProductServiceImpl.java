@@ -5,14 +5,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.cart_service.application.service.ProductService;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
+import on.ssgdeal.cart_service.exception.CartException.NotEnoughStockException;
+import on.ssgdeal.cart_service.infrastructure.client.product.dto.GetProductOptionsResponseDto;
+import on.ssgdeal.cart_service.infrastructure.client.product.dto.IsProductStockAvailableRequestDto;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.ProductFeignClient;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsRequest;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsRequest.ProductDetail;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductOptionsResponse;
-import on.ssgdeal.cart_service.infrastructure.persistence.generator.RedisKeyGenerator;
-import on.ssgdeal.cart_service.exception.CartException.NotEnoughStockException;
-import on.ssgdeal.cart_service.infrastructure.client.product.dto.IsProductStockAvailableRequestDto;
+import on.ssgdeal.cart_service.application.generator.RedisKeyGenerator;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
                         )
                     )
                 );
-                return productFeignClient.getProductDetails(request);
+                return productFeignClient.getProductDetails(request).data();
             })
             .toList();
     }
@@ -49,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
             .map(key -> {
                 Long productId = RedisKeyGenerator.parseProductId(key.getHashKey());
                 GetProductOptionsResponse response =
-                    productFeignClient.getProductOptions(productId);
+                    productFeignClient.getProductOptions(productId).data();
                 return new GetProductOptionsResponseDto(productId, response.options().stream()
                     .map(option -> new GetProductOptionsResponseDto.Option(
                         option.optionId(),
@@ -73,18 +74,4 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public record GetProductOptionsResponseDto(
-        Long productId,
-        List<Option> options
-    ) {
-
-        public record Option(
-            Long optionId,
-            String optionName,
-            Long extraPrice,
-            Long productStock
-        ) {
-
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package on.ssgdeal.cart_service.infrastructure.persistence.generator;
+package on.ssgdeal.cart_service.application.generator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
