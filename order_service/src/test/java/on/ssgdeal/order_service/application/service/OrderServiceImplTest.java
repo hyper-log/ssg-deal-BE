@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.common.auth.enums.AuthRole;
 import on.ssgdeal.common.auth.passport.Passport;
+import on.ssgdeal.common.pageable.enums.PageSortBy;
 import on.ssgdeal.order_service.application.service.dto.CancelOrderRequestDto;
 import on.ssgdeal.order_service.application.service.dto.CancelOrderResponseDto;
 import on.ssgdeal.order_service.application.service.dto.CancelTotalOrderRequestDto;
@@ -59,6 +60,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -423,7 +425,8 @@ class OrderServiceImplTest {
                 orderService.createOrder(orderRequest, orderLoginUserInfo);
 
                 var loginUserInfo = createFakeLoginUserInfo();
-                Pageable pageable = PageRequest.of(0, 10);
+                Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC,
+                    String.valueOf(PageSortBy.CREATED_AT));
 
                 // when
                 PageDto<GetTotalOrdersResponseDto> result = orderService.getTotalOrders(
@@ -434,6 +437,7 @@ class OrderServiceImplTest {
                 assertThat(result.content()).hasSize(1);
                 assertThat(result.content().get(0).totalOrderId()).isEqualTo(1L);
                 assertThat(result.totalElements()).isEqualTo(1);
+                log.info(result.content().toString());
             }
 
             @Nested

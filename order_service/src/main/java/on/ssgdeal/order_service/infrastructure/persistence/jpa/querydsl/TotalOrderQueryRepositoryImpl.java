@@ -219,7 +219,6 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
             .select(totalOrder.id)
             .from(totalOrder)
             .where(totalOrderFilter)
-            .orderBy(orderSpecifiers)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -230,6 +229,7 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
             .join(totalOrder.orders, order).fetchJoin()
             .join(order.orderProducts, orderProduct)
             .join(totalOrder.orderer, orderer).fetchJoin()
+            .orderBy(orderSpecifiers)
             .where(totalOrder.id.in(totalOrderIds))
             .fetch();
     }
