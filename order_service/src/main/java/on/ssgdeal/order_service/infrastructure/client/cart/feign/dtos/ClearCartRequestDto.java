@@ -13,8 +13,7 @@ public record ClearCartRequestDto(List<ClearProductInfoDto> productList) {
                     .map(
                         product -> new ClearProductInfoDto(
                             product.getProductId(),
-                            product.getOptionId(),
-                            product.getQuantity().getValue()
+                            product.getOptionId()
                         )
                     )
             )
@@ -23,7 +22,7 @@ public record ClearCartRequestDto(List<ClearProductInfoDto> productList) {
         return new ClearCartRequestDto(productList);
     }
 
-    public record ClearProductInfoDto(Long productId, Long optionId, Long quantity) {
+    public record ClearProductInfoDto(Long productId, Long optionId) {
 
     }
 
