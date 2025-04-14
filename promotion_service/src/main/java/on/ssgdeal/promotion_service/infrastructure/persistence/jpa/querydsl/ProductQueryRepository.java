@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProductQueryRepository {
 
-    Page<Product> search(Pageable pageable);
+    Page<Product> searchWithProductName(String productName, Pageable pageable);
 
 
 }

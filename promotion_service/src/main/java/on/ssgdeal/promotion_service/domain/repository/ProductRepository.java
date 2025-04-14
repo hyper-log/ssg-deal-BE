@@ -9,7 +9,7 @@ import org.springframework.data.domain.Slice;
 
 public interface ProductRepository {
 
-    Page<Product> search(Pageable pageable);
+    Page<Product> searchWithProductName(String productName, Pageable pageable);
 
     Slice<Product> findByCompanyId(Long companyId, Pageable pageable);
 
