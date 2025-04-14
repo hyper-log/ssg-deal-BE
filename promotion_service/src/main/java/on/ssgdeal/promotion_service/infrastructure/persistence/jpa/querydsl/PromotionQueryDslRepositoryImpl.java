@@ -101,7 +101,18 @@ public class PromotionQueryDslRepositoryImpl implements PromotionQueryDslReposit
                 .limit(conditionDto.pageable().getPageSize())
                 .fetch();
 
-        return new PageImpl<>(promotions, conditionDto.pageable(), promotions.size());
+        long totalCount = queryFactory
+                .select(promotion.count())
+                .from(promotion)
+                .where(
+                        containsKeyword(conditionDto.keyword(), promotion.title),
+                        filterStatus(conditionDto.filter())
+                )
+                .offset(conditionDto.pageable().getOffset())
+                .limit(conditionDto.pageable().getPageSize())
+                .fetchOne();
+
+        return new PageImpl<>(promotions, conditionDto.pageable(), totalCount);
     }
 
     @Override
