@@ -14,16 +14,19 @@ public interface DestinationService {
 
     FindAllMyDestinationsResponse findAllMy(HttpServletRequest httpServletRequest);
 
-    CreateMyDestinationResponse createMy(HttpServletRequest httpServletRequest,
+    CreateMyDestinationResponse createMy(
+        HttpServletRequest httpServletRequest,
         CreateMyDestinationRequestDto dto);
 
-    UpdateMyDestinationResponse updateMy(HttpServletRequest httpServletRequest,
+    UpdateMyDestinationResponse updateMy(
+        HttpServletRequest httpServletRequest,
         UpdateMyDestinationRequestDto dto);
 
     void deleteMy(HttpServletRequest httpServletRequest, Long destinationId);
 
     FindMyDestinationResponse findMy(HttpServletRequest httpServletRequest, Long destinationId);
 
-    ValidateDestinationsResponse validateMyDestinations(HttpServletRequest httpServletRequest,
+    ValidateDestinationsResponse validateMyDestinations(
+        HttpServletRequest httpServletRequest,
         ValidateDestinationsRequestDto dto);
 }

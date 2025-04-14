@@ -18,9 +18,9 @@ public class Address {
     @Column(name = "address", nullable = false)
     private String address;
 
-    public Address(final String email) {
-        validate(email);
-        this.address = email;
+    public Address(final String address) {
+        validate(address);
+        this.address = address;
     }
 
     public static Address valueOf(String address) {

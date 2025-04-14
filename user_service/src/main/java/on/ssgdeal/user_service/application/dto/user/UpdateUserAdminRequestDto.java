@@ -11,7 +11,8 @@ public record UpdateUserAdminRequestDto(
 
     public static UpdateUserAdminRequestDto from(
         Long userId,
-        UpdateUserAdminRequest updateUserAdminRequest) {
+        UpdateUserAdminRequest updateUserAdminRequest
+    ) {
         return new UpdateUserAdminRequestDto(
             userId,
             updateUserAdminRequest.nickname(),
