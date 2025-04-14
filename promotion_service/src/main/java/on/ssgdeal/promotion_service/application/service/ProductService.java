@@ -21,7 +21,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
 
-    PageDto<SearchProductResponse> search(Pageable pageable);
+    PageDto<SearchProductResponse> searchWithProductName(String productName, Pageable pageable);
 
     FindByIdResponse findById(Long productId);
 

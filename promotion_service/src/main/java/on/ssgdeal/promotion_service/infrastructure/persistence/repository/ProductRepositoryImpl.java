@@ -20,8 +20,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     private final ProductQueryRepository queryRepository;
 
     @Override
-    public Page<Product> search(Pageable pageable) {
-        return queryRepository.search(pageable);
+    public Page<Product> searchWithProductName(String productName, Pageable pageable) {
+        return queryRepository.searchWithProductName(productName, pageable);
     }
 
     @Override
