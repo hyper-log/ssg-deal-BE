@@ -1,5 +1,14 @@
 package on.ssgdeal.cart_service.application.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.Map;
+import on.ssgdeal.cart_service.application.service.dto.GetProductsByIdsResponseDto;
+import on.ssgdeal.cart_service.domain.entity.CartProduct;
+import on.ssgdeal.cart_service.domain.repository.CartRepository;
+import on.ssgdeal.cart_service.infrastructure.client.product.ProductServiceImpl.GetProductOptionsResponseDto;
+import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
 import static on.ssgdeal.cart_service.exception.CartException.NotEnoughStockException;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +39,97 @@ class CartServiceImplTest {
             cartRepository,
             new ProductService() {
                 @Override
+                public List<GetProductDetailsResponse> getProductsByHashKeys(
+                    List<CartProduct> cartProducts
+                ) {
+                    return List.of(
+                        new GetProductDetailsResponse(
+                            "ING",
+                            1L,
+                            "companyName_1",
+                            1L,
+                            "productName_1",
+                            "imgUrl_1",
+                            1000L,
+                            100L,
+                            1L,
+                            "optionName_1",
+                            0L
+                        ),
+                        new GetProductDetailsResponse(
+                            "ING",
+                            1L,
+                            "companyName_1",
+                            2L,
+                            "productName_2",
+                            "imgUrl_2",
+                            2000L,
+                            200L,
+                            1L,
+                            "optionName_1",
+                            0L
+                        ),
+                        new GetProductDetailsResponse(
+                            "ING",
+                            2L,
+                            "companyName_2",
+                            3L,
+                            "productName_3",
+                            "imgUrl_3",
+                            3000L,
+                            300L,
+                            1L,
+                            "optionName_1",
+                            500L
+                        )
+                    );
+                }
+                @Override
+                public List<GetProductOptionsResponseDto> getProductOptions(
+                    List<CartProduct> cartProducts
+                ) {
+                    return List.of(
+                        new GetProductOptionsResponseDto(
+                            1L,
+                            List.of(
+                                new GetProductOptionsResponseDto.Option(
+                                    1L,
+                                    "optionName_1",
+                                    0L,
+                                    10L
+                                ),
+                                new GetProductOptionsResponseDto.Option(
+                                    2L,
+                                    "optionName_2",
+                                    0L,
+                                    20L
+                                )
+                            )
+                        ),
+                        new GetProductOptionsResponseDto(
+                            2L,
+                            List.of(
+                                new GetProductOptionsResponseDto.Option(
+                                    1L,
+                                    "optionName_1",
+                                    0L,
+                                    30L
+                                )
+                            )
+                        ),
+                        new GetProductOptionsResponseDto(
+                            3L,
+                            List.of(
+                                new GetProductOptionsResponseDto.Option(
+                                    1L,
+                                    "optionName_1",
+                                    500L,
+                                    40L
+                                )
+                            )
+                        )
+                    );
+                @Override
                 public void isProductStockAvailable(IsProductStockAvailableRequestDto requestDto) {
                     if (requestDto.quantity() <= 0) {
                         throw new NotEnoughStockException();
@@ -53,6 +153,43 @@ class CartServiceImplTest {
     @AfterEach
     void tearDown() {
         redisTemplate.delete(key);
+    }
+
+    @Nested
+    @DisplayName("장바구니 상품을 조회하는 getCarts 메서드는")
+    class Describe_getCarts {
+
+        @Nested
+        @DisplayName("장바구니에 상품이 존재할 때")
+        class Context_with_cart_product {
+
+            @BeforeEach
+            void setUp() {
+                String hashKey1 = RedisKeyGenerator.generateHashKey(1L, 1L);
+                String hashKey2 = RedisKeyGenerator.generateHashKey(2L, 1L);
+                String hashKey3 = RedisKeyGenerator.generateHashKey(3L, 1L);
+                redisTemplate.opsForHash().putAll(
+                    key,
+                    Map.of(
+                        hashKey1, quantity,
+                        hashKey2, quantity,
+                        hashKey3, quantity
+                    )
+                );
+            }
+
+            @Test
+            @DisplayName("장바구니 상품을 조회한다")
+            void it_gets_cart_product() {
+                // when
+                GetProductsByIdsResponseDto response = cartService.getCarts(userId);
+
+                // then
+                assertThat(response).isNotNull();
+                assertThat(response.productCount()).isEqualTo(3);
+                assertThat(response.subCarts()).hasSize(2);
+            }
+        }
     }
 
     @Nested
