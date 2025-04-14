@@ -1,11 +1,23 @@
 server:
   port: 8080
-
 spring:
   application:
     name: order-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
   config:
     import: "configserver:"
+  datasource:
+    url: url
+    username: user
+    password: password
   data:
     redis:
       host: host
@@ -21,3 +33,12 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /docs
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /api-docs-order-service

@@ -1,0 +1,24 @@
+package on.ssgdeal.promotion_service.domain.repository;
+
+import java.util.List;
+import java.util.Optional;
+import on.ssgdeal.promotion_service.domain.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+
+public interface ProductRepository {
+
+    Page<Product> searchWithProductName(String productName, Pageable pageable);
+
+    Slice<Product> findByCompanyId(Long companyId, Pageable pageable);
+
+    Optional<Product> findById(Long id);
+
+    Product save(Product product);
+
+    List<Product> findAllWithDetailsByIdsAndOptionIds(List<Long> productIds, List<Long> optionIds);
+
+    List<Product> findAllWithDetailsByCompanyIdsAndOptionIds(List<Long> companyIds,
+        List<Long> optionIds);
+}

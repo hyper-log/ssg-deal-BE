@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @Getter
 public enum PageSortBy {
-    CREATED_AT("created_at"),
-    UPDATED_AT("updated_at"),
+    CREATED_AT("createdAt"),
+    UPDATED_AT("updatedAt"),
     ID("id");
 
     private final String sortBy;

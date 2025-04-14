@@ -11,6 +11,9 @@ import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProduc
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductOptionsResponse;
 import on.ssgdeal.cart_service.infrastructure.persistence.generator.RedisKeyGenerator;
+import on.ssgdeal.cart_service.exception.CartException.NotEnoughStockException;
+import on.ssgdeal.cart_service.infrastructure.client.product.dto.IsProductStockAvailableRequestDto;
+import on.ssgdeal.common.presentation.dto.CommonResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -56,6 +59,18 @@ public class ProductServiceImpl implements ProductService {
                     )).toList());
             })
             .toList();
+    }
+
+    @Override
+    public void isProductStockAvailable(IsProductStockAvailableRequestDto request) {
+        log.info("isProductStockAvailable request: {}", request);
+
+        CommonResponse<Long> response = productFeignClient.getProductStock(
+            request.productId(), request.optionId());
+        Long stock = response.data();
+        if (stock == null || stock < request.quantity()) {
+            throw new NotEnoughStockException();
+        }
     }
 
     public record GetProductOptionsResponseDto(
