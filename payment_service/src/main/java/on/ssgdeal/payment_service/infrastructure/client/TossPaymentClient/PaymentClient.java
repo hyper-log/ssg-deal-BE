@@ -7,11 +7,18 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 import lombok.extern.slf4j.Slf4j;
+import on.ssgdeal.payment_service.application.service.dto.request.OrderPaymentPartialCancelRequestDto;
 import on.ssgdeal.payment_service.configuration.PaymentExceptionInterceptor;
 import on.ssgdeal.payment_service.configuration.PaymentLoggingInterceptor;
+import on.ssgdeal.payment_service.domain.entity.Payment;
+import on.ssgdeal.payment_service.domain.enums.PaymentCancelReason;
 import on.ssgdeal.payment_service.domain.enums.PaymentFailReason;
+import on.ssgdeal.payment_service.exception.PaymentException.PaymentCancelException;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentConfirmException;
+import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.request.PaymentCancelRequestDto;
 import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.request.PaymentConfirmRequestDto;
+import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.request.PaymentPartialCancelRequestDto;
+import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.response.PaymentCancelResponseDto;
 import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.response.PaymentConfirmResponseDto;
 import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.response.PaymentFailResponseDto;
 import org.springframework.http.HttpHeaders;
@@ -82,6 +89,58 @@ public class PaymentClient {
                 }
             })
             .body(PaymentConfirmResponseDto.class);
+    }
+
+    public PaymentCancelResponseDto cancelPayment(Payment payment) {
+        PaymentCancelRequestDto requestDto = new PaymentCancelRequestDto(
+            PaymentCancelReason.SIMPLE_CHANGE_OF_MIND.getDescription());
+        return restClient.method(HttpMethod.POST)
+            .uri(paymentProperties.getCancelUrl(payment.getPaymentKey()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(requestDto)
+            .retrieve()
+            .onStatus(HttpStatusCode::isError, (request, response) -> {
+                try (InputStream bodyStream = response.getBody()) {
+                    String errorBody = new String(bodyStream.readAllBytes(),
+                        StandardCharsets.UTF_8);
+                    log.error("결제 취소 실패 - 응답 바디: {}", errorBody);
+
+                    throw new PaymentCancelException();
+                } catch (IOException e) {
+                    log.error("응답 바디 읽기 실패", e);
+                    throw new PaymentCancelException();
+                }
+            })
+            .body(PaymentCancelResponseDto.class);
+
+    }
+
+    public PaymentCancelResponseDto partialCancelPayment(
+        Payment payment,
+        OrderPaymentPartialCancelRequestDto partialRequestDto
+    ) {
+        PaymentPartialCancelRequestDto requestDto = new PaymentPartialCancelRequestDto(
+            PaymentCancelReason.SIMPLE_CHANGE_OF_MIND.getDescription(),
+            partialRequestDto.cancelAmount());
+        return restClient.method(HttpMethod.POST)
+            .uri(paymentProperties.getCancelUrl(payment.getPaymentKey()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(requestDto)
+            .retrieve()
+            .onStatus(HttpStatusCode::isError, (request, response) -> {
+                try (InputStream bodyStream = response.getBody()) {
+                    String errorBody = new String(bodyStream.readAllBytes(),
+                        StandardCharsets.UTF_8);
+                    log.error("결제 취소 실패 - 응답 바디: {}", errorBody);
+
+                    throw new PaymentCancelException();
+                } catch (IOException e) {
+                    log.error("응답 바디 읽기 실패", e);
+                    throw new PaymentCancelException();
+                }
+            })
+            .body(PaymentCancelResponseDto.class);
+
     }
 
     private PaymentFailReason extractFailReason(String errorBody) {
