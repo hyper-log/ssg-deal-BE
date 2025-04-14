@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.common.application.dto.SliceDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.DecreaseStockRequestDto;
@@ -44,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "ProductServiceImpl")
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -56,6 +58,7 @@ public class ProductServiceImpl implements ProductService {
         String productName,
         Pageable pageable
     ) {
+        log.info("Search with product Name: {}", productName);
         Page<Product> products = productRepository.searchWithProductName(productName, pageable);
 
         return PageDto.from(products.map(SearchProductResponse::from));
@@ -66,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId).orElseThrow(
             ProductException.ProductNotFoundException::new
         );
-
+        log.info("Find by id: {}", productId);
         return productMapper.toFindByIdResponse(product);
     }
 
@@ -74,6 +77,7 @@ public class ProductServiceImpl implements ProductService {
     public SliceDto<FindByPromotionIdResponse> findByPromotionId(
         FindProductByPromotionIdRequestDto dto
     ) {
+        log.info("Find by promotion id: {}", dto);
         Promotion promotion = promotionRepository.findById(dto.promotionId()).orElseThrow(
             ProductException.ProductPromotionIsNotInProgressException::new
         );
@@ -101,6 +105,7 @@ public class ProductServiceImpl implements ProductService {
     public DecreaseStockResponse decreaseStock(
         DecreaseStockRequestDto dto
     ) {
+        log.info("Decrease stock: {}", dto);
         Product product = findProductByIdOrElseThrow(dto.productId());
 
         validatePromotionStatus(product);
@@ -131,6 +136,7 @@ public class ProductServiceImpl implements ProductService {
     public IncreaseStockResponse increaseStock(
         IncreaseStockRequestDto dto
     ) {
+        log.info("Increase stock: {}", dto);
         Product product = findProductByIdOrElseThrow(dto.productId());
 
         validatePromotionStatus(product);
@@ -158,6 +164,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public GetProductDetailsResponse getProductDetails(GetProductDetailsRequestDto dto) {
+        log.info("Get product details: {}", dto);
         List<Long> productIds = dto.productDetails()
             .stream()
             .map(GetProductDetailsRequestDto.ProductDetail::productId)
@@ -213,13 +220,14 @@ public class ProductServiceImpl implements ProductService {
     public ValidateStockDecreasesResponse validateStockDecrease(
         ValidateStockDecreasesRequestDto dto
     ) {
-        List<Long> companyIds = dto.productDetails()
+        log.info("Validate stock decrease: {}", dto);
+        List<Long> companyIds = dto.getProductDetails()
             .stream()
             .map(ValidateStockDecreasesRequestDto.ProductDetail::companyId)
             .distinct()
             .toList();
 
-        List<Long> optionIds = dto.productDetails()
+        List<Long> optionIds = dto.getProductDetails()
             .stream()
             .map(ValidateStockDecreasesRequestDto.ProductDetail::optionId)
             .distinct()
@@ -236,7 +244,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Map<Company, List<ValidateStockDecreasesResponse.CompanyDetail.CompanyProduct>> groupedByCompany =
-            dto.productDetails()
+            dto.getProductDetails()
                 .stream()
                 .map(pd -> {
                     ProductAndOption pair = productAndOptionMap.get(pd.optionId());
@@ -251,7 +259,7 @@ public class ProductServiceImpl implements ProductService {
                     // 검증 2: 프로모션 진행 여부
                     PromotionStatus promotionStatus = pair.product.getCompany().getPromotion()
                         .getStatus();
-                    if (promotionStatus.equals(PromotionStatus.IN_PROGRESS)) {
+                    if (!promotionStatus.equals(PromotionStatus.IN_PROGRESS)) {
                         throw new ProductException.ProductPromotionIsNotInProgressException();
                     }
 

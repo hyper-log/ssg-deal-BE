@@ -13,11 +13,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductJpaRepository extends JpaRepository<Product, Long> {
 
-    Slice<Product> findByCompanyId(Long companyId, Pageable pageable);
+    @Query("SELECT p FROM Product p WHERE p.company.id = :companyId")
+    Slice<Product> findByCompanyId(@Param("companyId") Long companyId, Pageable pageable);
 
     Optional<Product> findById(Long id);
 
-    @Query("SELECT DISTINCT p FROM Product p " +
+    @Query("SELECT p FROM Product p " +
         "JOIN FETCH p.options o " +
         "JOIN FETCH p.company c " +
         "JOIN FETCH c.promotion promo " +
@@ -28,7 +29,7 @@ public interface ProductJpaRepository extends JpaRepository<Product, Long> {
         @Param("optionIds") List<Long> optionIds
     );
 
-    @Query("SELECT DISTINCT p FROM Product p " +
+    @Query("SELECT p FROM Product p " +
         "JOIN FETCH p.options o " +
         "JOIN FETCH p.company c " +
         "JOIN FETCH c.promotion promo " +

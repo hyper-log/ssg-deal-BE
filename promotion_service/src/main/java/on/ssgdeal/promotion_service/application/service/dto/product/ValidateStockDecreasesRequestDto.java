@@ -3,7 +3,7 @@ package on.ssgdeal.promotion_service.application.service.dto.product;
 import java.util.List;
 
 public record ValidateStockDecreasesRequestDto(
-    List<ProductDetail> productDetails
+    List<ProductDetail> getProductDetails
 ) {
 
     public record ProductDetail(

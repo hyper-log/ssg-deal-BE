@@ -3,8 +3,6 @@ server:
 spring:
   application:
     name: promotion-service
-  profiles:
-    active: dev
   config:
     import: "configserver:"
   data:

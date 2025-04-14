@@ -11,6 +11,7 @@ import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProduct
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.IncreaseStockRequest;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.ValidateStockDecreasesRequest;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ProductPresentationMapper {
@@ -23,5 +24,6 @@ public interface ProductPresentationMapper {
 
     IncreaseStockRequestDto toDto(IncreaseStockRequest request);
 
+    @Mapping(target = "getProductDetails", source = "getProductDetails")
     ValidateStockDecreasesRequestDto toDto(ValidateStockDecreasesRequest request);
 }
