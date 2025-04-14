@@ -23,6 +23,6 @@ public record OrderCompleteSendSlackRequestDto(Long totalOrderId,
             loginUserInfoDto.nickname(),
             totalOrderCompleteSendInfoDto.orderAt(),
             totalOrderCompleteSendInfoDto.paymentPrice(),
-            TotalOrderStatus.EXPIRED);
+            TotalOrderStatus.PAID);
     }
 }
