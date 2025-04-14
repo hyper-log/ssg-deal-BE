@@ -35,9 +35,12 @@ public class PaymentException extends CustomException {
         public PaymentTimeoutException() {
             super(PaymentExceptionCode.PAYMENT_TIMEOUT);
         }
+    }
 
-        public PaymentFailReason getFailReason() {
-            return PaymentFailReason.TIMEOUT;
+    public static class PaymentCancelException extends PaymentException {
+
+        public PaymentCancelException() {
+            super(PaymentExceptionCode.PAYMENT_CANCEL_FAIL);
         }
     }
 }
