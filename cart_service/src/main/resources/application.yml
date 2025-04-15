@@ -21,3 +21,25 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+  tracing:
+    sampling:
+      probability: 1.0  # 100% of the requests will be traced
+
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans" # Zipkin 서버 주소
+      connect-timeout: 1s  # Timeout for connecting to Zipkin server
+      encoding: json  # The format of the trace data (you can use json or protobuf)
+      read-timeout: 10s  # Timeout for reading from the Zipkin server
+
+logging:
+  pattern:
+    level: "%5p [%X{traceId:-},%X{spanId:-}]"
