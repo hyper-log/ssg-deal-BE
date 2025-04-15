@@ -23,6 +23,10 @@ dependencies {
     // springboot
     implementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // zipkin
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
     // gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
     // lombok

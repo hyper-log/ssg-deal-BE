@@ -65,16 +65,20 @@ management:
   endpoints:
     web:
       exposure:
-        include: "prometheus,health,info"
+        include:
+          - health
+          - info
   tracing:
     sampling:
       probability: 1.0  # 10% of the requests will be traced
-    enabled: true  # Enable tracing
 
   zipkin:
     tracing:
-      endpoint: http://zipkin:9411/api/v2/spans  # Zipkin server URL for receiving spans
+      endpoint: "localhost:9411/api/v2/spans" # Zipkin 서버 주소
       connect-timeout: 1s  # Timeout for connecting to Zipkin server
       encoding: json  # The format of the trace data (you can use json or protobuf)
       read-timeout: 10s  # Timeout for reading from the Zipkin server
 
+logging:
+  pattern:
+    level: "%5p [%X{traceId:-},%X{spanId:-}]"
