@@ -52,8 +52,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         return path.equals("/api/v1/auth/signup") ||
             path.equals("/api/v1/auth/login") ||
             (path.equals("/api/v1/auth/my") && method.equals("DELETE")) ||
-            path.equals("/actuator/prometheus") ||
-            path.startsWith("/internal")
+            path.equals("/actuator/prometheus")
             ;
     }
 
