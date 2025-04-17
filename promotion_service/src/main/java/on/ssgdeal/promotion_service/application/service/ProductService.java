@@ -6,6 +6,7 @@ import on.ssgdeal.promotion_service.application.service.dto.product.DecreaseStoc
 import on.ssgdeal.promotion_service.application.service.dto.product.FindProductByPromotionIdRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductDetailsRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductOptionsRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.GetProductStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.IncreaseStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.ValidateStockDecreasesRequestDto;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByIdResponse;
@@ -38,4 +39,6 @@ public interface ProductService {
     ValidateStockDecreasesResponse validateStockDecrease(ValidateStockDecreasesRequestDto dto);
 
     GetProductOptionsResponse getProductOptions(GetProductOptionsRequestDto dto);
+
+    Long getProductStock(GetProductStockRequestDto dto);
 }

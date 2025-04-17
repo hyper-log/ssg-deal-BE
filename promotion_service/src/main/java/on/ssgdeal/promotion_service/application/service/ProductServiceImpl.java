@@ -15,6 +15,7 @@ import on.ssgdeal.promotion_service.application.service.dto.product.DecreaseStoc
 import on.ssgdeal.promotion_service.application.service.dto.product.FindProductByPromotionIdRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductDetailsRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductOptionsRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.GetProductStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.IncreaseStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.ValidateStockDecreasesRequestDto;
 import on.ssgdeal.promotion_service.domain.entity.Company;
@@ -324,6 +325,19 @@ public class ProductServiceImpl implements ProductService {
             .build();
     }
 
+    @Override
+    public Long getProductStock(
+        GetProductStockRequestDto dto
+    ) {
+        Product product = findByProductIdAndOptionIdOrElseThrow(
+            dto.productId(),
+            dto.optionId()
+        );
+
+        return product.getOptions().get(0).getProductStock().getValue();
+    }
+
+
     public GetProductDetailsResponse getProductDetailsNPlus1(
         GetProductDetailsRequestDto dto
     ) {
@@ -378,6 +392,15 @@ public class ProductServiceImpl implements ProductService {
         return product.getOptions().stream()
             .filter(option -> option.getId().equals(optionId))
             .findFirst()
+            .orElseThrow(ProductException.ProductOptionNotFoundException::new
+            );
+    }
+
+    private Product findByProductIdAndOptionIdOrElseThrow(
+        Long productId,
+        Long optionId
+    ) {
+        return productRepository.findByProductIdAndOptionId(productId, optionId)
             .orElseThrow(ProductException.ProductOptionNotFoundException::new
             );
     }

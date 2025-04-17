@@ -3,11 +3,13 @@ package on.ssgdeal.promotion_service.presentation.internal.dto.mapper;
 import on.ssgdeal.promotion_service.application.service.dto.product.DecreaseStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductDetailsRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductOptionsRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.GetProductStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.IncreaseStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.ValidateStockDecreasesRequestDto;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.DecreaseStockRequest;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProductDetailsRequest;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProductOptionsRequest;
+import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProductStockRequest;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.IncreaseStockRequest;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.ValidateStockDecreasesRequest;
 import org.mapstruct.Mapper;
@@ -26,4 +28,6 @@ public interface ProductPresentationMapper {
 
     @Mapping(target = "getProductDetails", source = "getProductDetails")
     ValidateStockDecreasesRequestDto toDto(ValidateStockDecreasesRequest request);
+
+    GetProductStockRequestDto toDto(GetProductStockRequest request);
 }

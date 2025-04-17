@@ -116,7 +116,7 @@ class ProductServiceImplTest {
 
                 when(product.getOptions()).thenReturn(List.of(productOption));
 
-                when(productRepository.findAllWithDetailsByCompanyIdsAndOptionIds(anyList(),
+                when(productRepository.findAllWithDetailsByProductIdsAndOptionIds(anyList(),
                     anyList()))
                     .thenReturn(List.of(product));
 
@@ -139,7 +139,7 @@ class ProductServiceImplTest {
                     0);
                 assertThat(cp.productId()).isEqualTo(10L);
                 assertThat(cp.productName()).isEqualTo("Test Product");
-                assertThat(cp.productPreviewImgUrl()).isEqualTo("http://example.com/preview");
+                assertThat(cp.productPreview()).isEqualTo("http://example.com/preview");
                 assertThat(cp.originalPrice()).isEqualTo(20000L);
                 assertThat(cp.promotionPrice()).isEqualTo(15000L);
                 assertThat(cp.optionId()).isEqualTo(100L);
