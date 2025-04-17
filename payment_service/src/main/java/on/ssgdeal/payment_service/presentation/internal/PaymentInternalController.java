@@ -9,7 +9,7 @@ import on.ssgdeal.payment_service.application.service.dto.response.OrderPaymentC
 import on.ssgdeal.payment_service.application.service.dto.response.OrderPaymentPartialCancelResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +21,7 @@ public class PaymentInternalController {
 
     private final PaymentProcessorService paymentProcessorService;
 
-    @PostMapping("/{totalOrderId}/cancel")
+    @PutMapping("/{totalOrderId}/cancel")
     public ResponseEntity<CommonResponse<OrderPaymentCancelResponseDto>> orderCancelPayment(
         @PathVariable Long totalOrderId
     ) {
@@ -29,7 +29,7 @@ public class PaymentInternalController {
         return ResponseEntity.ok(CommonResponse.success(responseDto));
     }
 
-    @PostMapping("/{totalOrderId}/partial-cancel")
+    @PutMapping("/{totalOrderId}/partial-cancel")
     public ResponseEntity<CommonResponse<OrderPaymentPartialCancelResponseDto>> orderPartialCancelPayment(
         @PathVariable Long totalOrderId,
         @RequestBody @Valid OrderPaymentPartialCancelRequestDto partialCancelRequestDto

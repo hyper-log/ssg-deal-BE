@@ -146,6 +146,7 @@ public class TotalOrderQueryRepositoryImpl implements TotalOrderQueryRepository 
     public TotalOrder findTotalOrderForFail(Long totalOrderId) {
         List<TotalOrder> results = queryFactory
             .selectDistinct(totalOrder)
+            .from(totalOrder)
             .join(totalOrder.orders, order).fetchJoin()
             .join(totalOrder.totalOrderPayments, totalOrderPayment)
             .where(

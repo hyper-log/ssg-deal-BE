@@ -13,6 +13,8 @@ import on.ssgdeal.cart_service.domain.repository.CartRepository;
 import on.ssgdeal.cart_service.infrastructure.client.product.dto.GetProductOptionsResponseDto;
 import on.ssgdeal.cart_service.infrastructure.client.product.dto.IsProductStockAvailableRequestDto;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
+import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse.ProductDetail;
+import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse.ProductDetail.PromotionStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,12 +53,12 @@ class CartServiceImplTest {
             cartRepository,
             new ProductService() {
                 @Override
-                public List<GetProductDetailsResponse> getProductsByHashKeys(
+                public GetProductDetailsResponse getProductsByHashKeys(
                     List<CartProduct> cartProducts
                 ) {
-                    return List.of(
-                        new GetProductDetailsResponse(
-                            "ING",
+                    List<ProductDetail> productDetails = List.of(
+                        new ProductDetail(
+                            PromotionStatus.IN_PROGRESS,
                             1L,
                             "companyName_1",
                             1L,
@@ -68,8 +70,8 @@ class CartServiceImplTest {
                             "optionName_1",
                             0L
                         ),
-                        new GetProductDetailsResponse(
-                            "ING",
+                        new ProductDetail(
+                            PromotionStatus.IN_PROGRESS,
                             1L,
                             "companyName_1",
                             2L,
@@ -81,8 +83,8 @@ class CartServiceImplTest {
                             "optionName_1",
                             0L
                         ),
-                        new GetProductDetailsResponse(
-                            "ING",
+                        new ProductDetail(
+                            PromotionStatus.IN_PROGRESS,
                             2L,
                             "companyName_2",
                             3L,
@@ -95,6 +97,7 @@ class CartServiceImplTest {
                             500L
                         )
                     );
+                    return new GetProductDetailsResponse(productDetails);
                 }
                 @Override
                 public List<GetProductOptionsResponseDto> getProductOptions(

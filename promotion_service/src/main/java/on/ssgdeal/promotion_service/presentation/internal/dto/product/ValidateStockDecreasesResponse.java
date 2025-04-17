@@ -2,7 +2,6 @@ package on.ssgdeal.promotion_service.presentation.internal.dto.product;
 
 import java.util.List;
 import lombok.Builder;
-import on.ssgdeal.promotion_service.domain.enums.PromotionStatus;
 
 @Builder
 public record ValidateStockDecreasesResponse(
@@ -18,10 +17,10 @@ public record ValidateStockDecreasesResponse(
 
         @Builder
         public record CompanyProduct(
-            PromotionStatus promotionStatus,
+            String promotionStatus,
             Long productId,
             String productName,
-            String productPreviewImgUrl,
+            String productPreview,
             Long originalPrice,
             Long promotionPrice,
             Long optionId,

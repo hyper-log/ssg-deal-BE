@@ -56,7 +56,7 @@ public class DestinationController {
     @PatchMapping("/my/{destinationId}")
     public ResponseEntity<CommonResponse<UpdateMyDestinationResponse>> updateMy(
         HttpServletRequest httpServletRequest,
-        @PathVariable Long destinationId,
+        @PathVariable(name = "destinationId") Long destinationId,
         @RequestBody UpdateMyDestinationRequest request
     ) {
         UpdateMyDestinationRequestDto dto = request.toDto(destinationId);
@@ -69,7 +69,7 @@ public class DestinationController {
     @DeleteMapping("/my/{destinationId}")
     public ResponseEntity<CommonResponse<Void>> deleteMy(
         HttpServletRequest httpServletRequest,
-        @PathVariable Long destinationId
+        @PathVariable(name = "destinationId") Long destinationId
     ) {
         destinationService.deleteMy(httpServletRequest, destinationId);
 
@@ -80,7 +80,7 @@ public class DestinationController {
     @GetMapping("/my/{destinationId}")
     public ResponseEntity<CommonResponse<FindMyDestinationResponse>> findMy(
         HttpServletRequest httpServletRequest,
-        @PathVariable Long destinationId
+        @PathVariable(name = "destinationId") Long destinationId
     ) {
         var response = destinationService.findMy(httpServletRequest, destinationId);
 

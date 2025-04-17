@@ -229,7 +229,9 @@ public class OrderServiceImpl implements OrderService {
         TotalOrder totalOrder = totalOrderRepository.findTotalOrderForFail(
             requestDto.totalOrderId());
         totalOrderRepository.cancelUpdateStatusTotalOrder(totalOrder);
-        requestCancelTotalOrderIncreaseProduct(totalOrder);
+        TotalOrder updateTotalOrder = totalOrderRepository.findTotalOrderForCancelUpdate(
+            requestDto.totalOrderId());
+        requestCancelTotalOrderIncreaseProduct(updateTotalOrder);
     }
 
     @Override

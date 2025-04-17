@@ -7,7 +7,7 @@ public record ValidateStockDecreasesRequest(
 ) {
 
     public record ProductDetail(
-        Long companyId,
+        Long productId,
         Long optionId,
         Long decreaseStockAmount
     ) {

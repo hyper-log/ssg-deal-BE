@@ -3,12 +3,13 @@ package on.ssgdeal.cart_service.application.service.dto;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import on.ssgdeal.cart_service.application.generator.RedisKeyGenerator;
 import on.ssgdeal.cart_service.application.service.dto.GetProductsByIdsResponseDto.SubCart.Product;
 import on.ssgdeal.cart_service.application.service.dto.GetProductsByIdsResponseDto.SubCart.Product.Option;
 import on.ssgdeal.cart_service.domain.entity.CartProduct;
 import on.ssgdeal.cart_service.infrastructure.client.product.dto.GetProductOptionsResponseDto;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
-import on.ssgdeal.cart_service.application.generator.RedisKeyGenerator;
+import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse.ProductDetail;
 
 public record GetProductsByIdsResponseDto(
     Long originalTotalPrice,
@@ -45,18 +46,19 @@ public record GetProductsByIdsResponseDto(
                 Long extraPrice
             ) {
 
-
             }
         }
     }
 
     public static GetProductsByIdsResponseDto from(
-        List<GetProductDetailsResponse> detailsResponseList,
+        GetProductDetailsResponse productDetailsResponse,
         List<GetProductOptionsResponseDto> productOptionsResponses,
         List<CartProduct> cartProducts
     ) {
-        Map<Long, List<GetProductDetailsResponse>> groupedByCompany = detailsResponseList.stream()
-            .collect(Collectors.groupingBy(GetProductDetailsResponse::companyId));
+        List<ProductDetail> productDetails = productDetailsResponse.productDetails();
+
+        Map<Long, List<ProductDetail>> groupedByCompany = productDetails.stream()
+            .collect(Collectors.groupingBy(ProductDetail::companyId));
 
         List<SubCart> subCarts = groupedByCompany.values().stream().map(
             getProductDetailsResponses -> {
