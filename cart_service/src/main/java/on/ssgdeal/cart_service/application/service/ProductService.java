@@ -8,7 +8,7 @@ import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProduc
 
 public interface ProductService {
 
-    List<GetProductDetailsResponse> getProductsByHashKeys(List<CartProduct> cartProducts);
+    GetProductDetailsResponse getProductsByHashKeys(List<CartProduct> cartProducts);
 
     List<GetProductOptionsResponseDto> getProductOptions(List<CartProduct> cartProducts);
 

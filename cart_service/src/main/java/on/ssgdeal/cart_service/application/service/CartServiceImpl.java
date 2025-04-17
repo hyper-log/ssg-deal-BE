@@ -88,13 +88,13 @@ public class CartServiceImpl implements CartService {
         List<CartProduct> cartProducts = cartRepository.findAll(key);
         log.info("getCarts cartProducts: {}", cartProducts);
 
-        List<GetProductDetailsResponse> detailsResponseList =
+        GetProductDetailsResponse detailsResponse =
             productService.getProductsByHashKeys(cartProducts);
         List<GetProductOptionsResponseDto> productOptionsResponses =
             productService.getProductOptions(cartProducts);
 
         return GetProductsByIdsResponseDto.from(
-            detailsResponseList, productOptionsResponses, cartProducts);
+            detailsResponse, productOptionsResponses, cartProducts);
     }
 
     @Override

@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ProductFeignClient {
 
     @PostMapping("/internal/v1/promotions/products/detail")
-    CommonResponse<GetProductDetailsResponse> getProductDetails(@RequestBody GetProductDetailsRequest request);
+    CommonResponse<GetProductDetailsResponse> getProductDetails(
+        @RequestBody GetProductDetailsRequest request);
 
-    @GetMapping("/api/v1/promotions/products/options/list")
+    @GetMapping("/api/v1/promotions/products/options")
     CommonResponse<GetProductOptionsResponse> getProductOptions(@RequestParam Long productId);
 
     @GetMapping("/internal/v1/promotions/products/{productId}/options/{optionId}/stock")
