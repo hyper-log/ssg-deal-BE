@@ -221,9 +221,9 @@ public class ProductServiceImpl implements ProductService {
         ValidateStockDecreasesRequestDto dto
     ) {
         log.info("Validate stock decrease: {}", dto);
-        List<Long> companyIds = dto.getProductDetails()
+        List<Long> productIds = dto.getProductDetails()
             .stream()
-            .map(ValidateStockDecreasesRequestDto.ProductDetail::companyId)
+            .map(ValidateStockDecreasesRequestDto.ProductDetail::productId)
             .distinct()
             .toList();
 
@@ -233,8 +233,8 @@ public class ProductServiceImpl implements ProductService {
             .distinct()
             .toList();
 
-        List<Product> products = productRepository.findAllWithDetailsByCompanyIdsAndOptionIds(
-            companyIds, optionIds);
+        List<Product> products = productRepository.findAllWithDetailsByProductIdsAndOptionIds(
+            productIds, optionIds);
 
         Map<Long, ProductAndOption> productAndOptionMap = new HashMap<>();
         for (Product product : products) {
@@ -251,19 +251,15 @@ public class ProductServiceImpl implements ProductService {
                     if (pair == null) {
                         throw new ProductException.ProductOptionNotFoundException();
                     }
-                    // 검증 1: 요청의 회사 ID와 조회된 Product의 회사 ID가 일치하는지 검증
-                    if (!pair.product.getCompany().getId().equals(pd.companyId())) {
-                        throw new ProductException.ProductCompanyMismatchException();
-                    }
 
-                    // 검증 2: 프로모션 진행 여부
+                    // 검증 1: 프로모션 진행 여부
                     PromotionStatus promotionStatus = pair.product.getCompany().getPromotion()
                         .getStatus();
                     if (!promotionStatus.equals(PromotionStatus.IN_PROGRESS)) {
                         throw new ProductException.ProductPromotionIsNotInProgressException();
                     }
 
-                    // 검증 3: 재고 확인 (요청한 감소 수량보다 옵션의 재고가 충분한지)
+                    // 검증 2: 재고 확인 (요청한 감소 수량보다 옵션의 재고가 충분한지)
                     Long availableStock = pair.option.getProductStock().getValue();
                     if (availableStock < pd.decreaseStockAmount()) {
                         throw new ProductException.ProductDoNotExistException();

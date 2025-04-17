@@ -50,4 +50,10 @@ public class ProductRepositoryImpl implements ProductRepository {
         List<Long> optionIds) {
         return jpaRepository.findAllWithDetailsByCompanyIdsAndOptionIds(companyIds, optionIds);
     }
+
+    @Override
+    public List<Product> findAllWithDetailsByProductIdsAndOptionIds(List<Long> productIds,
+        List<Long> optionIds) {
+        return jpaRepository.findAllWithDetailsByProductIdsAndOptionIds(productIds, optionIds);
+    }
 }
