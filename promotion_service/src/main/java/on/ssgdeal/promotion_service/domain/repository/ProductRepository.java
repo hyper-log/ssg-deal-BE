@@ -21,4 +21,6 @@ public interface ProductRepository {
 
     List<Product> findAllWithDetailsByCompanyIdsAndOptionIds(List<Long> companyIds,
         List<Long> optionIds);
+
+    Optional<Product> findByProductIdAndOptionId(Long productId, Long optionId);
 }
