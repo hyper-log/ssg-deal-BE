@@ -1,4 +1,4 @@
-package on.ssgdeal.order_service.application.service.dto;
+package on.ssgdeal.order_service.application.dto;
 
 import on.ssgdeal.order_service.domain.entity.TotalOrder;
 

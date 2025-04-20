@@ -1,6 +1,6 @@
 package on.ssgdeal.order_service.domain.entity.dtos;
 
-import on.ssgdeal.order_service.application.service.dto.CreateUserInfoDto;
+import on.ssgdeal.order_service.application.dto.CreateUserInfoDto;
 
 public record CreateOrdererDto(Long userId, String nickname, String slackEmail,
                                String destination, String deliveryRequest) {

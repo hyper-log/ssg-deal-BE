@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto;
-import on.ssgdeal.order_service.application.service.dto.CreateOrderRequestDto.CreateSubOrderRequestDto;
+import on.ssgdeal.order_service.application.dto.CreateOrderRequestDto;
+import on.ssgdeal.order_service.application.dto.CreateOrderRequestDto.CreateSubOrderRequestDto;
 
 public record CreateOrderRequest(
     @NotNull(message = "배송지는 필수 입력 값입니다.") Long destinationId,
