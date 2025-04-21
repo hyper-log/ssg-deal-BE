@@ -1,4 +1,4 @@
-package on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient;
+package on.ssgdeal.payment_service.infrastructure.client.PaymentClient;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @ConfigurationProperties(prefix = "payment")
-public class PaymentProperties {
+public class TossPaymentProperties {
+
     private String secretKey;
     private String baseUrl;
     private String confirmEndpoint;
