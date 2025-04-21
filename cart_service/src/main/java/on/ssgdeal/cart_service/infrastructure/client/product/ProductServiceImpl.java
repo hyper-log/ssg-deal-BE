@@ -13,6 +13,7 @@ import on.ssgdeal.cart_service.infrastructure.client.product.feign.ProductFeignC
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsRequest;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsRequest.ProductDetail;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductDetailsResponse;
+import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductOptionsRequest;
 import on.ssgdeal.cart_service.infrastructure.client.product.feign.dto.GetProductOptionsResponse;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,9 @@ public class ProductServiceImpl implements ProductService {
         return cartProducts.stream()
             .map(key -> {
                 Long productId = RedisKeyGenerator.parseProductId(key.getHashKey());
+                GetProductOptionsRequest request = GetProductOptionsRequest.from(productId);
                 GetProductOptionsResponse response =
-                    productFeignClient.getProductOptions(productId).data();
+                    productFeignClient.getProductOptions(request).data();
                 return new GetProductOptionsResponseDto(productId, response.options().stream()
                     .map(option -> new GetProductOptionsResponseDto.Option(
                         option.optionId(),
