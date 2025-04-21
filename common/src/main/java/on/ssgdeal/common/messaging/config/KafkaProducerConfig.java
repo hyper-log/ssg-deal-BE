@@ -16,6 +16,8 @@ public class KafkaProducerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+    @Value("${spring.application.name}")
+    private String applicationName;
 
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
@@ -53,6 +55,8 @@ public class KafkaProducerConfig {
         configs.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
         // 트랜잭션 타임아웃
         configs.put(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, 300000);
+        // 동일 Producer 재시작 간에도 트랜잭션을 식별하기 위한 ID
+        configs.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "tx-ssgdeal-" + applicationName);
 
         //== 성능 튜닝
         // batch size (32KB)
