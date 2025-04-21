@@ -24,7 +24,8 @@ public class KafkaProducerConfig {
         return new KafkaTemplate<>(producerFactory);
     }
 
-    private ProducerFactory<String, String> producerFactory() {
+    @Bean
+    public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> configs = getProducerCommonConfigs();
 
         return new DefaultKafkaProducerFactory<>(configs);
