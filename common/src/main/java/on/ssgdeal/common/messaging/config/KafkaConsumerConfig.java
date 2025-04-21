@@ -50,8 +50,6 @@ public class KafkaConsumerConfig {
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         // value 역직렬화
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        // 역직렬화 시 신뢰할 수 있는 패키지
-        configs.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
         // 자동 토픽 생성
         configs.put(ConsumerConfig.ALLOW_AUTO_CREATE_TOPICS_CONFIG, false);
