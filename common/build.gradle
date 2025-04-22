@@ -25,6 +25,9 @@ dependencies {
     // spring cloud
     implementation platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    // kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
 
 // Lombok Annotation Processor 강제 적용

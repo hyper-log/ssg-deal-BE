@@ -49,6 +49,7 @@ public class CartServiceImpl implements CartService {
                             updateCartProduct = CartProduct.create(
                                 updateHashKey, requestDto.quantity());
                         }
+                        cartRepository.deleteCartProducts(key, List.of(exist.getHashKey()));
                         cartRepository.updateCartProduct(
                             UpdateCartProductDto.from(key, updateCartProduct));
                     } else {

@@ -1,7 +1,7 @@
 package on.ssgdeal.order_service.infrastructure.client.slack.feign.dtos;
 
 import java.time.LocalDate;
-import on.ssgdeal.order_service.application.service.dto.LoginUserInfoDto;
+import on.ssgdeal.order_service.application.dto.LoginUserInfoDto;
 import on.ssgdeal.order_service.domain.entity.dtos.UpdateTotalOrderSuccessDto;
 import on.ssgdeal.order_service.domain.enums.TotalOrderStatus;
 import on.ssgdeal.order_service.infrastructure.client.slack.dtos.TotalOrderCompleteSendInfoDto;

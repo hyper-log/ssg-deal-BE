@@ -3,7 +3,7 @@ package on.ssgdeal.order_service.presentation.internal.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import on.ssgdeal.order_service.application.service.dto.UpdateCancelOrderSuccessRequestDto;
+import on.ssgdeal.order_service.application.dto.UpdateCancelOrderSuccessRequestDto;
 import on.ssgdeal.order_service.domain.enums.PaymentMethod;
 import on.ssgdeal.order_service.domain.enums.PaymentType;
 

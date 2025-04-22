@@ -1,4 +1,4 @@
-package on.ssgdeal.order_service.application.service.dto;
+package on.ssgdeal.order_service.application.dto;
 
 import java.time.LocalDateTime;
 import on.ssgdeal.order_service.domain.enums.PaymentMethod;

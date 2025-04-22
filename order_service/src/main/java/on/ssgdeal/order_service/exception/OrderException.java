@@ -113,4 +113,18 @@ public class OrderException extends CustomException {
             super(OrderExceptionCode.ORDER_ALREADY_CANCEL);
         }
     }
+
+    public static class OrderCreateException extends OrderException {
+
+        public OrderCreateException() {
+            super(OrderExceptionCode.ORDER_CREATE_EXCEPTION);
+        }
+    }
+
+    public static class OrderPromotionStockException extends OrderException {
+
+        public OrderPromotionStockException() {
+            super(OrderExceptionCode.ORDER_PROMOTION_STOCK_ERROR);
+        }
+    }
 }

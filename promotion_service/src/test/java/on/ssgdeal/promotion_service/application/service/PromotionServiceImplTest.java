@@ -47,7 +47,7 @@ public class PromotionServiceImplTest {
             void getFinishedPromotionDetailTest() throws Exception {
 
                 //given
-                Long requestPromotionId = 1L;
+                Long requestPromotionId = 2L;
 
                 //when
                 GetFinishedPromotionDetailResponseDto response = promotionService.getFinishedPromotionDetail(requestPromotionId);
@@ -76,7 +76,7 @@ public class PromotionServiceImplTest {
             void getFinishedPromotionDetailTest() throws Exception {
 
                 //given
-                Long requestPromotionId = 2L;
+                Long requestPromotionId = 1L;
                 Pageable pageable = PageRequest.of(0, 10);
 
                 //when

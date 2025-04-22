@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import on.ssgdeal.common.jpa.BaseEntity;
-import on.ssgdeal.order_service.application.service.dto.CreateUserInfoDto;
+import on.ssgdeal.order_service.application.dto.CreateUserInfoDto;
 import on.ssgdeal.order_service.domain.vo.DeliveryRequest;
 import org.hibernate.annotations.SQLRestriction;
 
