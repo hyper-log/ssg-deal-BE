@@ -2,20 +2,29 @@ package on.ssgdeal.promotion_service.presentation.external;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import on.ssgdeal.common.annotation.RoleCheck;
 import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.common.application.dto.SliceDto;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
 import on.ssgdeal.promotion_service.application.service.ProductService;
 import on.ssgdeal.promotion_service.application.service.dto.product.FindProductByPromotionIdRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.UpdateOptionRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.UpdateProductRequestDto;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByIdResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByPromotionIdResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.GetProductRankingResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.SearchProductResponse;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.UpdateOptionRequest;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.UpdateOptionResponse;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.UpdateProductRequest;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.UpdateProductResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,6 +79,34 @@ public class ProductController {
     public ResponseEntity<CommonResponse<GetProductRankingResponse>> getProductRanking() {
         log.info("Get product rankings");
         GetProductRankingResponse response = productService.getProductRanking();
+
+        return ResponseEntity.ok(CommonResponse.success(response));
+    }
+
+    @RoleCheck("MASTER")
+    @PatchMapping("/products/{productId}")
+    public ResponseEntity<CommonResponse<UpdateProductResponse>> updateProduct(
+        @PathVariable(name = "productId") Long productId,
+        @RequestBody UpdateProductRequest request
+    ) {
+        log.info("Update product {}, {}", productId, request);
+
+        UpdateProductRequestDto dto = UpdateProductRequestDto.from(productId, request);
+        UpdateProductResponse response = productService.updateProduct(dto);
+
+        return ResponseEntity.ok(CommonResponse.success(response));
+    }
+
+    @RoleCheck("MASTER")
+    @PatchMapping("/products/options/{optionId}")
+    public ResponseEntity<CommonResponse<UpdateOptionResponse>> updateOption(
+        @PathVariable(name = "optionId") Long optionId,
+        @RequestBody UpdateOptionRequest request
+    ) {
+        log.info("Update option {}, {}", optionId, request);
+
+        UpdateOptionRequestDto dto = UpdateOptionRequestDto.from(optionId, request);
+        UpdateOptionResponse response = productService.updateOption(dto);
 
         return ResponseEntity.ok(CommonResponse.success(response));
     }

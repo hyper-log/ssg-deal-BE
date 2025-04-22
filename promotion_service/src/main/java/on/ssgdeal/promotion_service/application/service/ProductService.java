@@ -8,11 +8,15 @@ import on.ssgdeal.promotion_service.application.service.dto.product.GetProductDe
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductOptionsRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.IncreaseStockRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.UpdateOptionRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.UpdateProductRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.ValidateStockDecreasesRequestDto;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByIdResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByPromotionIdResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.GetProductRankingResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.SearchProductResponse;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.UpdateOptionResponse;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.UpdateProductResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.DecreaseStockResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProductDetailsResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProductOptionsResponse;
@@ -41,4 +45,8 @@ public interface ProductService {
     GetProductOptionsResponse getProductOptions(GetProductOptionsRequestDto dto);
 
     Long getProductStock(GetProductStockRequestDto dto);
+
+    UpdateProductResponse updateProduct(UpdateProductRequestDto dto);
+
+    UpdateOptionResponse updateOption(UpdateOptionRequestDto dto);
 }

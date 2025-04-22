@@ -25,6 +25,7 @@ import on.ssgdeal.promotion_service.domain.vo.ProductName;
 import on.ssgdeal.promotion_service.domain.vo.ProductOriginalPrice;
 import on.ssgdeal.promotion_service.domain.vo.ProductPreviewUrl;
 import on.ssgdeal.promotion_service.domain.vo.ProductPromotionPrice;
+import org.springframework.data.annotation.Version;
 
 @Entity
 @Table(name = "product")
@@ -63,5 +64,9 @@ public class Product extends BaseEntity {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductRankingInfo> productRankingInfos;
+
+    @Version
+    @Column(nullable = false)
+    private Long version;
 
 }
