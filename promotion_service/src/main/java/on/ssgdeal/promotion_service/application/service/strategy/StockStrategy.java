@@ -8,6 +8,6 @@ public interface StockStrategy {
 
     StockOperation getOperationType();
 
-    void apply(Product Product, ProductOption option, Long amount);
+    void apply(Product product, ProductOption option, Long amount);
 
 }

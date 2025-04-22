@@ -14,7 +14,8 @@ public record UpdateStockResponseDto(
     ) {
         return new UpdateStockResponseDto(
             product,
-            productOption);
+            productOption
+        );
     }
 
 }

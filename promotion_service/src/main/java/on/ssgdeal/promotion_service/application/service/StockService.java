@@ -1,5 +1,6 @@
 package on.ssgdeal.promotion_service.application.service;
 
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -14,7 +15,6 @@ import on.ssgdeal.promotion_service.domain.enums.StockOperation;
 import on.ssgdeal.promotion_service.domain.repository.ProductRepository;
 import on.ssgdeal.promotion_service.exception.ProductException.ProductNotFoundException;
 import on.ssgdeal.promotion_service.exception.ProductException.ProductOptionNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,15 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class StockService {
 
     private final ProductRepository productRepository;
-    private final Map<StockOperation, StockStrategy> strategyMap;
+    private final List<StockStrategy> strategies;
+    private Map<StockOperation, StockStrategy> strategyMap;
 
-
-    @Autowired
-    public StockService(
-        ProductRepository productRepository,
-        List<StockStrategy> strategies
-    ) {
-        this.productRepository = productRepository;
+    @PostConstruct
+    public void init() {
         this.strategyMap = strategies.stream()
             .collect(Collectors.toMap(StockStrategy::getOperationType, Function.identity()));
     }
