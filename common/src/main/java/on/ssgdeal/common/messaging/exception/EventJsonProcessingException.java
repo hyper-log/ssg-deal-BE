@@ -1,8 +1,6 @@
 package on.ssgdeal.common.messaging.exception;
 
-import on.ssgdeal.common.global.exception.CustomException;
-
-public class EventJsonProcessingException extends CustomException {
+public class EventJsonProcessingException extends NonRecoverableException {
 
     public EventJsonProcessingException(MessagingExceptionCode e) {
         super(e);
