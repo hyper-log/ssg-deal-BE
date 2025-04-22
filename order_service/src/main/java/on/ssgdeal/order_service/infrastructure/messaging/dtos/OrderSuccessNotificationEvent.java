@@ -13,7 +13,7 @@ public record OrderSuccessNotificationEvent(
     String ordererName,
     LocalDate orderAt,
     Long paymentPrice,
-    TotalOrderStatus orderStatus
+    String orderStatus
 ) implements EventPayload {
 
     public static OrderSuccessNotificationEvent from(
@@ -27,7 +27,7 @@ public record OrderSuccessNotificationEvent(
             loginUserInfoDto.nickname(),
             totalOrderCompleteSendInfoDto.orderAt(),
             totalOrderCompleteSendInfoDto.paymentPrice(),
-            TotalOrderStatus.PAID
+            TotalOrderStatus.PAID.getDescription()
         );
     }
 }
