@@ -43,4 +43,16 @@ public class NotificationException extends CustomException {
         }
     }
 
+    public static class NotificationChannelNotFoundException extends NotificationException {
+        public NotificationChannelNotFoundException() {
+            super(NotificationExceptionCode.NOTIFICATION_CHANNEL_NOT_FOUND);
+        }
+    }
+
+    public static class NotificationNotFoundException extends NotificationException {
+        public NotificationNotFoundException() {
+            super(NotificationExceptionCode.NOTIFICATION_NOT_FOUND);
+        }
+    }
+
 }

@@ -14,7 +14,9 @@ public enum NotificationExceptionCode implements ExceptionCode {
     SLACK_CHANNEL_OPEN_FAILED(HttpStatus.BAD_REQUEST, "슬랙 유저 채널 오픈에 실패했습니다."),
     SLACK_MESSAGE_SEND_FAILED(HttpStatus.BAD_REQUEST, "슬랙 메시지 전송에 실패했습니다."),
     SLACK_MESSAGE_API_FAILED(HttpStatus.BAD_REQUEST, "슬랙 메시지 API가 실패했습니다."),
-    INVALID_NUMBER_FORMAT(HttpStatus.BAD_REQUEST, "숫자 변환에 실패했습니다.")
+    INVALID_NUMBER_FORMAT(HttpStatus.BAD_REQUEST, "숫자 변환에 실패했습니다."),
+    NOTIFICATION_CHANNEL_NOT_FOUND(HttpStatus.NOT_FOUND, "알림 채널을 찾을 수 없습니다."),
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

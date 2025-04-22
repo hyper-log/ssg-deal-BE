@@ -4,6 +4,7 @@ import on.ssgdeal.notification_service.application.service.dto.CreateNotificatio
 import on.ssgdeal.notification_service.domain.entity.Notification;
 import on.ssgdeal.notification_service.domain.entity.NotificationTemplate;
 import on.ssgdeal.notification_service.domain.entity.dto.CreateNotificationDto;
+import on.ssgdeal.notification_service.domain.enums.NotificationChannelType;
 import on.ssgdeal.notification_service.domain.enums.NotificationTemplateType;
 import on.ssgdeal.notification_service.domain.repository.NotificationRepository;
 import on.ssgdeal.notification_service.domain.repository.NotificationTemplateRepository;
@@ -57,6 +58,7 @@ class NotificationServiceImplUnitTest {
     private String mockContent;
     private CreateNotificationDto mockDto;
 
+    private NotificationChannelType mockSenderType;
 
     @BeforeEach
     void setUp() {
@@ -88,7 +90,9 @@ class NotificationServiceImplUnitTest {
                 .content(mockContent)
                 .build();
 
-        mockNotification = Notification.create(mockDto);
+        mockNotification = Notification.createSuccess(mockDto);
+
+        mockSenderType = NotificationChannelType.SLACK;
 
     }
 
@@ -114,7 +118,7 @@ class NotificationServiceImplUnitTest {
                 );
 
         // when
-        CreateNotificationResponseDto response = notificationServiceImpl.sendSlackNotification(mockRequestDto);
+        CreateNotificationResponseDto response = notificationServiceImpl.sendNotification(mockRequestDto, mockSenderType);
 
         // then
         assertThat(response).isNotNull();

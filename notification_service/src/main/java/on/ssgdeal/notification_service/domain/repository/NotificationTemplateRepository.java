@@ -10,5 +10,7 @@ public interface NotificationTemplateRepository {
     Optional<NotificationTemplate> findByType(NotificationTemplateType type);
 
     NotificationTemplate save(NotificationTemplate notification);
+
+    void deleteAll();
     
 }

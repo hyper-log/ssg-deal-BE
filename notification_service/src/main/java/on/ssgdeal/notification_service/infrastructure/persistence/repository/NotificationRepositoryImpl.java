@@ -6,6 +6,7 @@ import on.ssgdeal.notification_service.domain.repository.NotificationRepository;
 import on.ssgdeal.notification_service.infrastructure.persistence.jpa.NotificationJpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,4 +25,13 @@ public class NotificationRepositoryImpl implements NotificationRepository {
         return notificationJpaRepository.findById(id);
     }
 
+    @Override
+    public List<Notification> findAll() {
+        return notificationJpaRepository.findAll();
+    }
+
+    @Override
+    public void deleteAll() {
+        notificationJpaRepository.deleteAll();
+    }
 }
