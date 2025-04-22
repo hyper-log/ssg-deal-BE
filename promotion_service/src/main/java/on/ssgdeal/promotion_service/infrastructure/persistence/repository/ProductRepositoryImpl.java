@@ -35,8 +35,18 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public Optional<Product> findWithPromotionById(Long id) {
+        return jpaRepository.findWithPromotionById(id);
+    }
+
+    @Override
     public Product save(Product product) {
         return jpaRepository.save(product);
+    }
+
+    @Override
+    public Product saveAndFlush(Product product) {
+        return jpaRepository.saveAndFlush(product);
     }
 
     @Override

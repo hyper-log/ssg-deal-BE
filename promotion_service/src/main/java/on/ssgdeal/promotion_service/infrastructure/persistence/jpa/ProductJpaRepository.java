@@ -48,4 +48,13 @@ public interface ProductJpaRepository extends JpaRepository<Product, Long> {
         @Param("productId") Long productId,
         @Param("optionId") Long optionId
     );
+
+    @Query("SELECT p FROM Product p " +
+        "JOIN FETCH p.company c " +
+        "JOIN FETCH c.promotion promo " +
+        "WHERE p.id = :productId "
+    )
+    Optional<Product> findWithPromotionById(
+        @Param("productId") Long id
+    );
 }

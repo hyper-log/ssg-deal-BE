@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import on.ssgdeal.common.jpa.BaseEntity;
+import on.ssgdeal.promotion_service.application.service.dto.product.UpdateProductRequestDto;
 import on.ssgdeal.promotion_service.domain.vo.ProductContentImageUrl;
 import on.ssgdeal.promotion_service.domain.vo.ProductName;
 import on.ssgdeal.promotion_service.domain.vo.ProductOriginalPrice;
@@ -69,4 +70,48 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Long version;
 
+    public void update(UpdateProductDto dto) {
+        if (dto.productName != null) {
+            this.name = new ProductName(dto.productName);
+        }
+        if (dto.originalPrice != null) {
+            this.originalPrice = new ProductOriginalPrice(dto.originalPrice);
+        }
+        if (dto.promotionPrice != null) {
+            this.promotionPrice = new ProductPromotionPrice(dto.promotionPrice);
+        }
+        if (dto.previewUrl != null) {
+            this.previewUrl = new ProductPreviewUrl(dto.previewUrl);
+        }
+        if (dto.contentImgUrl != null) {
+            this.contentImgUrl = new ProductContentImageUrl(dto.contentImgUrl);
+        }
+        if (dto.content != null) {
+            this.content = dto.content;
+        }
+    }
+
+    @Builder
+    public record UpdateProductDto(
+        String productName,
+        Long originalPrice,
+        Long promotionPrice,
+        String previewUrl,
+        String contentImgUrl,
+        String content
+    ) {
+
+        public static UpdateProductDto from(
+            UpdateProductRequestDto dto
+        ) {
+            return UpdateProductDto.builder()
+                .productName(dto.productName())
+                .originalPrice(dto.originalPrice())
+                .promotionPrice(dto.promotionPrice())
+                .previewUrl(dto.previewUrl())
+                .contentImgUrl(dto.contentImgUrl())
+                .content(dto.content())
+                .build();
+        }
+    }
 }

@@ -22,6 +22,7 @@ import on.ssgdeal.promotion_service.application.service.dto.product.UpdateProduc
 import on.ssgdeal.promotion_service.application.service.dto.product.ValidateStockDecreasesRequestDto;
 import on.ssgdeal.promotion_service.domain.entity.Company;
 import on.ssgdeal.promotion_service.domain.entity.Product;
+import on.ssgdeal.promotion_service.domain.entity.Product.UpdateProductDto;
 import on.ssgdeal.promotion_service.domain.entity.ProductOption;
 import on.ssgdeal.promotion_service.domain.entity.ProductRanking;
 import on.ssgdeal.promotion_service.domain.entity.Promotion;
@@ -30,7 +31,10 @@ import on.ssgdeal.promotion_service.domain.enums.PromotionStatus;
 import on.ssgdeal.promotion_service.domain.repository.ProductRepository;
 import on.ssgdeal.promotion_service.domain.repository.PromotionRepository;
 import on.ssgdeal.promotion_service.exception.ProductException;
+import on.ssgdeal.promotion_service.exception.ProductException.ProductVersionConflictException;
 import on.ssgdeal.promotion_service.exception.PromotionException;
+import on.ssgdeal.promotion_service.infrastructure.persistence.cache.ProductCacheManager;
+import on.ssgdeal.promotion_service.infrastructure.persistence.cache.dto.CachingProductDto;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByIdResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByPromotionIdResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.GetProductRankingResponse;
@@ -42,11 +46,14 @@ import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProduct
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProductOptionsResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.IncreaseStockResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.ValidateStockDecreasesResponse;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final PromotionRepository promotionRepository;
     private final ProductMapper productMapper;
+    private final ProductCacheManager productCacheManager;
 
 
     @Override
@@ -343,7 +351,29 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public UpdateProductResponse updateProduct(UpdateProductRequestDto dto) {
-        return null;
+        Product product = findProductByIdOrElseThrow(dto.productId());
+        UpdateProductDto updateProductDto = UpdateProductDto.from(dto);
+        product.update(updateProductDto);
+
+        Product updatedProduct;
+        try {
+            updatedProduct = productRepository.saveAndFlush(product);
+        } catch (OptimisticLockingFailureException e) {
+            throw new ProductVersionConflictException();
+        }
+
+        CachingProductDto cachingProductDto = CachingProductDto.from(updatedProduct);
+        TransactionSynchronizationManager.registerSynchronization(
+            new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    productCacheManager.evict(updatedProduct.getId());
+                    productCacheManager.warmUp(cachingProductDto);
+                }
+            }
+        );
+
+        return UpdateProductResponse.from(product);
     }
 
     @Override
