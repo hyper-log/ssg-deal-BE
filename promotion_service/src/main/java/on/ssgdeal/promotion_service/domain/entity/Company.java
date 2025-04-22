@@ -3,6 +3,7 @@ package on.ssgdeal.promotion_service.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import on.ssgdeal.common.jpa.BaseEntity;
+import on.ssgdeal.promotion_service.domain.entity.dto.CreateCompanyDto;
 import on.ssgdeal.promotion_service.domain.vo.CompanyLogoUrl;
 import on.ssgdeal.promotion_service.domain.vo.CompanyName;
 
@@ -35,5 +36,17 @@ public class Company extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
+
+    public static Company create(CreateCompanyDto dto) {
+        return Company.builder()
+                .name(new CompanyName(dto.companyName()))
+                .logoUrl(new CompanyLogoUrl(dto.logoUrl()))
+                .managerId(dto.managerId())
+                .build();
+    }
+
+    public void assignPromotion(Promotion promotion) {
+        this.promotion = promotion;
+    }
 
 }

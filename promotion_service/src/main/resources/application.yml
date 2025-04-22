@@ -5,6 +5,8 @@ spring:
     name: promotion-service
   config:
     import: "configserver:"
+  profiles:
+    active: dev
   data:
     redis:
       host: host

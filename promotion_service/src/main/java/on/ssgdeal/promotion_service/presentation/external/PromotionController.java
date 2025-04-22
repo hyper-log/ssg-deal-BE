@@ -1,16 +1,16 @@
 package on.ssgdeal.promotion_service.presentation.external;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.common.presentation.dto.CommonResponse;
 import on.ssgdeal.promotion_service.application.service.PromotionService;
-import on.ssgdeal.promotion_service.application.service.dto.GetCompaniesResponseDto;
-import on.ssgdeal.promotion_service.application.service.dto.GetFinishedPromotionDetailResponseDto;
-import on.ssgdeal.promotion_service.application.service.dto.GetInProgressPromotionDetailResponseDto;
-import on.ssgdeal.promotion_service.application.service.dto.GetPromotionsResponseDto;
+import on.ssgdeal.promotion_service.application.service.dto.*;
+import on.ssgdeal.promotion_service.presentation.dto.CreatePromotionRequest;
 import on.ssgdeal.promotion_service.presentation.dto.GetCompaniesRequest;
 import on.ssgdeal.promotion_service.presentation.dto.GetPromotionsRequest;
+import on.ssgdeal.promotion_service.presentation.dto.mapper.PromotionPresentationMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +23,16 @@ import org.springframework.web.bind.annotation.*;
 public class PromotionController {
 
     private final PromotionService promotionService;
+    private final PromotionPresentationMapper mapper;
+
+    @PostMapping
+    public ResponseEntity<CommonResponse<CreatePromotionResponseDto>> createdPromotion(
+            @RequestBody final CreatePromotionRequest request,
+            HttpServletRequest servletRequest
+    ) {
+        final var responseDto = promotionService.createPromotion(mapper.toDto(request));
+        return ResponseEntity.ok().body(CommonResponse.success(responseDto));
+    }
 
     @GetMapping("/finished/{promotionId}")
     public ResponseEntity<CommonResponse<GetFinishedPromotionDetailResponseDto>> getFinishedPromotionDetail(

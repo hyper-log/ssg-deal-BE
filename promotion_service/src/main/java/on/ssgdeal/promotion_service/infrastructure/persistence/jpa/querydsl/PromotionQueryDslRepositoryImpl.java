@@ -34,7 +34,6 @@ public class PromotionQueryDslRepositoryImpl implements PromotionQueryDslReposit
 
     private final JPAQueryFactory queryFactory;
 
-    //TODO : 정렬 조건 추가
     @Override
     public Optional<GetInProgressPromotionDetailDto> findPromotionWithProductsById(
             Long promotionId,
@@ -57,6 +56,10 @@ public class PromotionQueryDslRepositoryImpl implements PromotionQueryDslReposit
                 .where(promotion.id.eq(promotionId))
                 .fetchOne();
 
+        if (promotionInfo == null) {
+            return Optional.empty();
+        }
+
         List<GetInProgressPromotionDetailDto.ProductDetailDto> products = queryFactory
                 .select(Projections.constructor(GetInProgressPromotionDetailDto.ProductDetailDto.class,
                         product.id.as("productId"),
@@ -75,7 +78,6 @@ public class PromotionQueryDslRepositoryImpl implements PromotionQueryDslReposit
         boolean hasNext = products.size() > pageable.getPageSize();
 
         //TODO : Slice에 경우 다음 값에 대한 정보 추가
-
         Slice<GetInProgressPromotionDetailDto.ProductDetailDto> productSlice =
                 new SliceImpl<>(products, pageable, hasNext);
 
@@ -163,7 +165,7 @@ public class PromotionQueryDslRepositoryImpl implements PromotionQueryDslReposit
         sort.forEach(order -> {
             String sortBy = order.getProperty();
             Order direction = order.getDirection() == Sort.Direction.ASC ? Order.ASC : Order.DESC;
-            switch (PageSortBy.valueOf(sortBy.toUpperCase())) {
+            switch (PageSortBy.from(sortBy)) {
                 case CREATED_AT -> orderSpecifiers.add(new OrderSpecifier<>(direction, company.createdAt));
                 case UPDATED_AT -> orderSpecifiers.add(new OrderSpecifier<>(direction, company.updatedAt));
                 case ID -> orderSpecifiers.add(new OrderSpecifier<>(direction, company.id));
@@ -178,10 +180,11 @@ public class PromotionQueryDslRepositoryImpl implements PromotionQueryDslReposit
         sort.forEach(order -> {
             String sortBy = order.getProperty();
             Order direction = order.getDirection() == Sort.Direction.ASC ? Order.ASC : Order.DESC;
-            switch (PageSortBy.valueOf(sortBy.toUpperCase())) {
-                case CREATED_AT -> orderSpecifiers.add(new OrderSpecifier<>(direction, company.createdAt));
-                case UPDATED_AT -> orderSpecifiers.add(new OrderSpecifier<>(direction, company.updatedAt));
-                case ID -> orderSpecifiers.add(new OrderSpecifier<>(direction, company.id));
+            System.out.println("sortBy = " + sortBy);
+            switch (PageSortBy.from(sortBy)) {
+                case CREATED_AT -> orderSpecifiers.add(new OrderSpecifier<>(direction, promotion.createdAt));
+                case UPDATED_AT -> orderSpecifiers.add(new OrderSpecifier<>(direction, promotion.updatedAt));
+                case ID -> orderSpecifiers.add(new OrderSpecifier<>(direction, promotion.id));
             }
         });
         return orderSpecifiers.toArray(new OrderSpecifier[0]);
