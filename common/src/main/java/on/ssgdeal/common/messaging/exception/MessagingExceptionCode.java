@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum MessagingExceptionCode implements ExceptionCode {
 
     NON_RECOVERABLE(HttpStatus.CONFLICT, "재시도 하지 않을 예외가 발생했습니다."),
+    EVENT_JSON_PROCESSING_EXCEPTION(HttpStatus.NOT_MODIFIED, "이벤트 직렬화에 실패했습니다."),
     ;
 
     private final HttpStatus httpStatus;

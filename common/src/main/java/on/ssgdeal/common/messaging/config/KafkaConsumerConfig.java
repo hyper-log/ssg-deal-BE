@@ -12,7 +12,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -23,7 +22,6 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 
 @Configuration
-@EnableKafka
 public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
@@ -106,7 +104,7 @@ public class KafkaConsumerConfig {
         // DLQ 정책 및 재시도 정책 적용
         factory.setCommonErrorHandler(defaultErrorHandler);
         // 컨테이너 동시성 설정
-        factory.setConcurrency(Runtime.getRuntime().availableProcessors());
+        factory.setConcurrency(1);
 
         return factory;
     }

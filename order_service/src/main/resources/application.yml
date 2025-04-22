@@ -29,6 +29,8 @@ spring:
       discovery:
         enabled: true
         service-id: config-service
+  kafka:
+    bootstrap-servers: localhost:9092
 eureka:
   client:
     service-url:
