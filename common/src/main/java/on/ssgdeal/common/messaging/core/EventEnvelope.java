@@ -11,19 +11,19 @@ import on.ssgdeal.common.messaging.exception.NonRecoverableException;
 
 @Slf4j
 public record EventEnvelope<T extends EventPayload>(
-    Topic topic,
+    String topic,
     T payload,
     String timestamp
 ) {
 
     public static <T extends EventPayload> EventEnvelope<T> wrap(
-        Topic topic, T payload, String timestamp
+        String topic, T payload, String timestamp
     ) {
         return new EventEnvelope<>(topic, payload, timestamp);
     }
 
     public static <T extends EventPayload> EventEnvelope<T> wrap(
-        Topic topic, T payload
+        String topic, T payload
     ) {
         return new EventEnvelope<>(topic, payload, LocalDateTime.now().toString());
     }
@@ -42,14 +42,13 @@ public record EventEnvelope<T extends EventPayload>(
         }
     }
 
-    public EventEnvelope<T> fromJson(String json, Class<T> tClass) {
+    public static <T extends EventPayload> EventEnvelope<T> fromJson(String json, Class<T> tClass) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode jsonNode = mapper.readTree(json);
             log.info("Envelope Json 역직렬화 시작 - jsonNode: {}", jsonNode);
 
-            String topicString = jsonNode.get("topic").asText();
-            Topic topic = Topic.valueOf(topicString);
+            String topic = jsonNode.get("topic").asText();
             String timestamp = jsonNode.get("timestamp").asText();
             T payload = mapper.treeToValue(jsonNode.get("payload"), tClass);
 

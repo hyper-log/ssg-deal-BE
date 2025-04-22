@@ -42,7 +42,7 @@ public class SlackServiceImpl implements SlackService {
         EventEnvelope<OrderSuccessNotificationEvent> envelope = EventEnvelope.wrap(
             Topic.ORDER_SUCCESS_NOTIFICATION_EVENT, payload);
         Outbox outbox = Outbox.create(
-            envelope.topic().toString(),
+            envelope.topic(),
             AggregateType.ORDER,
             totalOrderId,
             envelope.toJson()

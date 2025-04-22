@@ -56,7 +56,7 @@ public class PromotionServiceImpl implements PromotionService {
                 EventEnvelope<IncreaseStockEvent> envelope = EventEnvelope.wrap(
                     Topic.INCREASE_STOCK_EVENT, payload);
                 return Outbox.create(
-                    envelope.topic().toString(),
+                    envelope.topic(),
                     AggregateType.ORDER,
                     totalOrderId,
                     envelope.toJson()
