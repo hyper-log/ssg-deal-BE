@@ -368,7 +368,7 @@ public class ProductServiceImpl implements ProductService {
                 @Override
                 public void afterCommit() {
                     productCacheManager.evict(updatedProduct.getId());
-                    productCacheManager.warmUp(cachingProductDto);
+                    productCacheManager.update(cachingProductDto);
                 }
             }
         );

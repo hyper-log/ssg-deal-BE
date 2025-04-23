@@ -16,7 +16,7 @@ public class ProductCacheManager {
         cacheService.evictProductCache(productId);
     }
 
-    public void warmUp(CachingProductDto dto) {
-        cacheService.warmUpProductCache(dto);
+    public void update(CachingProductDto dto) {
+        cacheService.updateProductCache(dto);
     }
 }

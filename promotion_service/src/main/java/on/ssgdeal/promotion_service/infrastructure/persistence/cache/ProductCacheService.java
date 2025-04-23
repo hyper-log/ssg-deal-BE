@@ -27,7 +27,7 @@ public class ProductCacheService {
     private final ObjectMapper objectMapper;
     private final ProductRepository productRepository;
 
-    public void warmUpProductCache(CachingProductDto dto) {
+    public void updateProductCache(CachingProductDto dto) {
         try {
             Long ttl = getTtl(dto.getProductId());
             if (ttl == 0L) {
