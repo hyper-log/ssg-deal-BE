@@ -1,5 +1,8 @@
-package on.ssgdeal.promotion_service.domain.entity.mapper;
+package on.ssgdeal.promotion_service.application.service.dto.mapper;
 
+import on.ssgdeal.promotion_service.application.service.dto.product.DecreaseStockRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.IncreaseStockRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.stock.UpdateStockRequestDto;
 import on.ssgdeal.promotion_service.domain.entity.Product;
 import on.ssgdeal.promotion_service.domain.entity.ProductOption;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByIdResponse;
@@ -10,7 +13,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface ProductMapper {
+public interface ProductApplicationMapper {
+
+    @Mapping(target = "amount", source = "increaseStockAmount")
+    UpdateStockRequestDto toDto(IncreaseStockRequestDto requestDto);
+
+    @Mapping(target = "amount", source = "decreaseStockAmount")
+    UpdateStockRequestDto toDto(DecreaseStockRequestDto requestDto);
 
     @Mapping(source = "id", target = "productId")
     @Mapping(source = "name.value", target = "productName")
@@ -52,5 +61,4 @@ public interface ProductMapper {
         ProductOption productOption,
         Long increaseAmount
     );
-
 }
