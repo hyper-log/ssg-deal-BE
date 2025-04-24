@@ -35,7 +35,6 @@ import on.ssgdeal.promotion_service.domain.repository.ProductRepository;
 import on.ssgdeal.promotion_service.domain.repository.PromotionRepository;
 import on.ssgdeal.promotion_service.exception.ProductException;
 import on.ssgdeal.promotion_service.exception.ProductException.ProductVersionConflictException;
-import on.ssgdeal.promotion_service.exception.PromotionException;
 import on.ssgdeal.promotion_service.infrastructure.persistence.cache.ProductCacheManager;
 import on.ssgdeal.promotion_service.infrastructure.persistence.cache.dto.CachingProductDto;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByIdResponse;
@@ -346,7 +345,7 @@ public class ProductServiceImpl implements ProductService {
                 @Override
                 public void afterCommit() {
                     productCacheManager.evict(updatedProduct.getId());
-                    productCacheManager.update(cachingProductDto);
+                    productCacheManager.save(cachingProductDto);
                 }
             }
         );

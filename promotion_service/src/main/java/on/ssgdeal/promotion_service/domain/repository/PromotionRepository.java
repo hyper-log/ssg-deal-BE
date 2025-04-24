@@ -9,6 +9,7 @@ import on.ssgdeal.promotion_service.domain.enums.PromotionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,5 +23,6 @@ public interface PromotionRepository {
     List<Promotion> saveAll(List<Promotion> promotions);
     Optional<Promotion> findFirstByStatus(PromotionStatus status);
     void deleteAll();
+    Page<Promotion> findByStartPromotionDate(LocalDate startPromotionDate, Pageable pageable);
 
 }

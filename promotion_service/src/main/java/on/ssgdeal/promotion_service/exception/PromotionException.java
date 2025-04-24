@@ -29,5 +29,10 @@ public class PromotionException extends CustomException {
             super(PromotionExceptionCode.PROMOTION_STATUS_INVALID);
         }
     }
+    public static class ItemProcessingException extends PromotionException {
+        public ItemProcessingException() {
+            super(PromotionExceptionCode.ITEM_PROCESSING_FAILED);
+        }
+    }
 
 }

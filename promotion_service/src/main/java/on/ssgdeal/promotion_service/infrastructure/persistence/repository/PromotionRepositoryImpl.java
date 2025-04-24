@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,9 +56,13 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     public Optional<Promotion> findFirstByStatus(PromotionStatus status) {
         return promotionJpaRepository.findFirstByStatus(status);
     }
-
     @Override
     public void deleteAll() {
         promotionJpaRepository.deleteAll();
+    }
+
+    @Override
+    public Page<Promotion> findByStartPromotionDate(LocalDate startPromotionDate, Pageable pageable) {
+        return promotionJpaRepository.findByStartPromotionDate(startPromotionDate, pageable);
     }
 }

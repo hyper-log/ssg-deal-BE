@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import on.ssgdeal.promotion_service.domain.entity.Product;
@@ -19,15 +20,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductCacheService {
 
-    private static final String PRODUCT_KEY_PATTERN = "promotion:product:{%d}:v{%d}";
-    private static final String PRODUCT_KEYS_SCAN_PATTERN = "promotion:product:{%d}:v*";
+    private static final String PRODUCT_KEY_PATTERN = "promotion:product:%d:v%d";
+    private static final String PRODUCT_KEYS_SCAN_PATTERN = "promotion:product:%d:v*";
     private static final Duration CACHE_MARGIN = Duration.ofMinutes(10);
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
     private final ProductRepository productRepository;
 
-    public void updateProductCache(CachingProductDto dto) {
+    public void saveProductListCache(List<CachingProductDto> dtos) {
+        for (CachingProductDto dto : dtos) {
+            saveProductCache(dto);
+        }
+    }
+
+    public void saveProductCache(CachingProductDto dto) {
         try {
             Long ttl = getTtl(dto.getProductId());
             if (ttl == 0L) {
