@@ -26,7 +26,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Slice<Product> findByCompanyId(Long companyId, Pageable pageable) {
-        return jpaRepository.findByCompanyId(companyId, pageable);
+        return jpaRepository.findSliceByCompanyId(companyId, pageable);
     }
 
     @Override

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface ProductJpaRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE p.company.id = :companyId")
-    Slice<Product> findByCompanyId(@Param("companyId") Long companyId, Pageable pageable);
+    Slice<Product> findSliceByCompanyId(@Param("companyId") Long companyId, Pageable pageable);
     @Query("SELECT p FROM Product p WHERE p.company.id = :companyId")
     Page<Product> findPageByCompanyId(@Param("companyId") Long companyId, Pageable pageable);
 
