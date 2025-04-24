@@ -16,11 +16,13 @@ import on.ssgdeal.payment_service.domain.entity.Payment;
 import on.ssgdeal.payment_service.domain.enums.PaymentFailReason;
 import on.ssgdeal.payment_service.domain.enums.PaymentResult;
 import on.ssgdeal.payment_service.domain.enums.PaymentStatus;
+import on.ssgdeal.payment_service.domain.enums.PaymentType;
 import on.ssgdeal.payment_service.domain.repository.PaymentRepository;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentCancelException;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentConfirmException;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.PaymentClient;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.response.PaymentConfirmResponseDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.response.PaymentConfirmResponseDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.strategy.PaymentStrategy;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.strategy.PaymentStrategyFactory;
 import on.ssgdeal.payment_service.infrastructure.client.order.feign.dto.GetValidTotalOrderId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -46,7 +48,10 @@ class PaymentProcessorServiceImplTest {
     private OrderService orderService;
 
     @Mock
-    private PaymentClient paymentClient;
+    private PaymentStrategyFactory paymentStrategyFactory;
+
+    @Mock
+    private PaymentStrategy paymentStrategy;
 
     @Nested
     @DisplayName("결제 승인 요청 테스트")
@@ -62,12 +67,15 @@ class PaymentProcessorServiceImplTest {
             PaymentConfirmResponseDto confirmResponse = FixtureFactory.getPaymentConfirmResponseDto(
                 requestDto);
 
+            given(
+                paymentStrategyFactory.getStrategy(PaymentType.TOSS)).willReturn(
+                paymentStrategy);
             given(paymentService.savePayment(requestDto)).willReturn(savedPayment);
             given(paymentRepository.findById(savedPayment.getId())).willReturn(
                 Optional.of(managedPayment));
             given(orderService.getValidTotalOrderId(savedPayment.getTotalOrderId()))
                 .willReturn(new GetValidTotalOrderId(true));
-            given(paymentClient.confirmPayment(any())).willReturn(confirmResponse);
+            given(paymentStrategy.confirm(any())).willReturn(confirmResponse);
 
             // when
             OrderPaymentResponseDto responseDto = paymentProcessorService.orderPayment(requestDto);
@@ -86,12 +94,15 @@ class PaymentProcessorServiceImplTest {
             Payment savedPayment = FixtureFactory.getPayment(requestDto, 1L);
             Payment managedPayment = FixtureFactory.getPayment(requestDto, 1L);
 
+            given(
+                paymentStrategyFactory.getStrategy(PaymentType.TOSS)).willReturn(
+                paymentStrategy);
             given(paymentService.savePayment(requestDto)).willReturn(savedPayment);
             given(paymentRepository.findById(savedPayment.getId())).willReturn(
                 Optional.of(managedPayment));
             given(orderService.getValidTotalOrderId(savedPayment.getTotalOrderId()))
                 .willReturn(new GetValidTotalOrderId(true));
-            given(paymentClient.confirmPayment(any()))
+            given(paymentStrategy.confirm(any()))
                 .willThrow(new PaymentConfirmException(PaymentFailReason.INVALID_REQUEST));
 
             // when
@@ -116,6 +127,10 @@ class PaymentProcessorServiceImplTest {
             // given
             Long totalOrderId = 123L;
             Payment payment = FixtureFactory.getPayment();
+
+            given(
+                paymentStrategyFactory.getStrategy(PaymentType.TOSS)).willReturn(
+                paymentStrategy);
             given(orderService.getValidTotalOrderId(totalOrderId))
                 .willReturn(new GetValidTotalOrderId(true));
             given(paymentService.getPaymentByTotalOrderId(totalOrderId)).willReturn(payment);
@@ -135,10 +150,14 @@ class PaymentProcessorServiceImplTest {
             // given
             Long totalOrderId = 123L;
             Payment payment = FixtureFactory.getPayment();
+
+            given(
+                paymentStrategyFactory.getStrategy(PaymentType.TOSS)).willReturn(
+                paymentStrategy);
             given(orderService.getValidTotalOrderId(totalOrderId))
                 .willReturn(new GetValidTotalOrderId(true));
             given(paymentService.getPaymentByTotalOrderId(totalOrderId)).willReturn(payment);
-            willThrow(new PaymentCancelException()).given(paymentClient).cancelPayment(payment);
+            willThrow(new PaymentCancelException()).given(paymentStrategy).cancel(payment);
 
             // when
             OrderPaymentCancelResponseDto responseDto = paymentProcessorService.orderPaymentCancel(
@@ -157,6 +176,10 @@ class PaymentProcessorServiceImplTest {
             Payment payment = FixtureFactory.getPayment();
             OrderPaymentPartialCancelRequestDto requestDto = new OrderPaymentPartialCancelRequestDto(
                 500L);
+
+            given(
+                paymentStrategyFactory.getStrategy(PaymentType.TOSS)).willReturn(
+                paymentStrategy);
             given(orderService.getValidTotalOrderId(totalOrderId))
                 .willReturn(new GetValidTotalOrderId(true));
             given(paymentService.getPaymentByTotalOrderId(totalOrderId)).willReturn(payment);
@@ -179,12 +202,16 @@ class PaymentProcessorServiceImplTest {
             Payment payment = FixtureFactory.getPayment();
             OrderPaymentPartialCancelRequestDto requestDto = new OrderPaymentPartialCancelRequestDto(
                 500L);
+
+            given(
+                paymentStrategyFactory.getStrategy(PaymentType.TOSS)).willReturn(
+                paymentStrategy);
             given(orderService.getValidTotalOrderId(totalOrderId))
                 .willReturn(new GetValidTotalOrderId(true));
             given(paymentService.getPaymentByTotalOrderId(totalOrderId)).willReturn(payment);
 
-            willThrow(new PaymentCancelException()).given(paymentClient)
-                .partialCancelPayment(payment, requestDto);
+            willThrow(new PaymentCancelException()).given(paymentStrategy)
+                .partialCancel(payment, requestDto);
 
             // when
             OrderPaymentPartialCancelResponseDto responseDto =

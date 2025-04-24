@@ -43,4 +43,11 @@ public class PaymentException extends CustomException {
             super(PaymentExceptionCode.PAYMENT_CANCEL_FAIL);
         }
     }
+
+    public static class PaymentUnsupportedTypeException extends PaymentException {
+
+        public PaymentUnsupportedTypeException() {
+            super(PaymentExceptionCode.PAYMENT_UNSUPPORTED_TYPE);
+        }
+    }
 }

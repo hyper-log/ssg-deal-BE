@@ -2,7 +2,7 @@ package on.ssgdeal.payment_service.application.service.dto.response;
 
 import lombok.Builder;
 import on.ssgdeal.payment_service.domain.entity.Payment;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.response.PaymentConfirmResponseDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.response.PaymentConfirmResponseDto;
 
 @Builder
 public record OrderPaymentResponseDto(

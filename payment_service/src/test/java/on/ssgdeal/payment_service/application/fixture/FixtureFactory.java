@@ -5,7 +5,7 @@ import on.ssgdeal.payment_service.domain.entity.Payment;
 import on.ssgdeal.payment_service.domain.enums.PaymentMethod;
 import on.ssgdeal.payment_service.domain.enums.PaymentStatus;
 import on.ssgdeal.payment_service.domain.enums.PaymentType;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.response.PaymentConfirmResponseDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.response.PaymentConfirmResponseDto;
 
 public class FixtureFactory {
 
