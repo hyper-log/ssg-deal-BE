@@ -1,4 +1,4 @@
-package on.ssgdeal.promotion_service.infrastructure.persistence.cache;
+package on.ssgdeal.promotion_service.infrastructure.batch;
 
 import on.ssgdeal.promotion_service.domain.entity.Product;
 import on.ssgdeal.promotion_service.infrastructure.persistence.cache.dto.CachingProductDto;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class ProductToDtoProcessor implements ItemProcessor<List<Product>, List<CachingProductDto>> {
+public class ProductDetailToDtoProcessor implements ItemProcessor<List<Product>, List<CachingProductDto>> {
 
     @Override
     public List<CachingProductDto> process(List<Product> products) throws Exception {

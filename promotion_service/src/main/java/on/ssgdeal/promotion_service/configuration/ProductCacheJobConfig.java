@@ -1,11 +1,9 @@
 package on.ssgdeal.promotion_service.configuration;
 
 import lombok.RequiredArgsConstructor;
+import on.ssgdeal.promotion_service.domain.entity.Product;
 import on.ssgdeal.promotion_service.domain.entity.Promotion;
-import on.ssgdeal.promotion_service.infrastructure.persistence.cache.ProductProcessor;
-import on.ssgdeal.promotion_service.infrastructure.persistence.cache.ProductToDtoProcessor;
-import on.ssgdeal.promotion_service.infrastructure.persistence.cache.ProductWriter;
-import on.ssgdeal.promotion_service.infrastructure.persistence.cache.PromotionReader;
+import on.ssgdeal.promotion_service.infrastructure.batch.*;
 import on.ssgdeal.promotion_service.infrastructure.persistence.cache.dto.CachingProductDto;
 import on.ssgdeal.promotion_service.infrastructure.persistence.jpa.PromotionJpaRepository;
 import org.springframework.batch.core.Job;
@@ -36,24 +34,43 @@ public class ProductCacheJobConfig {
     private final PromotionJpaRepository promotionJpaRepository;
     private final PromotionReader promotionReader;
     private final ProductProcessor productProcessor;
-    private final ProductToDtoProcessor productToDtoProcessor;
-    private final ProductWriter productWriter;
+    private final ProductDetailToDtoProcessor productDetailToDtoProcessor;
+    private final ProductDetailWriter productDetailWriter;
+    private final ProductStockWriter productStockWriter;
 
     @Bean
-    public Job cacheProductJob() {
-        return new JobBuilder("cacheProductsJob", jobRepository)
+    public Job cacheProductDetailJob() {
+        return new JobBuilder("cacheProductDetailJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .start(cacheProductStep())
+                .start(cacheProductDetailStep())
                 .build();
     }
 
     @Bean
-    public Step cacheProductStep() {
-        return new StepBuilder("cacheProductStep", jobRepository)
+    public Job cacheProductStockJob() {
+        return new JobBuilder("cacheProductStockJob", jobRepository)
+                .incrementer(new RunIdIncrementer())
+                .start(cacheProductStockStep())
+                .build();
+    }
+
+    @Bean
+    public Step cacheProductDetailStep() {
+        return new StepBuilder("cacheProductDetailStep", jobRepository)
                 .<Promotion, List<CachingProductDto>>chunk(10, transactionManager)
-                .reader(promotionReader.promotionItemReader(promotionJpaRepository))
+                .reader(promotionReader.promotionItemReaderByStartDate(promotionJpaRepository))
                 .processor(compositeProcessor())
-                .writer(productWriter)
+                .writer(productDetailWriter)
+                .build();
+    }
+
+    @Bean
+    public Step cacheProductStockStep() {
+        return new StepBuilder("cacheProductStockStep", jobRepository)
+                .<Promotion, List<Product>>chunk(10, transactionManager)
+                .reader(promotionReader.promotionItemReaderByStartDate(promotionJpaRepository))
+                .processor(productProcessor)
+                .writer(productStockWriter)
                 .build();
     }
 
@@ -63,7 +80,7 @@ public class ProductCacheJobConfig {
                 new CompositeItemProcessor<>();
         List<ItemProcessor<?, ?>> delegates = new ArrayList<>();
         delegates.add(productProcessor);
-        delegates.add(productToDtoProcessor);
+        delegates.add(productDetailToDtoProcessor);
         compositeProcessor.setDelegates(delegates);
         return compositeProcessor;
     }
@@ -75,5 +92,6 @@ public class ProductCacheJobConfig {
         jobLauncher.afterPropertiesSet();
         return jobLauncher;
     }
+
 }
 

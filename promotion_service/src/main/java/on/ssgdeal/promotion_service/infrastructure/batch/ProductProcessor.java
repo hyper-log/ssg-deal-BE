@@ -1,4 +1,4 @@
-package on.ssgdeal.promotion_service.infrastructure.persistence.cache;
+package on.ssgdeal.promotion_service.infrastructure.batch;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
