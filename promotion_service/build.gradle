@@ -62,6 +62,8 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     // spring batch
     implementation 'org.springframework.boot:spring-boot-starter-batch'
+    // quartz
+    implementation 'org.springframework.boot:spring-boot-starter-quartz'
 }
 
 test {
