@@ -107,10 +107,10 @@ public class PromotionFinishedStatusJobLauncherTest {
         }
     }
 
-//    @AfterAll
-//    void cleanUp() {
-//        promotionRepository.deleteAll();
-//    }
+    @AfterAll
+    void cleanUp() {
+        promotionRepository.deleteAll();
+    }
 
     @Nested
     @DisplayName("Describe: PromotionFinishedStatus 의 executeInternal 메서드는")
