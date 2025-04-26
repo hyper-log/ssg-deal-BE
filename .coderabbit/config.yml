@@ -1,0 +1,12 @@
+review:
+  enabled: true
+
+triggers:
+  pull_request:
+    branches:
+      include:
+        - dev
+        - main
+        - release/**
+        - feature/**
+        - enhancement/**
