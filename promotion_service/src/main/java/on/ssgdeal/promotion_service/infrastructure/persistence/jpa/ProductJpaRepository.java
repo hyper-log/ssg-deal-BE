@@ -19,6 +19,9 @@ public interface ProductJpaRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.company.id = :companyId")
     Page<Product> findPageByCompanyId(@Param("companyId") Long companyId, Pageable pageable);
 
+    @Query("SELECT p FROM Product p WHERE p.company.id = :companyId")
+    List<Product> findListByCompanyId(@Param("companyId") Long companyId);
+
     Optional<Product> findById(Long id);
 
     @Query("SELECT p FROM Product p " +

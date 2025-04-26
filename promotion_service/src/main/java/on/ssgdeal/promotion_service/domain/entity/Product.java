@@ -14,6 +14,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import on.ssgdeal.common.jpa.BaseEntity;
 import on.ssgdeal.promotion_service.application.service.dto.product.UpdateProductRequestDto;
+import on.ssgdeal.promotion_service.domain.entity.dto.CreateProductDto;
 import on.ssgdeal.promotion_service.domain.vo.ProductContentImageUrl;
 import on.ssgdeal.promotion_service.domain.vo.ProductName;
 import on.ssgdeal.promotion_service.domain.vo.ProductOriginalPrice;
@@ -61,6 +64,7 @@ public class Product extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "product_id")
+    @Builder.Default
     private List<ProductOption> options = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
@@ -69,6 +73,24 @@ public class Product extends BaseEntity {
     @Version
     @Column(nullable = false)
     private Long version;
+
+    public static Product create(CreateProductDto dto) {
+        List<ProductOption> productOptions = dto.options().stream()
+                .map(ProductOption::create)
+                .toList();
+
+        return Product.builder()
+                .company(dto.company())
+                .content(dto.content())
+                .contentImgUrl(new ProductContentImageUrl(dto.contentImgUrl()))
+                .originalPrice(new ProductOriginalPrice(dto.originalPrice()))
+                .promotionPrice(new ProductPromotionPrice(dto.promotionPrice()))
+                .name(new ProductName(dto.productName()))
+                .previewUrl(new ProductPreviewUrl(dto.previewUrl()))
+                .options(productOptions)
+                .version(0L)
+                .build();
+    }
 
     public void update(UpdateProductDto dto) {
         if (dto.productName != null) {

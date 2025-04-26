@@ -13,6 +13,8 @@ public interface ProductRepository {
 
     Slice<Product> findByCompanyId(Long companyId, Pageable pageable);
 
+    List<Product> findByCompanyId(Long companyId);
+
     Optional<Product> findById(Long id);
 
     Optional<Product> findWithOptionsById(Long id);
@@ -20,6 +22,8 @@ public interface ProductRepository {
     Optional<Product> findWithPromotionById(Long id);
 
     Product save(Product product);
+
+    List<Product> saveAll(List<Product> products);
 
     Product saveAndFlush(Product product);
 
@@ -29,4 +33,6 @@ public interface ProductRepository {
         List<Long> optionIds);
 
     Optional<Product> findByProductIdAndOptionId(Long productId, Long optionId);
+
+    void deleteAll();
 }
