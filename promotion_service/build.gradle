@@ -64,6 +64,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     // quartz
     implementation 'org.springframework.boot:spring-boot-starter-quartz'
+    // test lombok
+    testCompileOnly 'org.projectlombok:lombok:'
+    testAnnotationProcessor 'org.projectlombok:lombok:'
 }
 
 test {

@@ -25,6 +25,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +61,7 @@ public class CacheProductDetailJobLauncherTest {
     private List<CreatePromotionDto> mockPromotionDtos;
     private List<Promotion> mockPromotions;
     private static final String PRODUCT_KEY_PATTERN = "promotion:product:%d:v%d";
+    private final List<String> deleteKeys = new ArrayList<>();
     public List<CreatePromotionDto> createTestPromotions() {
         return List.of(
                 CreatePromotionDto.builder()
@@ -177,6 +179,7 @@ public class CacheProductDetailJobLauncherTest {
 
     @AfterAll
     void cleanUp() {
+        redisTemplate.delete(deleteKeys);
         productRepository.deleteAll();
         promotionRepository.deleteAll();
     }
@@ -209,8 +212,9 @@ public class CacheProductDetailJobLauncherTest {
                                 List<Product> products = productRepository.findByCompanyId(promotion.getCompany().getId());
                                 for (Product product : products) {
                                     String key = String.format(PRODUCT_KEY_PATTERN, product.getId(), product.getVersion());
-                                    log.info("{}", redisTemplate.hasKey(key));
+                                    log.info("key: {}, hasKey: {}", key, redisTemplate.hasKey(key));
                                     assertThat(redisTemplate.hasKey(key)).isTrue();
+                                    deleteKeys.add(key);
                                 }
                             }
                         });
