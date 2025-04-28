@@ -1,5 +1,7 @@
 package on.ssgdeal.common.messaging.config;
 
+import static on.ssgdeal.common.messaging.config.KafkaConsumerConfig.DLT_SUFFIX;
+
 import on.ssgdeal.common.messaging.domain.enums.Topic;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -10,8 +12,6 @@ import org.springframework.kafka.core.KafkaAdmin.NewTopics;
 @Configuration
 @EnableKafka
 public class KafkaTopicConfig {
-
-    private static final String DLT_SUFFIX = ".dlt";
 
     @Bean
     public NewTopics newTopics() {
