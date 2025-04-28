@@ -15,7 +15,8 @@ public enum ProductExceptionCode implements ExceptionCode {
     PRODUCT_COMPANY_MISMATCH(HttpStatus.NOT_FOUND, "선택한 업체의 상품이 아닙니다."),
     PRODUCT_PROMOTION_FINISHED(HttpStatus.BAD_REQUEST, "프로모션이 종료된 상품입니다."),
     PRODUCT_PROMOTION_IS_NOT_IN_PROGRESS(HttpStatus.BAD_REQUEST, "진행중인 프로모션의 상품이 아닙니다."),
-    ;
+    PRODUCT_VERSION_CONFLICT(HttpStatus.CONFLICT, "상품/옵션 수정 중 오류가 발생했습니다."),
+    PRODUCT_CACHE_SERIALIZE_FAILED(HttpStatus.BAD_REQUEST, "상품 업데이트 중 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -12,9 +12,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import on.ssgdeal.common.jpa.BaseEntity;
-import on.ssgdeal.promotion_service.domain.vo.OptionName;
-import on.ssgdeal.promotion_service.domain.vo.ProductOptionExtraPrice;
-import on.ssgdeal.promotion_service.domain.vo.ProductStock;
+import on.ssgdeal.promotion_service.domain.entity.dto.CreateProductDto;
+import on.ssgdeal.promotion_service.domain.entity.dto.CreateProductOptionDto;
+import on.ssgdeal.promotion_service.domain.vo.*;
 
 @Entity
 @Table(name = "product_option")
@@ -37,4 +37,11 @@ public class ProductOption extends BaseEntity {
     @Embedded
     private ProductStock productStock;
 
+    public static ProductOption create(CreateProductOptionDto dto) {
+        return ProductOption.builder()
+                .optionName(new OptionName(dto.optionName()))
+                .extraPrice(new ProductOptionExtraPrice(dto.extraPrice()))
+                .productStock(new ProductStock(dto.productStock()))
+                .build();
+    }
 }

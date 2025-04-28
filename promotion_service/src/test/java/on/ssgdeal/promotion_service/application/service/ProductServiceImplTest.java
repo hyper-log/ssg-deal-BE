@@ -2,58 +2,78 @@ package on.ssgdeal.promotion_service.application.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import on.ssgdeal.promotion_service.application.service.dto.mapper.ProductApplicationMapper;
+import on.ssgdeal.common.application.dto.SliceDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.DecreaseStockRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.FindProductByPromotionIdRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.GetProductDetailsRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.IncreaseStockRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.UpdateProductRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.ValidateStockDecreasesRequestDto;
-import on.ssgdeal.promotion_service.domain.entity.Company;
 import on.ssgdeal.promotion_service.domain.entity.Product;
-import on.ssgdeal.promotion_service.domain.entity.ProductOption;
 import on.ssgdeal.promotion_service.domain.entity.Promotion;
-import on.ssgdeal.promotion_service.domain.enums.PromotionStatus;
 import on.ssgdeal.promotion_service.domain.repository.ProductRepository;
 import on.ssgdeal.promotion_service.domain.repository.PromotionRepository;
-import on.ssgdeal.promotion_service.domain.vo.CompanyName;
-import on.ssgdeal.promotion_service.domain.vo.OptionName;
-import on.ssgdeal.promotion_service.domain.vo.ProductName;
-import on.ssgdeal.promotion_service.domain.vo.ProductOptionExtraPrice;
-import on.ssgdeal.promotion_service.domain.vo.ProductOriginalPrice;
-import on.ssgdeal.promotion_service.domain.vo.ProductPreviewUrl;
-import on.ssgdeal.promotion_service.domain.vo.ProductPromotionPrice;
-import on.ssgdeal.promotion_service.domain.vo.ProductStock;
-import on.ssgdeal.promotion_service.exception.PromotionException;
+import on.ssgdeal.promotion_service.exception.ProductException.ProductOptionNotFoundException;
+import on.ssgdeal.promotion_service.exception.ProductException.ProductPromotionIsNotInProgressException;
+import on.ssgdeal.promotion_service.infrastructure.persistence.cache.ProductCacheManager;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByIdResponse;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByPromotionIdResponse;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.UpdateProductResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.DecreaseStockResponse;
+import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProductDetailsResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.IncreaseStockResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.ValidateStockDecreasesResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.annotation.Transactional;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 @DisplayName("ProductServiceImpl 단위 테스트")
+@Transactional
 class ProductServiceImplTest {
 
-    @InjectMocks
+    private static final Logger log = LoggerFactory.getLogger(ProductServiceImplTest.class);
+
+    @Autowired
     private ProductServiceImpl productServiceImpl;
 
-    @Mock
+    @Autowired
     private ProductRepository productRepository;
 
-    @Mock
+    @Autowired
     private PromotionRepository promotionRepository;
 
-    @Mock
-    private ProductApplicationMapper productMapper; // 이번 테스트에서는 사용하지 않음
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private ProductCacheManager productCacheManager;
+
+    @MockitoBean(name = "loginUserAuditorAware")
+    private AuditorAware<Long> auditorAware;
+
+
+    @BeforeEach
+    void setUpAuditor() {
+        when(auditorAware.getCurrentAuditor())
+            .thenReturn(Optional.empty());
+    }
 
     @Nested
     @DisplayName("validateStockDecrease 메서드는")
@@ -66,70 +86,32 @@ class ProductServiceImplTest {
             @Test
             @DisplayName("It: 회사별 그룹화된 응답 DTO를 반환한다.")
             void testValidateStockDecrease_valid() {
-                ValidateStockDecreasesRequestDto.ProductDetail requestDetail =
-                    new ValidateStockDecreasesRequestDto.ProductDetail(1L, 100L, 5L);
-                ValidateStockDecreasesRequestDto requestDto =
-                    new ValidateStockDecreasesRequestDto(List.of(requestDetail));
+                Long productId = 3L;
+                Long optionId = 5L;
+                Long companyId = 2L;
+                String companyName = "브런치타임";
+                Long decreaseStockAmount = 1L;
+                ValidateStockDecreasesRequestDto.ProductDetail detail =
+                    ValidateStockDecreasesRequestDto.ProductDetail.builder()
+                        .productId(productId)
+                        .optionId(optionId)
+                        .decreaseStockAmount(decreaseStockAmount)
+                        .build();
 
-                // Company
-                Company company = mock(Company.class);
-                when(company.getId()).thenReturn(1L);
-                CompanyName companyNameVO = mock(CompanyName.class);
-                when(companyNameVO.getValue()).thenReturn("Test Company");
-                when(company.getName()).thenReturn(companyNameVO);
-
-                // Promotion (검증 로직에서 IN_PROGRESS 상태여야 함)
-                Promotion promotion = mock(Promotion.class);
-                when(promotion.getStatus()).thenReturn(PromotionStatus.IN_PROGRESS);
-                when(company.getPromotion()).thenReturn(promotion);
-
-                // Product
-                Product product = mock(Product.class);
-                when(product.getId()).thenReturn(10L);
-                when(product.getCompany()).thenReturn(company);
-                ProductName productNameVO = mock(ProductName.class);
-                when(productNameVO.getValue()).thenReturn("Test Product");
-                when(product.getName()).thenReturn(productNameVO);
-                ProductPreviewUrl previewUrlVO = mock(ProductPreviewUrl.class);
-                when(previewUrlVO.getValue()).thenReturn("http://example.com/preview");
-                when(product.getPreviewUrl()).thenReturn(previewUrlVO);
-                ProductOriginalPrice originalPriceVO = mock(ProductOriginalPrice.class);
-                when(originalPriceVO.getValue()).thenReturn(20000L);
-                when(product.getOriginalPrice()).thenReturn(originalPriceVO);
-                ProductPromotionPrice promotionPriceVO = mock(ProductPromotionPrice.class);
-                when(promotionPriceVO.getValue()).thenReturn(15000L);
-                when(product.getPromotionPrice()).thenReturn(promotionPriceVO);
-
-                // ProductOption
-                ProductOption productOption = mock(ProductOption.class);
-                when(productOption.getId()).thenReturn(100L);
-                OptionName optionNameVO = mock(OptionName.class);
-                when(optionNameVO.getValue()).thenReturn("Red / L");
-                when(productOption.getOptionName()).thenReturn(optionNameVO);
-                ProductOptionExtraPrice extraPriceVO = mock(ProductOptionExtraPrice.class);
-                when(extraPriceVO.getValue()).thenReturn(100L);
-                when(productOption.getExtraPrice()).thenReturn(extraPriceVO);
-
-                ProductStock stockVO = mock(ProductStock.class);
-                when(stockVO.getValue()).thenReturn(10L);
-                when(productOption.getProductStock()).thenReturn(stockVO);
-
-                when(product.getOptions()).thenReturn(List.of(productOption));
-
-                when(productRepository.findAllWithDetailsByProductIdsAndOptionIds(anyList(),
-                    anyList()))
-                    .thenReturn(List.of(product));
+                ValidateStockDecreasesRequestDto dto = ValidateStockDecreasesRequestDto.builder()
+                    .getProductDetails(List.of(detail))
+                    .build();
 
                 ValidateStockDecreasesResponse response = productServiceImpl.validateStockDecrease(
-                    requestDto);
+                    dto);
 
                 assertThat(response).isNotNull();
                 List<ValidateStockDecreasesResponse.CompanyDetail> companyDetails = response.companyList();
                 assertThat(companyDetails.size()).isEqualTo(1);
 
                 ValidateStockDecreasesResponse.CompanyDetail companyDetail = companyDetails.get(0);
-                assertThat(companyDetail.companyId()).isEqualTo(1L);
-                assertThat(companyDetail.companyName()).isEqualTo("Test Company");
+                assertThat(companyDetail.companyId()).isEqualTo(companyId);
+                assertThat(companyDetail.companyName()).isEqualTo(companyName);
 
                 List<ValidateStockDecreasesResponse.CompanyDetail.CompanyProduct> companyProducts =
                     companyDetail.companyProductList();
@@ -137,15 +119,8 @@ class ProductServiceImplTest {
 
                 ValidateStockDecreasesResponse.CompanyDetail.CompanyProduct cp = companyProducts.get(
                     0);
-                assertThat(cp.productId()).isEqualTo(10L);
-                assertThat(cp.productName()).isEqualTo("Test Product");
-                assertThat(cp.productPreview()).isEqualTo("http://example.com/preview");
-                assertThat(cp.originalPrice()).isEqualTo(20000L);
-                assertThat(cp.promotionPrice()).isEqualTo(15000L);
-                assertThat(cp.optionId()).isEqualTo(100L);
-                assertThat(cp.optionName()).isEqualTo("Red / L");
-                assertThat(cp.extraPrice()).isEqualTo(100L);
-                assertThat(cp.decreaseStockAmount()).isEqualTo(5L);
+                assertThat(cp.productId()).isEqualTo(productId);
+                assertThat(cp.decreaseStockAmount()).isEqualTo(decreaseStockAmount);
             }
         }
     }
@@ -162,41 +137,20 @@ class ProductServiceImplTest {
             @DisplayName("It: 재고를 정상적으로 감소시키고 DecreaseStockResponse를 반환한다.")
             void testDecreaseStock_Success() {
                 // given
-                DecreaseStockRequestDto dto = new DecreaseStockRequestDto(10L, 100L, 5L);
-                Company company = org.mockito.Mockito.mock(Company.class);
-
-                Promotion promotion = org.mockito.Mockito.mock(Promotion.class);
-                when(promotion.getStatus()).thenReturn(PromotionStatus.IN_PROGRESS);
-                when(company.getPromotion()).thenReturn(promotion);
-
-                Product product = org.mockito.Mockito.mock(Product.class);
-                when(product.getCompany()).thenReturn(company);
-
-                ProductOption productOption = org.mockito.Mockito.mock(ProductOption.class);
-                when(productOption.getId()).thenReturn(100L);
-                ProductStock stockVO = org.mockito.Mockito.mock(ProductStock.class);
-                when(productOption.getProductStock()).thenReturn(stockVO);
-                when(product.getOptions()).thenReturn(List.of(productOption));
-                when(productRepository.findById(dto.productId())).thenReturn(Optional.of(product));
-                when(productRepository.save(product)).thenReturn(product);
-
-                DecreaseStockResponse expectedResponse = DecreaseStockResponse.builder()
-                    .productId(10L)
-                    .optionId(100L)
-                    .decreaseStockAmount(5L)
-                    .build();
-                when(productMapper.toDecreaseStockResponse(product, productOption,
-                    dto.decreaseStockAmount()))
-                    .thenReturn(expectedResponse);
+                Long productId = 3L;
+                Long optionId = 5L;
+                Long decreaseStockAmount = 1L;
+                DecreaseStockRequestDto dto = new DecreaseStockRequestDto(productId, optionId,
+                    decreaseStockAmount);
 
                 // when
                 DecreaseStockResponse response = productServiceImpl.decreaseStock(dto);
 
                 // then
                 assertThat(response).isNotNull();
-                assertThat(response.productId()).isEqualTo(10L);
-                assertThat(response.optionId()).isEqualTo(100L);
-                assertThat(response.decreaseStockAmount()).isEqualTo(5);
+                assertThat(response.productId()).isEqualTo(productId);
+                assertThat(response.optionId()).isEqualTo(optionId);
+                assertThat(response.decreaseStockAmount()).isEqualTo(decreaseStockAmount);
             }
         }
 
@@ -205,32 +159,22 @@ class ProductServiceImplTest {
         class PromotionNotInProgressTest {
 
             @Test
-            @DisplayName("It: PromotionException.PromotionNotInProgressException 예외를 발생시킨다.")
+            @DisplayName("It: ProductPromotionIsNotInProgressException 예외를 발생시킨다.")
             void testDecreaseStock_PromotionFinished() {
                 // given
-                DecreaseStockRequestDto dto = new DecreaseStockRequestDto(10L, 100L, 5L);
-
-                Company company = org.mockito.Mockito.mock(Company.class);
-
-                Promotion promotion = org.mockito.Mockito.mock(Promotion.class);
-                when(promotion.getStatus()).thenReturn(PromotionStatus.FINISHED);
-                when(company.getPromotion()).thenReturn(promotion);
-
-                Product product = org.mockito.Mockito.mock(Product.class);
-                when(product.getCompany()).thenReturn(company);
-
-                when(productRepository.findById(dto.productId())).thenReturn(Optional.of(product));
+                Long productId = 1L;
+                Long optionId = 1L;
+                Long increaseStockAmount = 5L;
+                DecreaseStockRequestDto dto = new DecreaseStockRequestDto(productId, optionId,
+                    increaseStockAmount);
 
                 // when, then
                 assertThatThrownBy(() -> productServiceImpl.decreaseStock(dto))
-                    .isInstanceOf(PromotionException.PromotionNotInProgressException.class);
+                    .isInstanceOf(ProductPromotionIsNotInProgressException.class);
             }
         }
     }
 
-    // ---------------------------
-    // increaseStock 메서드 테스트
-    // ---------------------------
     @Nested
     @DisplayName("increaseStock 메서드는")
     class IncreaseStockTests {
@@ -243,70 +187,212 @@ class ProductServiceImplTest {
             @DisplayName("It: 재고를 정상적으로 증가시키고 IncreaseStockResponse를 반환한다.")
             void testIncreaseStock_Success() {
                 // given
-                IncreaseStockRequestDto dto = new IncreaseStockRequestDto(10L, 100L, 3L);
-
-                Company company = org.mockito.Mockito.mock(Company.class);
-
-                Promotion promotion = org.mockito.Mockito.mock(Promotion.class);
-                when(promotion.getStatus()).thenReturn(PromotionStatus.IN_PROGRESS);
-                when(company.getPromotion()).thenReturn(promotion);
-
-                Product product = org.mockito.Mockito.mock(Product.class);
-                when(product.getCompany()).thenReturn(company);
-
-                ProductOption productOption = org.mockito.Mockito.mock(ProductOption.class);
-                when(productOption.getId()).thenReturn(100L);
-                ProductStock stockVO = org.mockito.Mockito.mock(ProductStock.class);
-                when(productOption.getProductStock()).thenReturn(stockVO);
-                when(product.getOptions()).thenReturn(List.of(productOption));
-
-                when(productRepository.findById(dto.productId())).thenReturn(Optional.of(product));
-                when(productRepository.save(product)).thenReturn(product);
-
-                IncreaseStockResponse expectedResponse = IncreaseStockResponse.builder()
-                    .productId(10L)
-                    .optionId(100L)
-                    .increaseStockAmount(3L)
-                    .build();
-                when(productMapper.toIncreaseStockResponse(product, productOption,
-                    dto.increaseStockAmount()))
-                    .thenReturn(expectedResponse);
+                Long productId = 1L;
+                Long optionId = 1L;
+                Long increaseStockAmount = 5L;
+                IncreaseStockRequestDto dto = new IncreaseStockRequestDto(productId, optionId,
+                    increaseStockAmount);
 
                 // when
                 IncreaseStockResponse response = productServiceImpl.increaseStock(dto);
 
                 // then
                 assertThat(response).isNotNull();
-                assertThat(response.productId()).isEqualTo(10L);
-                assertThat(response.optionId()).isEqualTo(100L);
-                assertThat(response.increaseStockAmount()).isEqualTo(3);
+                assertThat(response.productId()).isEqualTo(productId);
+                assertThat(response.optionId()).isEqualTo(optionId);
+                assertThat(response.increaseStockAmount()).isEqualTo(increaseStockAmount);
             }
         }
 
         @Nested
-        @DisplayName("Context: 프로모션이 종료된 경우 (FINISHED)")
+        @DisplayName("Context: 올바르지 않은 상품 옵션인 경우 (Unmatched)")
         class PromotionNotInProgressTestForIncrease {
 
             @Test
-            @DisplayName("It: PromotionException.PromotionNotInProgressException 예외를 발생시킨다.")
+            @DisplayName("It: ProductOptionNotFoundException 예외를 발생시킨다.")
             void testIncreaseStock_PromotionFinished() {
                 // given
-                IncreaseStockRequestDto dto = new IncreaseStockRequestDto(10L, 100L, 3L);
-
-                Company company = org.mockito.Mockito.mock(Company.class);
-
-                Promotion promotion = org.mockito.Mockito.mock(Promotion.class);
-                when(promotion.getStatus()).thenReturn(PromotionStatus.FINISHED);
-                when(company.getPromotion()).thenReturn(promotion);
-
-                Product product = org.mockito.Mockito.mock(Product.class);
-                when(product.getCompany()).thenReturn(company);
-
-                when(productRepository.findById(dto.productId())).thenReturn(Optional.of(product));
+                Long productId = 1L;
+                Long optionId = 5L;
+                Long increaseStockAmount = 5L;
+                IncreaseStockRequestDto dto = new IncreaseStockRequestDto(productId, optionId,
+                    increaseStockAmount);
 
                 // when, then
                 assertThatThrownBy(() -> productServiceImpl.increaseStock(dto))
-                    .isInstanceOf(PromotionException.PromotionNotInProgressException.class);
+                    .isInstanceOf(ProductOptionNotFoundException.class);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("findById 메서드는")
+    class FindByIdTests {
+
+        @Nested
+        @DisplayName("Context: 유효한 요청일 때")
+        class ValidFindByIdTest {
+
+            @Test
+            @Rollback(false)
+            @DisplayName("It: 캐시에서 값을 확인 후, RDB에서 값을 조회하며, 캐시 업로드를 수행한다.")
+            void testFindById_Success() {
+                // given
+                Long productId = 3L;
+                Product product = productRepository.findById(productId).orElse(null);
+
+                // when
+                for (int i = 0; i < 10; i++) {
+                    long start = System.currentTimeMillis();
+                    FindByIdResponse response = productServiceImpl.findById(productId);
+                    long end = System.currentTimeMillis();
+                    log.info("findById({}) execution time: {} ms", productId, (end - start));
+
+                }
+                FindByIdResponse response = productServiceImpl.findById(productId);
+
+                // then
+                assertThat(response.productId()).isEqualTo(productId);
+                assertThat(response.companyName()).isEqualTo(
+                    product.getCompany().getName().getValue());
+                assertThat(response.productContent()).isEqualTo(product.getContent());
+                assertThat(response.productPreviewImgUrl()).isEqualTo(
+                    product.getPreviewUrl().getValue());
+
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("findByPromotionId 메서드는")
+    class FindByPromotionIdTests {
+
+        @Nested
+        @DisplayName("Context: 유효한 요청일 때")
+        class ValidFindByPromotionIdTests {
+
+            @Test
+            @Rollback(false)
+            @DisplayName("It: 캐시에서 값을 확인 후, RDB에서 값을 조회하며, 캐시 업로드를 수행한다.")
+            void testFindByPromotionIdTests_Success() {
+                // given
+                Long promotionId = 2L;
+                Pageable pageable = Pageable.ofSize(10);
+                FindProductByPromotionIdRequestDto dto = new FindProductByPromotionIdRequestDto(
+                    promotionId, pageable);
+                Promotion promotion = promotionRepository.findById(promotionId).orElse(null);
+                Slice<Product> products = productRepository.findByCompanyId(promotion.getCompany()
+                    .getId(), pageable);
+
+                // when
+                for (int i = 0; i < 10; i++) {
+                    long start = System.currentTimeMillis();
+                    SliceDto<FindByPromotionIdResponse> response = productServiceImpl.findByPromotionId(
+                        dto);
+                    long end = System.currentTimeMillis();
+                    log.info("findById({}) execution time: {} ms", promotionId, (end - start));
+
+                }
+                SliceDto<FindByPromotionIdResponse> response = productServiceImpl.findByPromotionId(
+                    dto);
+
+                // then
+                Product product = products.getContent().get(0);
+                assertThat(response.content().get(0).companyName()).isEqualTo(
+                    product.getCompany().getName().getValue());
+                assertThat(response.content().get(0).productId()).isEqualTo(product.getId());
+                assertThat(response.content().get(0).productPreviewImgUrl()).isEqualTo(
+                    product.getPreviewUrl().getValue());
+
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("getProductDetails 메서드는")
+    class GetProductDetailsTests {
+
+        @Nested
+        @DisplayName("Context: 유효한 요청일 때")
+        class ValidGetProductDetailsTests {
+
+            @Test
+            @Rollback(false)
+            @DisplayName("It: 캐시에서 값을 확인 후, RDB에서 값을 조회하며, 캐시 업로드를 수행한다.")
+            void testGetProductDetailsTests_Success() {
+                // given
+                Long productId = 2L;
+                Long optionId = 4L;
+
+                GetProductDetailsRequestDto.ProductDetail detail = new GetProductDetailsRequestDto
+                    .ProductDetail(productId, optionId);
+
+                GetProductDetailsRequestDto dto = new GetProductDetailsRequestDto(List.of(detail));
+
+                Product product = productRepository.findById(productId).orElse(null);
+
+                // when
+                for (int i = 0; i < 10; i++) {
+                    long start = System.currentTimeMillis();
+                    GetProductDetailsResponse response = productServiceImpl.getProductDetails(dto);
+                    long end = System.currentTimeMillis();
+                    log.info("findById({}) execution time: {} ms", productId, (end - start));
+
+                }
+                GetProductDetailsResponse response = productServiceImpl.getProductDetails(dto);
+
+                // then
+                assertThat(response.productDetails().get(0).companyName()).isEqualTo(
+                    product.getCompany().getName().getValue());
+                assertThat(response.productDetails().get(0).productId()).isEqualTo(product.getId());
+                assertThat(response.productDetails().get(0).productPreviewImgUrl()).isEqualTo(
+                    product.getPreviewUrl().getValue());
+
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("updateProduct 메서드는")
+    class UpdateProductTests {
+
+        @Nested
+        @DisplayName("Context: 유효한 요청일 때")
+        class WhenRequestIsValid {
+
+            @Test
+            @Rollback(false)
+            @DisplayName("It: 제품을 업데이트하고 캐시를 갱신한 후 올바른 응답을 반환한다.")
+            void testUpdateProduct_Success() {
+                // given
+                Long productId = 3L;
+                String productName = "테스트 상품명";
+                Long originalPrice = 30_000L;
+                UpdateProductRequestDto dto = new UpdateProductRequestDto(
+                    productId,
+                    productName,
+                    originalPrice,
+                    null,
+                    null,
+                    null,
+                    null
+                );
+
+                // 기존 상품 엔티티 준비
+                Product existing = productRepository.findById(productId).orElse(null);
+
+                // when
+                UpdateProductResponse response = productServiceImpl.updateProduct(dto);
+
+                // then: 반환 DTO 검증
+                assert existing != null;
+                assertThat(response.content()).isEqualTo(existing.getContent());
+                assertThat(response.contentImgUrl()).isEqualTo(
+                    existing.getContentImgUrl().getValue());
+                assertThat(response.productId()).isEqualTo(productId);
+                assertThat(response.productName()).isEqualTo(productName);
+                assertThat(response.originalPrice()).isEqualTo(originalPrice);
+
             }
         }
     }

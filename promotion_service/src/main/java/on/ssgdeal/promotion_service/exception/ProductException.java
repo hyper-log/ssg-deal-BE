@@ -50,4 +50,18 @@ public class ProductException extends CustomException {
         }
     }
 
+    public static class ProductVersionConflictException extends ProductException {
+
+        public ProductVersionConflictException() {
+            super(ProductExceptionCode.PRODUCT_VERSION_CONFLICT);
+        }
+    }
+
+    public static class ProductCacheSerializeFailedException extends ProductException {
+
+        public ProductCacheSerializeFailedException() {
+            super(ProductExceptionCode.PRODUCT_CACHE_SERIALIZE_FAILED);
+        }
+    }
+
 }

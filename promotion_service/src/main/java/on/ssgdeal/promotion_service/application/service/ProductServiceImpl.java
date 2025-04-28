@@ -18,11 +18,14 @@ import on.ssgdeal.promotion_service.application.service.dto.product.GetProductDe
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductOptionsRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.GetProductStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.IncreaseStockRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.UpdateOptionRequestDto;
+import on.ssgdeal.promotion_service.application.service.dto.product.UpdateProductRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.ValidateStockDecreasesRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.stock.UpdateStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.stock.UpdateStockResponseDto;
 import on.ssgdeal.promotion_service.domain.entity.Company;
 import on.ssgdeal.promotion_service.domain.entity.Product;
+import on.ssgdeal.promotion_service.domain.entity.Product.UpdateProductDto;
 import on.ssgdeal.promotion_service.domain.entity.ProductOption;
 import on.ssgdeal.promotion_service.domain.entity.ProductRanking;
 import on.ssgdeal.promotion_service.domain.entity.Promotion;
@@ -31,20 +34,29 @@ import on.ssgdeal.promotion_service.domain.enums.StockOperation;
 import on.ssgdeal.promotion_service.domain.repository.ProductRepository;
 import on.ssgdeal.promotion_service.domain.repository.PromotionRepository;
 import on.ssgdeal.promotion_service.exception.ProductException;
+import on.ssgdeal.promotion_service.exception.ProductException.ProductNotFoundException;
+import on.ssgdeal.promotion_service.exception.ProductException.ProductVersionConflictException;
+import on.ssgdeal.promotion_service.infrastructure.persistence.cache.ProductCacheManager;
+import on.ssgdeal.promotion_service.infrastructure.persistence.cache.dto.CachingProductDto;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByIdResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.FindByPromotionIdResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.GetProductRankingResponse;
 import on.ssgdeal.promotion_service.presentation.external.dto.product.SearchProductResponse;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.UpdateOptionResponse;
+import on.ssgdeal.promotion_service.presentation.external.dto.product.UpdateProductResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.DecreaseStockResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProductDetailsResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.GetProductOptionsResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.IncreaseStockResponse;
 import on.ssgdeal.promotion_service.presentation.internal.dto.product.ValidateStockDecreasesResponse;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +65,8 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final PromotionRepository promotionRepository;
+    private final ProductCacheManager productCacheManager;
+
     private final StockService stockService;
     private final ProductApplicationMapper productApplicationMapper;
 
@@ -67,17 +81,33 @@ public class ProductServiceImpl implements ProductService {
         return PageDto.from(products.map(SearchProductResponse::from));
     }
 
+    //    @Cacheable(value = "findByIdCache", key = "#p0")
     @Override
     public FindByIdResponse findById(Long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(
-            ProductException.ProductNotFoundException::new
-        );
+        return productCacheManager.getOrLoadView(productId, FindByIdResponse.class);
+    }
+
+    public FindByIdResponse findByIdNonCache(Long productId) {
         log.info("Find by id: {}", productId);
+        Product product = productRepository
+            .findById(productId)
+            .orElseThrow(ProductNotFoundException::new);
+
         return productApplicationMapper.toFindByIdResponse(product);
     }
 
     @Override
     public SliceDto<FindByPromotionIdResponse> findByPromotionId(
+        FindProductByPromotionIdRequestDto dto
+    ) {
+        log.info("Find by promotion id: {}", dto);
+        return productCacheManager.getAllByPromotionOrLoad(
+            dto.promotionId(),
+            dto.pageable(),
+            FindByPromotionIdResponse.class);
+    }
+
+    public SliceDto<FindByPromotionIdResponse> findByPromotionIdNonCache(
         FindProductByPromotionIdRequestDto dto
     ) {
         log.info("Find by promotion id: {}", dto);
@@ -311,6 +341,38 @@ public class ProductServiceImpl implements ProductService {
         );
 
         return product.getOptions().get(0).getProductStock().getValue();
+    }
+
+    @Override
+    public UpdateProductResponse updateProduct(UpdateProductRequestDto dto) {
+        Product product = findProductByIdOrElseThrow(dto.productId());
+        UpdateProductDto updateProductDto = UpdateProductDto.from(dto);
+        product.update(updateProductDto);
+
+        Product updatedProduct;
+        try {
+            updatedProduct = productRepository.saveAndFlush(product);
+        } catch (OptimisticLockingFailureException e) {
+            throw new ProductVersionConflictException();
+        }
+
+        CachingProductDto cachingProductDto = CachingProductDto.from(updatedProduct);
+        TransactionSynchronizationManager.registerSynchronization(
+            new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    productCacheManager.evict(updatedProduct.getId());
+                    productCacheManager.save(cachingProductDto);
+                }
+            }
+        );
+
+        return UpdateProductResponse.from(product);
+    }
+
+    @Override
+    public UpdateOptionResponse updateOption(UpdateOptionRequestDto dto) {
+        return null;
     }
 
 

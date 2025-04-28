@@ -30,7 +30,7 @@ public class DestinationController {
 
     private final DestinationService destinationService;
 
-    @RoleCheck("CONSUMER")
+    @RoleCheck({"CONSUMER", "MASTER"})
     @GetMapping("/my")
     public ResponseEntity<CommonResponse<FindAllMyDestinationsResponse>> findAllMy(
         HttpServletRequest httpServletRequest
@@ -40,7 +40,7 @@ public class DestinationController {
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 
-    @RoleCheck("CONSUMER")
+    @RoleCheck({"CONSUMER", "MASTER"})
     @PostMapping("/my")
     public ResponseEntity<CommonResponse<CreateMyDestinationResponse>> createMy(
         HttpServletRequest httpServletRequest,
@@ -52,7 +52,7 @@ public class DestinationController {
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 
-    @RoleCheck("CONSUMER")
+    @RoleCheck({"CONSUMER", "MASTER"})
     @PatchMapping("/my/{destinationId}")
     public ResponseEntity<CommonResponse<UpdateMyDestinationResponse>> updateMy(
         HttpServletRequest httpServletRequest,
@@ -65,7 +65,7 @@ public class DestinationController {
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 
-    @RoleCheck("CONSUMER")
+    @RoleCheck({"CONSUMER", "MASTER"})
     @DeleteMapping("/my/{destinationId}")
     public ResponseEntity<CommonResponse<Void>> deleteMy(
         HttpServletRequest httpServletRequest,
@@ -76,7 +76,7 @@ public class DestinationController {
         return ResponseEntity.ok(CommonResponse.success());
     }
 
-    @RoleCheck("CONSUMER")
+    @RoleCheck({"CONSUMER", "MASTER"})
     @GetMapping("/my/{destinationId}")
     public ResponseEntity<CommonResponse<FindMyDestinationResponse>> findMy(
         HttpServletRequest httpServletRequest,
