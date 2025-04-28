@@ -1,7 +1,5 @@
 package on.ssgdeal.order_service.application.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.application.dto.PageDto;
 import on.ssgdeal.common.command.ScopedCommandInvoker;
-import on.ssgdeal.common.messaging.domain.entity.Outbox;
-import on.ssgdeal.common.messaging.domain.entity.Outbox.AggregateType;
-import on.ssgdeal.common.messaging.exception.EventJsonProcessingException;
 import on.ssgdeal.order_service.application.command.CreateOrderCommand;
 import on.ssgdeal.order_service.application.command.OrderCommandFactory;
 import on.ssgdeal.order_service.application.dto.CancelOrderRequestDto;
@@ -25,14 +20,12 @@ import on.ssgdeal.order_service.application.dto.LoginUserInfoDto;
 import on.ssgdeal.order_service.application.dto.UpdateCancelOrderSuccessRequestDto;
 import on.ssgdeal.order_service.application.dto.UpdateTotalOrderFailRequestDto;
 import on.ssgdeal.order_service.application.dto.UpdateTotalOrderSuccessRequestDto;
-import on.ssgdeal.order_service.domain.entity.Event;
 import on.ssgdeal.order_service.domain.entity.Order;
 import on.ssgdeal.order_service.domain.entity.TotalOrder;
 import on.ssgdeal.order_service.domain.entity.dtos.GetTotalOrderDetailDto;
 import on.ssgdeal.order_service.domain.entity.dtos.GetTotalOrdersUserInfoDto;
 import on.ssgdeal.order_service.domain.entity.dtos.UpdateTotalOrderSuccessDto;
 import on.ssgdeal.order_service.domain.entity.dtos.mapper.TotalOrderEntityLayerMapper;
-import on.ssgdeal.order_service.domain.enums.EventType;
 import on.ssgdeal.order_service.domain.enums.OrderStatus;
 import on.ssgdeal.order_service.domain.enums.TotalOrderStatus;
 import on.ssgdeal.order_service.domain.repository.TotalOrderRepository;
@@ -52,7 +45,6 @@ import on.ssgdeal.order_service.infrastructure.client.promotion.feign.dtos.InCre
 import on.ssgdeal.order_service.infrastructure.client.slack.dtos.TotalOrderCompleteSendInfoDto;
 import on.ssgdeal.order_service.infrastructure.messaging.dtos.IncreaseStockEvent;
 import on.ssgdeal.order_service.infrastructure.messaging.dtos.OrderSuccessNotificationEvent;
-import on.ssgdeal.order_service.infrastructure.persistence.jpa.OutboxRepository;
 import on.ssgdeal.order_service.presentation.external.dto.CreateOrderResponse;
 import on.ssgdeal.order_service.presentation.internal.dto.ValidTotalOrderResponse;
 import org.springframework.data.domain.Page;
@@ -76,7 +68,6 @@ public class OrderServiceImpl implements OrderService {
     private final CartService cartService;
     private final OrderCommandFactory orderCommandFactory;
     private final ScopedCommandInvoker commandInvoker;
-    private final OutboxRepository outboxRepository;
 
     @Override
     @Transactional
@@ -249,42 +240,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void requestCancelTotalOrderIncreaseProduct(TotalOrder totalOrder) {
-        // TODO : 동기 이벤트 임시 주석 처리
-        // List<InCreaseProductStockRequestDto> inCreaseProductStockRequestDtos = cancelIncreaseRequest(totalOrder);
-        List<IncreaseStockEvent> payload = toIncreaseStockEventDto(totalOrder);
-        /*
-        for (InCreaseProductStockRequestDto dto : inCreaseProductStockRequestDtos) {
-            try {
-                log.info("재고 증가 요청");
-                promotionService.increaseProductStock(dto);
-            } catch (Exception e) {
-                log.error("재고 증가 요청 실패 : {} ", e.getMessage());
-                log.error("재고 증가 요청 실패 상품 : {} ", dto.toString());
-            }
-        }
-         */
-        for (IncreaseStockEvent payloadEvent : payload) {
-            Event<IncreaseStockEvent> event = new Event<>(
-                EventType.INCREASE_STOCK_EVENT,
-                payloadEvent,
-                LocalDate.now().toString());
-
-            String payloadJson;
-            try {
-                payloadJson = new ObjectMapper().writeValueAsString(event);
-            } catch (JsonProcessingException e) {
-                throw new EventJsonProcessingException();
-            }
-            try {
-                Outbox outbox = Outbox.create(event.getEventType().getTopic(),
-                    AggregateType.ORDER,
-                    totalOrder.getId(),
-                    payloadJson);
-                outboxRepository.save(outbox);
-            } catch (Exception e) {
-                log.error("재고 증가 요청 실패 : {} ", e.getMessage());
-            }
-        }
+        log.info("재고 증가 요청");
+        List<IncreaseStockEvent> payloadList = toIncreaseStockEventDto(totalOrder);
+        promotionService.publishIncreaseProductStockMessage(totalOrder.getId(), payloadList);
     }
 
     private void requestCancelTotalOrderPayment(TotalOrder totalOrder) {
@@ -307,44 +265,14 @@ public class OrderServiceImpl implements OrderService {
         UpdateTotalOrderSuccessDto updateTotalOrderSuccessDto,
         Long totalOrderId
     ) {
-        TotalOrderCompleteSendInfoDto totalOrderCompleteSendInfoDto = TotalOrderCompleteSendInfoDto.from(
-            orderAt, paymentPrice);
-        // TODO: 동기 전송 임시 주석
-        /*
-        OrderCompleteSendSlackRequestDto sendSlackRequestDto = OrderCompleteSendSlackRequestDto.from(
+        TotalOrderCompleteSendInfoDto totalOrderCompleteSendInfoDto =
+            TotalOrderCompleteSendInfoDto.from(orderAt, paymentPrice);
+        OrderSuccessNotificationEvent payload = OrderSuccessNotificationEvent.from(
             updateTotalOrderSuccessDto,
-            totalOrderCompleteSendInfoDto, loginUserInfo);
-         */
-        OrderSuccessNotificationEvent payload =
-            OrderSuccessNotificationEvent.from(
-                updateTotalOrderSuccessDto,
-                totalOrderCompleteSendInfoDto,
-                loginUserInfo
-            );
-        Event<OrderSuccessNotificationEvent> event = new Event<>(
-            EventType.ORDER_SUCCESS_NOTIFICATION_EVENT,
-            payload,
-            LocalDate.now().toString());
-
-        String payloadJson;
-        try {
-            payloadJson = new ObjectMapper().writeValueAsString(event);
-        } catch (JsonProcessingException e) {
-            throw new EventJsonProcessingException();
-        }
-
-        try {
-            log.info("주문 성공 전달 알람 요청");
-            // TODO: 동기 전송 임시 주석
-            // slackService.sendOrderCompleteMessage(sendSlackRequestDto);
-            Outbox outbox = Outbox.create(event.getEventType().getTopic(),
-                AggregateType.ORDER,
-                totalOrderId,
-                payloadJson);
-            outboxRepository.save(outbox);
-        } catch (Exception e) {
-            log.warn("슬랙 메시지 전송 실패: {}", e.getMessage());
-        }
+            totalOrderCompleteSendInfoDto,
+            loginUserInfo
+        );
+        slackService.publishCompletedOrderSlackMessage(totalOrderId, payload);
     }
 
     private TotalOrder getTotalOrderElseThrow(Long paymentId) {
@@ -399,7 +327,6 @@ public class OrderServiceImpl implements OrderService {
             )
             .toList();
     }
-
     protected List<IncreaseStockEvent> toIncreaseStockEventDto(TotalOrder totalOrder) {
         return totalOrder.getOrders().stream().flatMap(
                 order -> order.getOrderProducts().stream().map(
@@ -407,6 +334,7 @@ public class OrderServiceImpl implements OrderService {
                         product.getOptionId(), product.getQuantity().getValue())
                 )
             )
+            .distinct()
             .toList();
     }
 

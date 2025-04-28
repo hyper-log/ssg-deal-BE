@@ -1,4 +1,4 @@
-package on.ssgdeal.order_service.infrastructure.persistence.jpa;
+package on.ssgdeal.common.messaging.domain.repository;
 
 import java.util.List;
 import on.ssgdeal.common.messaging.domain.entity.Outbox;

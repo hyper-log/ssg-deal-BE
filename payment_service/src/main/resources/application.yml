@@ -22,6 +22,9 @@ spring:
       discovery:
         enabled: true
         service-id: config-service
+  jpa:
+    hibernate:
+      ddl-auto: update
 eureka:
   client:
     service-url:

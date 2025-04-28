@@ -5,12 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.messaging.domain.entity.Outbox;
 import on.ssgdeal.common.messaging.domain.entity.Outbox.AggregateType;
+import on.ssgdeal.common.messaging.domain.repository.OutboxRepository;
 import on.ssgdeal.common.messaging.producer.KafkaOutboxProducer;
-import on.ssgdeal.order_service.infrastructure.persistence.jpa.OutboxRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
@@ -20,8 +18,7 @@ public class OrderKafkaOutboxProducer {
     private final KafkaOutboxProducer kafkaOutboxProducer;
     private final OutboxRepository outboxRepository;
 
-    @Scheduled(fixedDelay = 1000)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Scheduled(fixedDelay = 60000)
     public void execOutboxPublishing() {
         log.info("Order Service - execOutboxPublishing");
         List<Outbox> outboxeList = outboxRepository.findByAggregateType(AggregateType.ORDER);
@@ -29,6 +26,6 @@ public class OrderKafkaOutboxProducer {
             log.info("no outboxes found");
             return;
         }
-        outboxeList.forEach(kafkaOutboxProducer::publishOutboxMessage);
+        kafkaOutboxProducer.publishOutboxMessages(outboxeList);
     }
 }

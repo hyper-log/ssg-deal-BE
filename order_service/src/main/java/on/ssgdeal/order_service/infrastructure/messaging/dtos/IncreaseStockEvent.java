@@ -1,6 +1,7 @@
 package on.ssgdeal.order_service.infrastructure.messaging.dtos;
 
-import on.ssgdeal.common.messaging.domain.entity.EventPayload;
+
+import on.ssgdeal.common.messaging.core.EventPayload;
 
 public record IncreaseStockEvent(
     Long productId,

@@ -17,6 +17,11 @@ spring:
       discovery:
         enabled: true
         service-id: config-service
+  profiles:
+    active: dev
+  jpa:
+    hibernate:
+      ddl-auto: update
 
 eureka:
   client:

@@ -12,6 +12,9 @@ spring:
       port: 1234
       username: username
       password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
   cloud:
     config:
       discovery:

@@ -2,6 +2,7 @@ package on.ssgdeal.common.messaging.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,8 +56,11 @@ public class KafkaProducerConfig {
         configs.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
         // 트랜잭션 타임아웃
         configs.put(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, 300000);
+        // 재시도 횟수
+        configs.put(ProducerConfig.RETRIES_CONFIG, 3);
         // 동일 Producer 재시작 간에도 트랜잭션을 식별하기 위한 ID
-        configs.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "tx-ssgdeal-" + applicationName);
+        configs.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG,
+            "tx-ssgdeal-" + applicationName + UUID.randomUUID());
 
         //== 성능 튜닝
         // batch size (32KB)
