@@ -4,9 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import on.ssgdeal.common.messaging.exception.NonRecoverableException;
-import on.ssgdeal.common.messaging.producer.KafkaOutboxProducer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +21,8 @@ import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 
 @Configuration
 public class KafkaConsumerConfig {
+
+    public static final String DLT_SUFFIX = ".dlt";
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -62,7 +62,7 @@ public class KafkaConsumerConfig {
         // 리밸런싱 발생 시 컨슈머의 파티션 재분배 전략
         // CooperativeStickyAssignor => 컨슈머들은 기존 파티션을 최대한 유지
         configs.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG,
-            CooperativeStickyAssignor.class);
+            "org.apache.kafka.clients.consumer.CooperativeStickyAssignor");
 
         // 세션 타임아웃 (Default)
         configs.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 45000);
@@ -136,7 +136,7 @@ public class KafkaConsumerConfig {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
             kafkaTemplate,
             // 기존 파티션과 DLQ 파티션의 차이가 존재할 수 있으므로 파티션 0 고정
-            (cr, ex) -> new TopicPartition(cr.topic() + KafkaOutboxProducer.DLT_SUFFIX, 0)
+            (cr, ex) -> new TopicPartition(cr.topic() + DLT_SUFFIX, 0)
         );
         recoverer.setHeadersFunction((record, ex) -> {
             record.headers().add(
