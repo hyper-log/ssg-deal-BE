@@ -26,6 +26,8 @@ public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+    @Value("${spring.application.name}")
+    private String applicationName;
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
@@ -42,7 +44,7 @@ public class KafkaConsumerConfig {
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 
         // 컨슈머 그룹 내 여러 컨슈머의 메시지 중복 처리를 방지
-        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "on-ssgdeal-group");
+        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "ssgdeal-group-" + applicationName);
 
         // key 역직렬화
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
