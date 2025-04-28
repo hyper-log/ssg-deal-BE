@@ -1,13 +1,21 @@
 package on.ssgdeal.notification_service.domain.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import on.ssgdeal.common.jpa.BaseEntity;
-import on.ssgdeal.notification_service.domain.enums.NotificationStatus;
 import on.ssgdeal.notification_service.domain.enums.NotificationTemplateType;
-import on.ssgdeal.notification_service.domain.vo.SlackEmail;
-
-import java.util.List;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "notification_template")
@@ -15,7 +23,9 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
+@SQLRestriction("is_deleted = false")
 public class NotificationTemplate extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
