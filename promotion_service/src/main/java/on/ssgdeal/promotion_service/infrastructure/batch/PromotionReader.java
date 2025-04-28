@@ -1,4 +1,4 @@
-package on.ssgdeal.promotion_service.infrastructure.persistence.cache;
+package on.ssgdeal.promotion_service.infrastructure.batch;
 
 import on.ssgdeal.promotion_service.domain.entity.Promotion;
 import on.ssgdeal.promotion_service.infrastructure.persistence.jpa.PromotionJpaRepository;
@@ -13,18 +13,33 @@ import java.util.Collections;
 
 @Configuration
 public class PromotionReader {
-    private static int PROMOTION_PAGE_SIZE = 100;
+    private static int PROMOTION_PAGE_SIZE = 50;
 
     @Bean
     @StepScope
-    public RepositoryItemReader<Promotion> promotionItemReader(
+    public RepositoryItemReader<Promotion> promotionItemReaderByStartDate(
             PromotionJpaRepository promotionJpaRepository
     ) {
         RepositoryItemReader<Promotion> reader = new RepositoryItemReader<>();
-        reader.setName("promotionItemReader");
+        reader.setName("promotionItemReaderByStartDate");
         reader.setRepository(promotionJpaRepository);
         reader.setMethodName("findByStartPromotionDate");
         reader.setArguments(Collections.singletonList(LocalDate.now().plusDays(1)));
+        reader.setSort(Collections.singletonMap("id", Sort.Direction.ASC));
+        reader.setPageSize(PROMOTION_PAGE_SIZE);
+        return reader;
+    }
+
+    @Bean
+    @StepScope
+    public RepositoryItemReader<Promotion> promotionItemReaderByEndDate(
+            PromotionJpaRepository promotionJpaRepository
+    ) {
+        RepositoryItemReader<Promotion> reader = new RepositoryItemReader<>();
+        reader.setName("promotionItemReaderByEndDate");
+        reader.setRepository(promotionJpaRepository);
+        reader.setMethodName("findByEndPromotionDate");
+        reader.setArguments(Collections.singletonList(LocalDate.now().minusDays(1)));
         reader.setSort(Collections.singletonMap("id", Sort.Direction.ASC));
         reader.setPageSize(PROMOTION_PAGE_SIZE);
         return reader;

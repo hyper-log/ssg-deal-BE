@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import on.ssgdeal.promotion_service.domain.entity.Product;
+import on.ssgdeal.promotion_service.domain.entity.ProductOption;
+import on.ssgdeal.promotion_service.domain.entity.Promotion;
 import on.ssgdeal.promotion_service.domain.repository.ProductRepository;
 import on.ssgdeal.promotion_service.exception.ProductException.ProductCacheSerializeFailedException;
 import on.ssgdeal.promotion_service.exception.ProductException.ProductNotFoundException;
@@ -22,12 +24,23 @@ public class ProductCacheService {
 
     private static final String PRODUCT_KEY_PATTERN = "promotion:product:%d:v%d";
     private static final String PRODUCT_KEYS_SCAN_PATTERN = "promotion:product:%d:v*";
+    private static final String PRODUCT_STOCK_KEY_PATTERN = "product:%d:option:%d";
     private static final Duration CACHE_MARGIN = Duration.ofMinutes(10);
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
     private final ProductRepository productRepository;
 
+    public void saveProductStockListCache(List<Product> products) {
+        for (Product product : products) {
+            Long ttl = getTtl(product.getId());
+            for (ProductOption option : product.getOptions()) {
+                String key = String.format(PRODUCT_STOCK_KEY_PATTERN, product.getId(), option.getId());
+                String value = String.valueOf(option.getProductStock().getValue());
+                redisTemplate.opsForValue().set(key, value, Duration.ofSeconds(ttl));
+            }
+        }
+    }
     public void saveProductListCache(List<CachingProductDto> dtos) {
         for (CachingProductDto dto : dtos) {
             saveProductCache(dto);
@@ -72,5 +85,6 @@ public class ProductCacheService {
         }
         return Duration.ofDays(days).plus(CACHE_MARGIN).getSeconds();
     }
+
 
 }

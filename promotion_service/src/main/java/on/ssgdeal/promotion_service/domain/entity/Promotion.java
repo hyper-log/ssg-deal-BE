@@ -69,4 +69,7 @@ public class Promotion extends BaseEntity {
 
         return promotion;
     }
+    public void updateToFinishedStatus() {
+        this.status = PromotionStatus.FINISHED;
+    }
 }

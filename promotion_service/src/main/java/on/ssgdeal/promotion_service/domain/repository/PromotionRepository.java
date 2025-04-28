@@ -19,10 +19,13 @@ public interface PromotionRepository {
     Optional<GetInProgressPromotionDetailDto> findPromotionWithProductsById(Long id, Pageable pageable);
     Page<Promotion> findPromotions(GetPromotionsConditionDto conditionDto);
     Page<Company> findCompanies(GetCompaniesConditionDto conditionDto);
+    List<Promotion> findAll();
     Promotion save(Promotion promotion);
     List<Promotion> saveAll(List<Promotion> promotions);
     Optional<Promotion> findFirstByStatus(PromotionStatus status);
     void deleteAll();
+    void deleteAll(List<Promotion> promotions);
     Page<Promotion> findByStartPromotionDate(LocalDate startPromotionDate, Pageable pageable);
+    Page<Promotion> findByEndPromotionDate(LocalDate EndPromotionDate, Pageable pageable);
 
 }

@@ -6,12 +6,17 @@ import on.ssgdeal.promotion_service.domain.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.repository.query.Param;
 
 public interface ProductRepository {
 
     Page<Product> searchWithProductName(String productName, Pageable pageable);
 
     Slice<Product> findByCompanyId(Long companyId, Pageable pageable);
+
+    List<Product> findByCompanyId(Long companyId);
+
+    List<Product> findByCompanyIdWithOptions(Long companyId);
 
     Optional<Product> findById(Long id);
 
@@ -21,6 +26,8 @@ public interface ProductRepository {
 
     Product save(Product product);
 
+    List<Product> saveAll(List<Product> products);
+
     Product saveAndFlush(Product product);
 
     List<Product> findAllWithDetailsByIdsAndOptionIds(List<Long> productIds, List<Long> optionIds);
@@ -29,4 +36,7 @@ public interface ProductRepository {
         List<Long> optionIds);
 
     Optional<Product> findByProductIdAndOptionId(Long productId, Long optionId);
+
+    void deleteAll();
+    void deleteAll(List<Product> products);
 }

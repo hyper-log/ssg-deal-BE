@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface PromotionJpaRepository extends JpaRepository<Promotion, Long> {
     Optional<Promotion> findFirstByStatus(PromotionStatus status);
     Page<Promotion> findByStartPromotionDate(LocalDate startPromotionDate, Pageable pageable);
+    Page<Promotion> findByEndPromotionDate(LocalDate EndPromotionDate, Pageable pageable);
 }

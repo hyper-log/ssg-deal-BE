@@ -30,6 +30,16 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public List<Product> findByCompanyId(Long companyId) {
+        return jpaRepository.findListByCompanyId(companyId);
+    }
+
+    @Override
+    public List<Product> findByCompanyIdWithOptions(Long companyId) {
+        return jpaRepository.findByCompanyIdWithOptions(companyId);
+    }
+
+    @Override
     public Optional<Product> findById(Long id) {
         return jpaRepository.findById(id);
     }
@@ -42,6 +52,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> findWithOptionsById(Long id) {
         return jpaRepository.findWithOptionsById(id);
+    }
+
+    @Override
+    public List<Product> saveAll(List<Product> products) {
+        return jpaRepository.saveAll(products);
     }
 
     @Override
@@ -69,5 +84,15 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> findByProductIdAndOptionId(Long productId, Long optionId) {
         return jpaRepository.findByProductIdAndOptionId(productId, optionId);
+    }
+
+    @Override
+    public void deleteAll() {
+        jpaRepository.deleteAll();
+    }
+
+    @Override
+    public void deleteAll(List<Product> products) {
+        jpaRepository.deleteAll(products);
     }
 }

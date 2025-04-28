@@ -11,8 +11,6 @@ import on.ssgdeal.promotion_service.domain.entity.dto.GetPromotionsConditionDto;
 import on.ssgdeal.promotion_service.domain.enums.PromotionStatus;
 import on.ssgdeal.promotion_service.domain.repository.PromotionRepository;
 import on.ssgdeal.promotion_service.exception.PromotionException;
-import on.ssgdeal.promotion_service.presentation.dto.CreatePromotionRequest;
-import org.hibernate.AssertionFailure;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +23,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

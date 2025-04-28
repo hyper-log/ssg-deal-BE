@@ -16,15 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class JobLauncherController {
 
     private final JobLauncher jobLauncher;
-    private final Job cacheProductJob;
+    private final Job cacheProductDetailJob;
+    private final Job cacheProductStockJob;
 
     @PostMapping("/product/cache")
     public String handle() throws Exception{
-        JobParameters jobParameters = new JobParametersBuilder()
+        JobParameters jobProductDetailParameters = new JobParametersBuilder()
+                .addLong("timestamp", System.currentTimeMillis())
+                .toJobParameters();
+        JobParameters jobProductStockParameters = new JobParametersBuilder()
                 .addLong("timestamp", System.currentTimeMillis())
                 .toJobParameters();
 
-        JobExecution jobExecution = jobLauncher.run(cacheProductJob, jobParameters);
-        return "Job Status: " + jobExecution.getStatus();
+        JobExecution jobProductDetailExecution = jobLauncher.run(cacheProductDetailJob, jobProductDetailParameters);
+        JobExecution jobProductStockExecution = jobLauncher.run(cacheProductStockJob, jobProductStockParameters);
+        return "Job Product Detail Status: " + jobProductDetailExecution.getStatus()
+                + "Job Product Stock Status: " + jobProductStockExecution.getStatus();
     }
 }

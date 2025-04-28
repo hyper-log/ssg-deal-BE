@@ -43,6 +43,12 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     public Page<Company> findCompanies(GetCompaniesConditionDto conditionDto) {
         return promotionQueryDslRepository.findCompanies(conditionDto);
     }
+
+    @Override
+    public List<Promotion> findAll() {
+        return promotionJpaRepository.findAll();
+    }
+
     @Override
     public Promotion save(Promotion promotion) {
         return promotionJpaRepository.save(promotion);
@@ -62,7 +68,17 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     }
 
     @Override
+    public void deleteAll(List<Promotion> promotions) {
+        promotionJpaRepository.deleteAll(promotions);
+    }
+
+    @Override
     public Page<Promotion> findByStartPromotionDate(LocalDate startPromotionDate, Pageable pageable) {
         return promotionJpaRepository.findByStartPromotionDate(startPromotionDate, pageable);
+    }
+
+    @Override
+    public Page<Promotion> findByEndPromotionDate(LocalDate EndPromotionDate, Pageable pageable) {
+        return promotionJpaRepository.findByEndPromotionDate(EndPromotionDate, pageable);
     }
 }

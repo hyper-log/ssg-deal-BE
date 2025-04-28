@@ -1,12 +1,11 @@
 server:
   port: 8010
+  shutdown: graceful
 spring:
   application:
     name: promotion-service
   config:
     import: "configserver:"
-  profiles:
-    active: dev
   data:
     redis:
       host: host
