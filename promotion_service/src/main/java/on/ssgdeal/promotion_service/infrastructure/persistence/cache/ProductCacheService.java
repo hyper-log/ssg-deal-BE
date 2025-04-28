@@ -17,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import on.ssgdeal.common.application.dto.SliceDto;
 import on.ssgdeal.promotion_service.domain.entity.Product;
-import on.ssgdeal.promotion_service.domain.entity.Promotion;
 import on.ssgdeal.promotion_service.domain.entity.ProductOption;
+import on.ssgdeal.promotion_service.domain.entity.Promotion;
 import on.ssgdeal.promotion_service.domain.repository.ProductRepository;
 import on.ssgdeal.promotion_service.domain.repository.PromotionRepository;
 import on.ssgdeal.promotion_service.exception.ProductException;
@@ -39,29 +39,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductCacheService {
 
-    private static final String PRODUCT_KEYS_SCAN_PATTERN = "promotion:product:%d:v*";
-    private static final String PRODUCT_STOCK_KEY_PATTERN = "product:%d:option:%d";
     public static final String FIND_PRODUCTS_BY_PROMOTION_PATTERN = "promotion:%d:all_products";
-    private static final String PRODUCT_KEY_PATTERN = "promotion:product:%d";
+    public static final String PRODUCT_STOCK_KEY_PATTERN = "promotion:product:%d:option:%d";
+    public static final String PRODUCT_KEY_PATTERN = "promotion:product:%d";
     private static final Duration CACHE_MARGIN = Duration.ofMinutes(10);
-    private static final String decreaseStockScript = """
-        local promotionStatus = redis.call('GET', KEYS[1])
-        if not promotionStatus or promotionStatus ~= 'IN_PROGRESS' then
-            return {err = "PROMOTION_NOT_IN_PROGRESS"}
-        end
-        
-        local currentStock = tonumber(redis.call('GET', KEYS[2]) or "0")
-        local decreaseAmount = tonumber(ARGV[1])
-        
-        if currentStock < decreaseAmount then
-            return {err = "INSUFFICIENT_STOCK"}
-        end
-        
-        local newStock = currentStock - decreaseAmount
-        redis.call('SET', KEYS[2], newStock)
-        
-        return {ok = newStock}
-        """;
+
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
@@ -216,12 +198,14 @@ public class ProductCacheService {
         for (Product product : products) {
             Long ttl = getTtl(product.getId());
             for (ProductOption option : product.getOptions()) {
-                String key = String.format(PRODUCT_STOCK_KEY_PATTERN, product.getId(), option.getId());
+                String key = String.format(PRODUCT_STOCK_KEY_PATTERN, product.getId(),
+                    option.getId());
                 String value = String.valueOf(option.getProductStock().getValue());
                 redisTemplate.opsForValue().set(key, value, Duration.ofSeconds(ttl));
             }
         }
     }
+
     public void saveProductListCache(List<CachingProductDto> dtos) {
         for (CachingProductDto dto : dtos) {
             saveProductCache(dto);
