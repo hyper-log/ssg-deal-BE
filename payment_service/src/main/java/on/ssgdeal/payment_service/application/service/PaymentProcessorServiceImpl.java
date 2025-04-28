@@ -7,13 +7,15 @@ import on.ssgdeal.payment_service.application.service.dto.response.OrderPaymentC
 import on.ssgdeal.payment_service.application.service.dto.response.OrderPaymentPartialCancelResponseDto;
 import on.ssgdeal.payment_service.application.service.dto.response.OrderPaymentResponseDto;
 import on.ssgdeal.payment_service.domain.entity.Payment;
+import on.ssgdeal.payment_service.domain.enums.PaymentType;
 import on.ssgdeal.payment_service.domain.repository.PaymentRepository;
 import on.ssgdeal.payment_service.exception.PaymentException;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentCancelException;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentConfirmException;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentNotFoundException;
 import on.ssgdeal.payment_service.exception.PaymentExceptionCode;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.PaymentClient;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.strategy.PaymentStrategy;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.strategy.PaymentStrategyFactory;
 import on.ssgdeal.payment_service.infrastructure.client.order.feign.dto.CreateOrderPaymentFailRequestDto;
 import on.ssgdeal.payment_service.infrastructure.client.order.feign.dto.CreateOrderPaymentSuccessRequestDto;
 import org.springframework.stereotype.Service;
@@ -25,8 +27,8 @@ public class PaymentProcessorServiceImpl implements PaymentProcessorService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
-    private final PaymentClient paymentClient;
     private final OrderService orderService;
+    private final PaymentStrategyFactory paymentStrategyFactory;
 
     @Override
     @Transactional
@@ -37,18 +39,19 @@ public class PaymentProcessorServiceImpl implements PaymentProcessorService {
         Payment managedPayment = paymentRepository.findById(savedPayment.getId())
             .orElseThrow(PaymentNotFoundException::new);
 
+        PaymentStrategy strategy = paymentStrategyFactory.getStrategy(
+            PaymentType.valueOf(requestDto.paymentType()));
+
         try {
-            final var responseDto = paymentClient.confirmPayment(
+            var responseDto = strategy.confirm(
                 requestDto.toPaymentRequestDto(generateOrderId(requestDto.totalOrderId())));
             managedPayment.complete();
-            final var successRequestDto = CreateOrderPaymentSuccessRequestDto.from(
-                managedPayment);
+            var successRequestDto = CreateOrderPaymentSuccessRequestDto.from(managedPayment);
             orderService.createOrderPaymentSuccess(successRequestDto);
             return OrderPaymentResponseDto.success(responseDto, managedPayment);
         } catch (PaymentConfirmException e) {
             managedPayment.fail(e.getFailReason());
-            final var failRequestDto = CreateOrderPaymentFailRequestDto.from(
-                managedPayment);
+            var failRequestDto = CreateOrderPaymentFailRequestDto.from(managedPayment);
             orderService.createOrderPaymentFail(failRequestDto);
             return OrderPaymentResponseDto.fail(managedPayment);
         }
@@ -56,13 +59,14 @@ public class PaymentProcessorServiceImpl implements PaymentProcessorService {
 
     @Override
     @Transactional
-    public OrderPaymentCancelResponseDto orderPaymentCancel(final Long totalOrderId) {
+    public OrderPaymentCancelResponseDto orderPaymentCancel(Long totalOrderId) {
         validTotalOrderId(totalOrderId);
 
         Payment payment = paymentService.getPaymentByTotalOrderId(totalOrderId);
+        PaymentStrategy strategy = paymentStrategyFactory.getStrategy(payment.getPaymentType());
 
         try {
-            paymentClient.cancelPayment(payment);
+            strategy.cancel(payment);
             payment.cancel();
             return OrderPaymentCancelResponseDto.success(payment);
         } catch (PaymentCancelException e) {
@@ -77,9 +81,10 @@ public class PaymentProcessorServiceImpl implements PaymentProcessorService {
         validTotalOrderId(totalOrderId);
 
         Payment payment = paymentService.getPaymentByTotalOrderId(totalOrderId);
+        PaymentStrategy strategy = paymentStrategyFactory.getStrategy(payment.getPaymentType());
 
         try {
-            paymentClient.partialCancelPayment(payment, requestDto);
+            strategy.partialCancel(payment, requestDto);
             payment.cancel();
             return OrderPaymentPartialCancelResponseDto.success(payment);
         } catch (PaymentCancelException e) {
@@ -91,7 +96,7 @@ public class PaymentProcessorServiceImpl implements PaymentProcessorService {
         return "ORD-" + String.format("%06d", internalOrderId);
     }
 
-    protected void validTotalOrderId(final Long totalOrderId) {
+    protected void validTotalOrderId(Long totalOrderId) {
         if (!orderService.getValidTotalOrderId(totalOrderId).totalOrderExists()) {
             throw new PaymentException(PaymentExceptionCode.TOTAL_ORDER_ID_NOT_FOUND);
         }

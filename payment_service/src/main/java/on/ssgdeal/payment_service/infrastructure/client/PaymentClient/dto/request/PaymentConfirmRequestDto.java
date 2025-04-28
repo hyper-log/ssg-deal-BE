@@ -1,4 +1,4 @@
-package on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.request;
+package on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.request;
 
 import lombok.Builder;
 

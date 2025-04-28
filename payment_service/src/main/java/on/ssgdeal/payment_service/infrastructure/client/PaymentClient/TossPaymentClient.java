@@ -1,4 +1,4 @@
-package on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient;
+package on.ssgdeal.payment_service.infrastructure.client.PaymentClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -15,12 +15,12 @@ import on.ssgdeal.payment_service.domain.enums.PaymentCancelReason;
 import on.ssgdeal.payment_service.domain.enums.PaymentFailReason;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentCancelException;
 import on.ssgdeal.payment_service.exception.PaymentException.PaymentConfirmException;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.request.PaymentCancelRequestDto;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.request.PaymentConfirmRequestDto;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.request.PaymentPartialCancelRequestDto;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.response.PaymentCancelResponseDto;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.response.PaymentConfirmResponseDto;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.response.PaymentFailResponseDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.request.PaymentCancelRequestDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.request.PaymentConfirmRequestDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.request.PaymentPartialCancelRequestDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.response.PaymentCancelResponseDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.response.PaymentConfirmResponseDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.response.PaymentFailResponseDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
@@ -32,7 +32,7 @@ import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Component
-public class PaymentClient {
+public class TossPaymentClient {
 
     private static final String BASIC_DELIMITER = ":";
     private static final String AUTH_HEADER_PREFIX = "Basic ";
@@ -40,10 +40,10 @@ public class PaymentClient {
     private static final int READ_TIMEOUT_SECONDS = 30;
 
     private final ObjectMapper objectMapper;
-    private final PaymentProperties paymentProperties;
+    private final TossPaymentProperties paymentProperties;
     private final RestClient restClient;
 
-    public PaymentClient(PaymentProperties paymentProperties,
+    public TossPaymentClient(TossPaymentProperties paymentProperties,
         ObjectMapper objectMapper) {
         this.paymentProperties = paymentProperties;
         this.objectMapper = objectMapper;
@@ -62,7 +62,7 @@ public class PaymentClient {
         return factory;
     }
 
-    private String createPaymentAuthHeader(PaymentProperties paymentProperties) {
+    private String createPaymentAuthHeader(TossPaymentProperties paymentProperties) {
         byte[] encodedBytes = Base64.getEncoder()
             .encode((paymentProperties.getSecretKey() + BASIC_DELIMITER).getBytes(
                 StandardCharsets.UTF_8));

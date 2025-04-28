@@ -22,6 +22,13 @@ public interface ProductJpaRepository extends JpaRepository<Product, Long> {
         "JOIN FETCH p.options o " +
         "JOIN FETCH p.company c " +
         "JOIN FETCH c.promotion promo " +
+        "WHERE p.id = :id")
+    Optional<Product> findWithOptionsById(Long id);
+
+    @Query("SELECT p FROM Product p " +
+        "JOIN FETCH p.options o " +
+        "JOIN FETCH p.company c " +
+        "JOIN FETCH c.promotion promo " +
         "WHERE p.id IN :productIds " +
         "AND o.id IN :optionIds")
     List<Product> findAllWithDetailsByIdsAndOptionIds(

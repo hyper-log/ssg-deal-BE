@@ -1,7 +1,7 @@
 package on.ssgdeal.payment_service.application.service.dto.request;
 
 import lombok.Builder;
-import on.ssgdeal.payment_service.infrastructure.client.TossPaymentClient.dto.request.PaymentConfirmRequestDto;
+import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.request.PaymentConfirmRequestDto;
 
 @Builder
 public record OrderPaymentRequestDto(

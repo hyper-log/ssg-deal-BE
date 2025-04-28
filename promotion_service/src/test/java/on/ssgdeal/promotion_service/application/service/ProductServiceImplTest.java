@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import on.ssgdeal.promotion_service.application.service.dto.mapper.ProductApplicationMapper;
 import on.ssgdeal.promotion_service.application.service.dto.product.DecreaseStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.IncreaseStockRequestDto;
 import on.ssgdeal.promotion_service.application.service.dto.product.ValidateStockDecreasesRequestDto;
@@ -15,7 +16,6 @@ import on.ssgdeal.promotion_service.domain.entity.Company;
 import on.ssgdeal.promotion_service.domain.entity.Product;
 import on.ssgdeal.promotion_service.domain.entity.ProductOption;
 import on.ssgdeal.promotion_service.domain.entity.Promotion;
-import on.ssgdeal.promotion_service.domain.entity.mapper.ProductMapper;
 import on.ssgdeal.promotion_service.domain.enums.PromotionStatus;
 import on.ssgdeal.promotion_service.domain.repository.ProductRepository;
 import on.ssgdeal.promotion_service.domain.repository.PromotionRepository;
@@ -53,7 +53,7 @@ class ProductServiceImplTest {
     private PromotionRepository promotionRepository;
 
     @Mock
-    private ProductMapper productMapper; // 이번 테스트에서는 사용하지 않음
+    private ProductApplicationMapper productMapper; // 이번 테스트에서는 사용하지 않음
 
     @Nested
     @DisplayName("validateStockDecrease 메서드는")
