@@ -33,9 +33,13 @@ public class ProductKafkaEventListener {
     public void listenIncreaseStockEvent(
         @Payload String message,
         @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
+        @Header(KafkaHeaders.OFFSET) long offset,
+        @Header(name = KafkaHeaders.RECEIVED_KEY, required = false) Integer key,
         Acknowledgment ack
     ) throws Exception {
-        log.info("메시지를 소비합니다. Topic : {}, message :{}", topic, message);
+        log.info("메시지를 소비합니다. Topic : {}, Partition: {}, Offset: {}, Message key :{}",
+            topic, partition, offset, key);
         EventEnvelope<IncreaseStockEvent> envelope =
             EventEnvelope.fromJson(message, IncreaseStockEvent.class);
 
