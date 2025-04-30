@@ -9,7 +9,7 @@ import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.respon
 import on.ssgdeal.payment_service.infrastructure.client.PaymentClient.dto.response.PaymentConfirmResponseDto;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("TOSS")
 @RequiredArgsConstructor
 public class TossPaymentStrategy implements PaymentStrategy {
 
