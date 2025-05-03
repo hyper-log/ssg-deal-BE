@@ -28,7 +28,7 @@ public class NotificationKafkaEventListener {
 
     @KafkaListener(
         topics = {Topic.ORDER_SUCCESS_NOTIFICATION_EVENT},
-        groupId = "on-ssgdeal-group",
+        groupId = "on-ssgdeal-group-order-success-notification",
         containerFactory = "kafkaListenerContainerFactory"
     )
     public void listenSuccessOrderEvent(
@@ -49,7 +49,8 @@ public class NotificationKafkaEventListener {
             MdcContext mdcContext = new MdcContext();
             PassportMdcContext passportMdcContext = new PassportMdcContext(passportUtil, passportId);
         ) {
-            consumeSuccessOrderEvent(ack, envelope.payload());
+            consumeSuccessOrderEvent(envelope.payload());
+            ack.acknowledge();
         } catch (NonRecoverableException nre) {
             log.error("재시도하지 않을 예외가 발생했습니다. => {}", nre.getMessage());
             throw nre;
@@ -59,10 +60,9 @@ public class NotificationKafkaEventListener {
         }
     }
 
-    private void consumeSuccessOrderEvent(Acknowledgment ack, CreateNotificationEvent payload) {
+    private void consumeSuccessOrderEvent(CreateNotificationEvent payload) {
         try {
             notificationService.sendNotification(payload.toDto(), NotificationChannelType.SLACK);
-            ack.acknowledge();
         } catch (Exception e) {
             log.error("메시지 소비에 실패했습니다.", e);
             throw e;

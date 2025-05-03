@@ -48,7 +48,8 @@ public class ProductKafkaEventListener {
             MdcContext mdcContext = new MdcContext();
             PassportMdcContext passportMdcContext = new PassportMdcContext(passportUtil, passportId);
         ) {
-            consumeIncreaseStockEvent(ack, envelope.payload());
+            consumeIncreaseStockEvent(envelope.payload());
+            ack.acknowledge();
         } catch (NonRecoverableException nre) {
             log.error("재시도하지 않을 예외가 발생했습니다. => {}", nre.getMessage());
             throw nre;
@@ -58,10 +59,9 @@ public class ProductKafkaEventListener {
         }
     }
 
-    private void consumeIncreaseStockEvent(Acknowledgment ack, IncreaseStockEvent payload) {
+    private void consumeIncreaseStockEvent(IncreaseStockEvent payload) {
         try {
             productService.increaseStock(payload.toDto());
-            ack.acknowledge();
         } catch (Exception e) {
             log.error("메시지 소비에 실패했습니다. => {}", e.getMessage());
             throw e;
